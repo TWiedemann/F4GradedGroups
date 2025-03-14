@@ -25,7 +25,7 @@ BrownComPart := function(brownEl, i)
     elif i = 2 then
         return BrownPart(brownEl, 4);
     else
-        Error("Brown algebra element: Invalid position (ComPart).")
+        Error("Brown algebra element: Invalid position (ComPart).");
     fi;
 end;
 
@@ -35,7 +35,7 @@ BrownConicPart := function(brownEl, i)
     elif i = 2 then
         return BrownPart(brownEl, 3);
     else
-        Error("Brown algebra element: Invalid position (ConicPart).")
+        Error("Brown algebra element: Invalid position (ConicPart).");
     fi;
 end;
 

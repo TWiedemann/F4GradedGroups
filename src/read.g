@@ -1,7 +1,18 @@
-Read("./F4-5Grading.g");
-Read("./helper.g");
-Read("./conic.g");
-Read("./cubic.g");
-# Read("./struc.g");
-Read("./brown.g");
-Read("./lie.g");
+myUnbind := function(s)
+    if IsBoundGlobal(s) then
+        MakeReadWriteGlobal(s);
+        UnbindGlobal(s);
+    fi;
+end;
+
+Reread("./F4-5Grading.g");
+Reread("./helper.g");
+Reread("./conic.g");
+myUnbind("IsCubicElement");
+Reread("./cubic.g");
+myUnbind("IsBrownElement");
+Reread("./brown.g");
+myUnbind("IsDDElement");
+Reread("./lie0.g");
+Reread("./lie.g");
+Read("./user_vars.g");

@@ -8,20 +8,20 @@ comring_rank := 6;
 # If longer products are needed during the runtime, then an error message is printed.
 trace_max_length := 3; 
 
-conicAlgBasicIndetName := function(i)
+ConicAlgBasicIndetName := function(i)
 	return Concatenation("a", String(i));
 end;
 
-conicAlgBasicInvIndetName := function(i)
+ConicAlgBasicInvIndetName := function(i)
 	return Concatenation("a", String(i), "'");
 end;
 
 conicalgIndetNames := [];
 for i in [1..conicalg_rank] do
-	Add(conicalgIndetNames, conicAlgBasicIndetName(i));
+	Add(conicalgIndetNames, ConicAlgBasicIndetName(i));
 od;
 for i in [1..conicalg_rank] do
-	Add(conicalgIndetNames, conicAlgBasicInvIndetName(i)); # Conjugation
+	Add(conicalgIndetNames, ConicAlgBasicInvIndetName(i)); # Conjugation
 od;
 
 comRingBasicIndetName := function(i)
@@ -159,11 +159,11 @@ t1 := ComRing.1;
 t2 := ComRing.2;
 t3 := ComRing.3;
 
-conicAlgBasicIndet := function(i)
+ConicAlgBasicIndet := function(i)
 	return ConicAlgBasicIndets[i];
 end;
 
-conicAlgInvIndet := function(i)
+ConicAlgInvIndet := function(i)
 	return ConicAlgInvIndets[i];
 end;
 
@@ -183,7 +183,7 @@ comRingGamIndet := function(i)
 	return Indeterminate(BaseRing, comRingGamIndetName(i));
 end;
 
-conicAlgMagInv := function(m)
+ConicAlgMagInv := function(m)
 	local replaceList, replaceByList;
 	if not m in ConicAlgMag then
 		return fail;
@@ -194,17 +194,17 @@ conicAlgMagInv := function(m)
 	return replaceInMagma(ConicAlgMag, m, replaceList, replaceByList);
 end;
 
-conicAlgInv := function(a)
+ConicAlgInv := function(a)
 	if not a in ConicAlg then
 		return fail;
 	fi;
-	return changeRingElByMagmaTrans(ConicAlg, a, conicAlgMagInv);
+	return changeRingElByMagmaTrans(ConicAlg, a, ConicAlgMagInv);
 end;
 
 # magFunc: A function ConicAlgMag -> Comring.
 # Outpunt: The linear extension ConicAlg -> Comring of magFunc.
 # (This is only used for the trace, which makes it a bit useless. I accidentally thought I could use it for the trace and for the norm, but the norm is of course not linear.)
-conicAlgFunctionalFromMagFunctional := function(magFunc)
+ConicAlgFunctionalFromMagFunctional := function(magFunc)
 	return function(a)
 		local coeffList, result, i, magmaEl, coeff;
 		coeffList := CoefficientsAndMagmaElements(a);
@@ -220,9 +220,9 @@ end;
 
 
 
-# conicAlgNorm := conicAlgFunctionalFromMagFunctional(conicAlgMagNorm);
+# ConicAlgNorm := ConicAlgFunctionalFromMagFunctional(ConicAlgMagNorm);
 
-conicAlgMagTrOnRep := function(mRep)
+ConicAlgMagTrOnRep := function(mRep)
 	local assocRep;
 	assocRep := assocRepFromNonAssocRep(mRep);
 	if IsEmpty(assocRep) then
@@ -234,44 +234,44 @@ conicAlgMagTrOnRep := function(mRep)
 	fi;
 end;
 
-conicAlgMagTr := function(m)
-	return conicAlgMagTrOnRep(ExtRepOfObj(m));
+ConicAlgMagTr := function(m)
+	return ConicAlgMagTrOnRep(ExtRepOfObj(m));
 end;
 
-conicAlgTr := conicAlgFunctionalFromMagFunctional(conicAlgMagTr);
+ConicAlgTr := ConicAlgFunctionalFromMagFunctional(ConicAlgMagTr);
 
-conicAlgBiTr := function(a, b)
-	return conicAlgTr(conicAlgInv(a)*b);
+ConicAlgBiTr := function(a, b)
+	return ConicAlgTr(ConicAlgInv(a)*b);
 end;
 
-conicAlgMagNormOnRep := function(mRep)
+ConicAlgMagNormOnRep := function(mRep)
 	if mRep = 0 then
 		return Zero(ComRing);
 	elif mRep in [1..2*conicalg_rank] then
 		return comRingNormIndet(mRep);
 	elif IsList(mRep) then
-		return conicAlgMagNormOnRep(mRep[1]) * conicAlgMagNormOnRep(mRep[2]);
+		return ConicAlgMagNormOnRep(mRep[1]) * ConicAlgMagNormOnRep(mRep[2]);
 	else
 		return fail;
 	fi;
 end;
 
-conicAlgMagNorm := function(m)
-	return conicAlgMagNormOnRep(ExtRepOfObj(m));
+ConicAlgMagNorm := function(m)
+	return ConicAlgMagNormOnRep(ExtRepOfObj(m));
 end;
 
-conicAlgNorm := function(a)
+ConicAlgNorm := function(a)
 	local coeffList, result, i, j, magmaEl, magmaEl2, coeff, coeff2;
 	coeffList := CoefficientsAndMagmaElements(a);
 	result := Zero(ComRing);
 	for i in [1..Length(coeffList)/2] do
 		magmaEl := coeffList[2*i - 1]; # \in ConicAlgMag
 		coeff := coeffList[2*i]; # \in ComRing
-		result := result + coeff^2 * conicAlgMagNorm(magmaEl); # norm(x_i)
+		result := result + coeff^2 * ConicAlgMagNorm(magmaEl); # norm(x_i)
 		for j in [i+1..Length(coeffList)/2] do
 			magmaEl2 := coeffList[2*j - 1]; # \in ConicAlgMag
 			coeff2 := coeffList[2*j]; # \in ComRing
-			result := result + coeff*coeff2 * conicAlgMagTr(magmaEl * conicAlgMagInv(magmaEl2)); # tr(x_i x_j') = linearisation of norm
+			result := result + coeff*coeff2 * ConicAlgMagTr(magmaEl * ConicAlgMagInv(magmaEl2)); # tr(x_i x_j') = linearisation of norm
 		od;
 	od;
 	return result;

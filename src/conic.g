@@ -8,6 +8,8 @@ ComRing_rank := 6;
 # If longer products are needed during the runtime, then an error message is printed.
 Trace_MaxLength := 3; 
 
+## ConicAlg indeterminates
+
 ConicAlgBasicIndetName := function(i)
 	return Concatenation("a", String(i));
 end;
@@ -16,13 +18,22 @@ ConicAlgBasicInvIndetName := function(i)
 	return Concatenation("a", String(i), "'");
 end;
 
-conicalgIndetNames := [];
-for i in [1..ConicAlg_rank] do
-	Add(conicalgIndetNames, ConicAlgBasicIndetName(i));
-od;
-for i in [1..ConicAlg_rank] do
-	Add(conicalgIndetNames, ConicAlgBasicInvIndetName(i)); # Conjugation
-od;
+# Returns the list of all strings which appear as indeterminate names in ConicAlg
+_ConicAlgIndetNames := function()
+	local ConicAlgIndetNames, i;
+	ConicAlgIndetNames := [];
+	for i in [1..ConicAlg_rank] do
+		Add(ConicAlgIndetNames, ConicAlgBasicIndetName(i));
+	od;
+	for i in [1..ConicAlg_rank] do
+		Add(ConicAlgIndetNames, ConicAlgBasicInvIndetName(i)); # Conjugation
+	od;
+	return ConicAlgIndetNames;
+end;
+
+ConicAlgIndetNames := _ConicAlgIndetNames();
+
+## ComRing indeterminates
 
 ComRingBasicIndetName := function(i)
 	return Concatenation("t", String(i));
@@ -30,9 +41,9 @@ end;
 
 ComRingNormIndetName := function(i)
 	if i in [1..ConicAlg_rank] then
-		return Concatenation("n(", conicalgIndetNames[i], ")");
+		return Concatenation("n(", ConicAlgIndetNames[i], ")");
 	elif i in [ConicAlg_rank+1..2*ConicAlg_rank] then
-		return Concatenation("n(", conicalgIndetNames[i-ConicAlg_rank], ")");
+		return Concatenation("n(", ConicAlgIndetNames[i-ConicAlg_rank], ")");
 	else
 		return fail;
 	fi;
@@ -49,7 +60,7 @@ ComRingTraceIndetName := function(indexList)
 		if not i in [1..2*ConicAlg_rank] then
 			return fail;
 		else
-			name := Concatenation(name, conicalgIndetNames[i]);
+			name := Concatenation(name, ConicAlgIndetNames[i]);
 		fi;
 	od;
 	name := Concatenation(name, ")");
@@ -98,49 +109,58 @@ ComRingIndetNumberForTrace := function(indexList)
 	return result+1;
 end;
 
-ComRingIndetNames := [];
-# Basic indeterminates
-for i in [1..ComRing_rank] do
-	Add(ComRingIndetNames, Concatenation("t", String(i)));
-od;
-# Norms
-for i in [1..ConicAlg_rank] do
-	Add(ComRingIndetNames, ComRingNormIndetName(i));
-od;
-# Traces
-for l in [1..Trace_MaxLength] do
-	indexList := [];
-	for i in [1..l] do
-		Add(indexList, 1);
+# Returns the list of all strings which appear as indeterminate names in ComRing
+_ComRingIndetNames := function()
+	local ComRingIndetNames, i, j, l, indexList;
+	ComRingIndetNames := [];
+	# Basic indeterminates
+	for i in [1..ComRing_rank] do
+		Add(ComRingIndetNames, Concatenation("t", String(i)));
 	od;
-	Add(ComRingIndetNames, ComRingTraceIndetName(indexList)); # Add [ 1, ..., 1 ]
-	while true do
-		# Increase indexList by one step
-		for i in [l, l-1 .. 1 ] do
-			if indexList[i] < 2*ConicAlg_rank then
-				indexList[i] := indexList[i] + 1;
-				for j in [i+1..l] do
-					indexList[j] := 1;
-				od;
+	# Norms
+	for i in [1..ConicAlg_rank] do
+		Add(ComRingIndetNames, ComRingNormIndetName(i));
+	od;
+	# Traces
+	for l in [1..Trace_MaxLength] do
+		indexList := [];
+		for i in [1..l] do
+			Add(indexList, 1);
+		od;
+		Add(ComRingIndetNames, ComRingTraceIndetName(indexList)); # Add [ 1, ..., 1 ]
+		while true do
+			# Increase indexList by one step
+			for i in [l, l-1 .. 1 ] do
+				if indexList[i] < 2*ConicAlg_rank then
+					indexList[i] := indexList[i] + 1;
+					for j in [i+1..l] do
+						indexList[j] := 1;
+					od;
+					break;
+				elif i = 1 then
+					indexList := fail;
+				fi;
+			od;
+			if indexList = fail then
 				break;
-			elif i = 1 then
-				indexList := fail;
+			else
+				Add(ComRingIndetNames, ComRingTraceIndetName(indexList));
 			fi;
 		od;
-		if indexList = fail then
-			break;
-		else
-			Add(ComRingIndetNames, ComRingTraceIndetName(indexList));
-		fi;
 	od;
-od;
-# \Gamma
-for i in [1,2,3] do
-	Add(ComRingIndetNames, ComRingGamIndetName(i));
-od;
+	# \Gamma
+	for i in [1,2,3] do
+		Add(ComRingIndetNames, ComRingGamIndetName(i));
+	od;
+	return ComRingIndetNames;
+end;
+
+ComRingIndetNames := _ComRingIndetNames();
+
+## Definition of the algebraic structures
 
 ComRing := PolynomialRing(BaseRing, ComRingIndetNames);
-ConicAlgMag := FreeMagmaWithOne(conicalgIndetNames);
+ConicAlgMag := FreeMagmaWithOne(ConicAlgIndetNames);
 ConicAlg := FreeMagmaRing(ComRing, ConicAlgMag);
 
 ConicAlgMagIndets := GeneratorsOfMagmaWithOne(ConicAlgMag);
@@ -152,12 +172,7 @@ ConicAlgBasicIndets := ConicAlgIndets{[1..ConicAlg_rank]};
 ConicAlgMagInvIndets := ConicAlgMagIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 ConicAlgInvIndets := ConicAlgIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 
-a1 := ConicAlg.1;
-a2 := ConicAlg.2;
-a3 := ConicAlg.3;
-t1 := ComRing.1;
-t2 := ComRing.2;
-t3 := ComRing.3;
+## Constructors for indeterminates
 
 ConicAlgBasicIndet := function(i)
 	return ConicAlgBasicIndets[i];
@@ -182,6 +197,8 @@ end;
 ComRingGamIndet := function(i)
 	return Indeterminate(BaseRing, ComRingGamIndetName(i));
 end;
+
+## Functions on the rings
 
 ConicAlgMagInv := function(m)
 	local replaceList, replaceByList;

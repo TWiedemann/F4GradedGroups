@@ -21,6 +21,26 @@ CubicRepToMatrix := function(rep)
 			[g[1]*u[2], g[2]*ConicAlgInv(u[1]), x[3]]];
 end;
 
+CubicRepToString := function(a)
+	local stringList, i, s;
+	stringList := [];
+	for i in [1..3] do
+		if a[1][i] <> Zero(ComRing) then
+			s := Concatenation(String(a[1][i]), "[", String(i), String(i), "]");
+			Add(stringList, s);
+		fi;
+	od;
+	for i in [1..3] do
+		if a[2][i] <> Zero(ConicAlg) then
+			s := Concatenation(String(a[2][i]), "[", String(CycPerm[i][2]), String(CycPerm[i][3]), "]");
+			Add(stringList, s);
+		fi;
+	od;
+	return StringSum(stringList, CubicZeroString);
+end;
+
+CubicZeroString := "0_J";
+
 CubicSpec := rec(
 	ElementName := "CubicElement",
 	Zero := a -> [[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]],
@@ -32,12 +52,14 @@ CubicSpec := rec(
 		return -a;
 	end,
 	Print := function(a)
-		Print(CubicRepToMatrix(a));
+		Print(CubicRepToString(a));
 	end,
 	MathInfo := IsAdditivelyCommutativeElement
 );
 
 Cubic := ArithmeticElementCreator(CubicSpec);
+
+InstallMethod(String, [IsCubicElement], x -> CubicRepToString(UnderlyingElement(x)));
 
 ## Getters for coefficients
 
@@ -88,6 +110,10 @@ end;
 # Output: The element x of Cubic with CubicComCoeff(x, i) = t and every other coefficient zero.
 CubicComEl := function(i, t)
 	local comList, conicList;
+	if not t in ComRing then
+		Error("CubicComEl is only defined for elements of ComRing");
+		return fail;
+	fi;
 	comList := [Zero(ComRing), Zero(ComRing), Zero(ComRing)];
 	comList[i] := t;
 	conicList := [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)];
@@ -99,10 +125,14 @@ CubicComElOne := function(i)
 end;
 
 # i: 1, 2, or 3
-# a: Element of ComRing
+# a: Element of ConicAlg
 # Output: The element x of Cubic with CubicAlgCoeff(x, i) = a and every other coefficient zero.
 CubicAlgEl := function(i, a)
 	local comList, conicList;
+	if not a in ConicAlg then
+		Error("CubicAlgEl is only defined for elements of ConicAlg");
+		return fail;
+	fi;
 	comList := [Zero(ComRing), Zero(ComRing), Zero(ComRing)];
 	conicList := [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)];
 	conicList[i] := a;
@@ -228,14 +258,14 @@ end;
 
 ## ------- Structural maps of the corresponding Jordan algebra ----
 
-jordanU := function(a, b)
+JordanU := function(a, b)
 	return CubicTr(a,b)*a -CubicCross(CubicAdj(a), b);
 end;
 
-jordanULin := function(a,b,c)
+JordanULin := function(a,b,c)
 	return CubicTr(a, c)*b + CubicTr(b, c)*a - CubicCross(CubicCross(a,b), c);
 end;
 
-jordanD := function(a,b,c)
-	return jordanULin(a,c,b);
+JordanD := function(a,b,c)
+	return JordanULin(a,c,b);
 end;

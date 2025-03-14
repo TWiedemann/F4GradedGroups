@@ -1,4 +1,4 @@
-
+# This file should be obsolete
 strucConst := One(ComRing); # eta in Tom, 3.3
 
 strucZero := function()

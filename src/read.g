@@ -1,8 +1,8 @@
 myUnbind := function(s)
-    if IsBoundGlobal(s) then
-        MakeReadWriteGlobal(s);
-        UnbindGlobal(s);
-    fi;
+	if IsBoundGlobal(s) then
+		MakeReadWriteGlobal(s);
+		UnbindGlobal(s);
+	fi;
 end;
 
 Reread("./F4-5Grading.g");

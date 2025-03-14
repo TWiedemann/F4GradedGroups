@@ -28,13 +28,13 @@ CubicRepToString := function(a)
 	stringList := [];
 	for i in [1..3] do
 		if a[1][i] <> Zero(ComRing) then
-			s := Concatenation(String(a[1][i]), "[", String(i), String(i), "]");
+			s := Concatenation("(", String(a[1][i]), ")", "[", String(i), String(i), "]");
 			Add(stringList, s);
 		fi;
 	od;
 	for i in [1..3] do
 		if a[2][i] <> Zero(ConicAlg) then
-			s := Concatenation(String(a[2][i]), "[", String(CycPerm[i][2]), String(CycPerm[i][3]), "]");
+			s := Concatenation("(", String(a[2][i]), ")", "[", String(CycPerm[i][2]), String(CycPerm[i][3]), "]");
 			Add(stringList, s);
 		fi;
 	od;

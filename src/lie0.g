@@ -118,8 +118,28 @@ InstallMethod(dd, [IsCubicElement, IsCubicElement], function(cubicEl1, cubicEl2)
 	return DD([[One(ComRing), cubicEl1, cubicEl2]]);
 end);
 
+# rep: Internal representation of an element of L0
+# Output: A string representing this element
 L0RepToString := function(rep)
-	# TODO
+	local stringList, s, list, name, sym;
+	stringList := [];
+	for s in ["dd", "cubicPos", "cubicNeg"] do
+		if not IsZero(rep.(s)) then
+			Add(stringList, String(rep.(s)));
+		fi;
+	od;
+	for list in [["xiCoeff", "\xi"], ["zetaCoeff", "\zeta"]] do
+		name := list[1];
+		sym := list[2];
+		if rep.(name) <> Zero(ComRing) then
+			if rep.(name) = One(ComRing) then
+				Add(stringList, sym);
+			else
+				Add(stringList, Concatenation("(", String(rep.(name)), ")", sym));
+			fi;
+		fi;
+	od;
+	return StringSum(stringList);
 end;
 
 # Elements of L0 are represented by records with entries "dd", "xiCoeff", "zetaCoeff",
@@ -144,6 +164,13 @@ L0Spec := rec(
 			cubicNeg := -a.cubicNeg
 		);
 	end,
+	Zero := a -> rec(
+		dd := [],
+		xiCoeff := Zero(ComRing),
+		zetaCoeff := Zero(ComRing),
+		cubicPos := CubicZero,
+		cubicNeg := CubicZero
+	),
 	Print := function()
 		Print(L0RepToString);
 	end,
@@ -181,8 +208,11 @@ L0Spec := rec(
 );
 
 L0 := ArithmeticElementCreator(L0Spec);
+L0Zero := L0(L0Spec.Zero(fail));
 
 InstallMethod(String, [IsL0Element], x -> L0RepToString(UnderlyingElement(x)));
+
+## Constructors for elements of L0
 
 Xi := L0(rec(
 	dd := DDZero,
@@ -235,7 +265,138 @@ InstallMethod(DDToL0Emb, [IsDDElement], function(ddEl)
 end);
 
 DeclareOperation("ddL0", [IsCubicElement, IsCubicElement]);
-
 InstallMethod(ddL0, [IsCubicElement, IsCubicElement], function(cubicEl1, cubicEl2)
 	return DDToL0Emb(dd(cubicEl1, cubicEl2));
+end);
+
+## Getters for parts of elements of L0
+
+DeclareOperation("L0XiCoeff", [IsL0Element]);
+DeclareOperation("L0ZetaCoeff", [IsL0Element]);
+DeclareOperation("L0CubicPosCoeff", [IsL0Element]);
+DeclareOperation("L0CubicNegCoeff", [IsL0Element]);
+DeclareOperation("L0DDCoeff", [IsL0Element]);
+
+InstallMethod(L0XiCoeff, [IsL0Element], function(L0El)
+	return UnderlyingElement(L0El).xiCoeff;
+);
+InstallMethod(L0ZetaCoeff, [IsL0Element], function(L0El)
+	return UnderlyingElement(L0El).ZetaCoeff;
+);
+InstallMethod(L0CubicPosCoeff, [IsL0Element], function(L0El)
+	return UnderlyingElement(L0El).cubicPos;
+);
+InstallMethod(L0CubicNegCoeff, [IsL0Element], function(L0El)
+	return UnderlyingElement(L0El).cubicNeg;
+);
+InstallMethod(L0DDCoeff, [IsL0Element], function(L0El)
+	return UnderlyingElement(L0El).dd;
+);
+
+## Action of L0 on Lie
+
+# a: Element of ComRing or of Brown
+# Output: The result of the action of xi on a (regarded as an element of L_1 or L_2)
+XiPosEndo := function(a)
+	if a in ComRing then
+		return 2*a;
+	elif IsBrownElement(a) then
+		return a;
+	else
+		Error("xi not defined on this element");
+		return fail;
+	fi;
+end;
+
+# a: Element of ComRing or of Brown
+# Output: The result of the action of xi on a (regarded as an element of L_{-1} or L_{-2})
+XiNegEndo := function(a)
+	if a in ComRing then
+		return -2*a;
+	elif IsBrownElement(a) then
+		return -a;
+	else
+		Error("xi not defined on this element");
+		return fail;
+	fi;
+end;
+
+# a: Element of ComRing or of Brown
+# Output: The result of the action of zeta on a (regarded as an element of L_1 or L_2)
+ZetaPosEndo := function(a)
+	if a in ComRing then
+		return a;
+	elif IsBrownElement(a) then
+		return Brown(-BrownPart(a, 1), CubicZero, BrownPart(a, 3), 2*BrownPart(a, 4));
+	else
+		Error("zeta not defined on this element");
+		return fail;
+	fi;
+end;
+
+# a: Element of ComRing or of Brown
+# Output: The result of the action of zeta on a (regarded as an element of L_{-1} or L_{-2})
+ZetaNegEndo := function(a)
+	if a in ComRing then
+		return -a;
+	elif IsBrownElement(a) then
+		return Brown(-2*BrownPart(a, 1), -BrownPart(a, 2), CubicZero, BrownPart(a, 4));
+	else
+		Error("zeta not defined on this element");
+		return fail;
+	fi;
+end;
+
+DeclareOperation("L0AsEndo", [IsL0Element, IsInt]);
+InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
+	local xi, zeta, a, a2, ddList;
+	# Components of L0El
+	xi := L0XiCoeff(L0El);
+	zeta := L0ZetaCoeff(L0El);
+	a := L0CubicPosCoeff(L0El);
+	a2 := L0CubicNegCoeff(L0El);
+	ddList := DDCoeffList(L0DDCoeff(L0El));
+	if i = -2 then
+		return function(comEl)
+			# Cubic, Cubic' and DD act trivially
+			if not comEl in ComRing then
+				Error("Invalid input for L0 acting on L_{-2}");
+			fi;
+			return -(2*L0XiCoeff(L0El) + L0ZetaCoeff(L0El)) * comEl;
+		end;
+	elif i = 1 or i = -1 then
+		return function(brownEl)
+			## Components of brownEl
+			lam := BrownPart(brownEl, 1);
+			b := BrownPart(brownEl, 2);
+			b2 := BrownPart(brownEl, 3);
+			mu := BrownPart(brownEl, 4);
+			## Return value
+			# Action of Cubic and Cubic'
+			newLam := -CubicTr(b, a2);
+			newB := lam*a - CubicCross(a2, b2);
+			newB2 := CubicCross(a, b) - mu*a2;
+			newMu := CubicTr(a, b2);
+			# Action of DD
+			# ...
+			result := Brown([newLam, newB, newB2, newMu]);
+			if i = 1 then
+				# Action of xi and zeta. This is the only part where i is relevant.
+				result := result + xi*XiPosEndo(brownEl) + zeta*ZetaPosEndo(brownEl);
+			else
+				result := result + xi*XiNegEndo(brownEl) + zeta*ZetaNegEndo(brownEl);
+			fi;
+			return result;
+		end;
+	elif i = 2 then
+		return function(comEl)
+			# Cubic, Cubic' and DD act trivially
+			if not comEl in ComRing then
+				Error("Invalid input for L0 acting on L_2");
+			fi;
+			return (2*L0XiCoeff(L0El) + L0ZetaCoeff(L0El)) * comEl;
+		end;
+	else
+		return fail;
+	fi;
 end);

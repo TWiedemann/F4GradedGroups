@@ -378,10 +378,18 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 			newB2 := CubicCross(a, b) - mu*a2;
 			newMu := CubicTr(a, b2);
 			# Action of DD
-			# ...
+			for summand in ddList do
+				coeff := summand[1]; # in ComRing
+				c1 := summand[2]; # in Cubic
+				c2 := summand[3]; # in Cubic'
+				newLam := newLam - lam*cubicTr(c1, c2);
+				newB := newB + JordanD(c1, c2, b) - CubicTr(c1, c2)*b;
+				newB2 := newB2 - JordanD(c2, c, b2) + CubicTr(c1, c2)*b2;
+				newMu := newMu + mu*cubicTr(c1, c2);
+			od;
 			result := Brown([newLam, newB, newB2, newMu]);
+			# Action of xi and zeta. This is the only part where i is relevant.
 			if i = 1 then
-				# Action of xi and zeta. This is the only part where i is relevant.
 				result := result + xi*XiPosEndo(brownEl) + zeta*ZetaPosEndo(brownEl);
 			else
 				result := result + xi*XiNegEndo(brownEl) + zeta*ZetaNegEndo(brownEl);

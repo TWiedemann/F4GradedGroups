@@ -9,14 +9,29 @@ BrownSpec := rec(
 	MathInfo := IsAdditivelyCommutativeElement
 );
 Brown := ArithmeticElementCreator(BrownSpec);
+
+## Constructors for elements of Brown
+
 BrownZero := Brown(BrownSpec.Zero(fail));
+
+DeclareOperation("BrownElFromTuple", [IsRingElement, IsCubicElement, IsCubicElement, IsRingElement]);
+InstallMethod(BrownElFromTuple, [IsRingElement, IsCubicElement, IsCubicElement, IsRingElement],
+	function(a, b, c, d)
+		if not (a in ComRing and d in ComRing) then
+			Error("BrownElFromTuple: Invalid input");
+			return fail;
+		else
+			return Brown([a, b, c, d]);
+		fi;
+	end
+);
 
 ## Getters for components
 
 DeclareOperation(BrownElTuple, [IsBrownElement]);
 DeclareOperation(BrownElPart, [IsBrownElement, IsInteger]);
 DeclareOperation(BrownElComPart, [IsBrownElement, IsInteger]);
-DeclareOperation(BrownElConicPart, [IsBrownElement, IsInteger]);
+DeclareOperation(BrownElCubicPart, [IsBrownElement, IsInteger]);
 
 # Output: List [a, b, c, d] of the entries of brownEl
 InstallMethod(BrownElTuple, [IsBrownElement], function(brownEl)
@@ -42,13 +57,13 @@ InstallMethod(BrownElComPart, [IsBrownElement, IsInteger], function(brownEl, i)
 	fi;
 end);
 
-InstallMethod(BrownElConicPart, [IsBrownElement, IsInteger], function(brownEl, i)
+InstallMethod(BrownElCubicPart, [IsBrownElement, IsInteger], function(brownEl, i)
 	if i = 1 then
 		return BrownElPart(brownEl, 2);
 	elif i = 2 then
 		return BrownElPart(brownEl, 3);
 	else
-		Error("Brown algebra element: Invalid position (ConicPart).");
+		Error("Brown algebra element: Invalid position (CubicPart).");
 	fi;
 end);
 

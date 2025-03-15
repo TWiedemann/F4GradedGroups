@@ -214,7 +214,7 @@ InstallMethod(String, [IsL0Element], x -> L0RepToString(UnderlyingElement(x)));
 
 ## Constructors for elements of L0
 
-Xi := L0(rec(
+L0Xi := L0(rec(
 	dd := DDZero,
 	xiCoeff := One(ComRing),
 	zetaCoeff := Zero(ComRing),
@@ -222,7 +222,7 @@ Xi := L0(rec(
 	cubicNeg := CubicZero
 ));
 
-Zeta := L0(rec(
+L0Zeta := L0(rec(
 	dd := DDZero,
 	xiCoeff := Zero(ComRing),
 	zetaCoeff := One(ComRing),
@@ -366,6 +366,7 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 		end;
 	elif i = 1 or i = -1 then
 		return function(brownEl)
+			local lam, b, b2, mu, newLam, newB, newB2, newMu, coeff, c1, c2, result, summand;
 			## Components of brownEl
 			lam := BrownPart(brownEl, 1);
 			b := BrownPart(brownEl, 2);

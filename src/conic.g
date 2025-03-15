@@ -172,10 +172,12 @@ ConicAlgBasicIndets := ConicAlgIndets{[1..ConicAlg_rank]};
 ConicAlgMagInvIndets := ConicAlgMagIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 ConicAlgInvIndets := ConicAlgIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 
-##
+## Functions which test requirements and throw errors
 
 DeclareOperation("ReqComRingEl", [IsRingElement]);
 DeclareOperation("ReqComRingEl", [IsList]);
+DeclareOperation("ReqConicAlgEl", [IsRingElement]);
+DeclareOperation("ReqConicAlgEl", [IsList]);
 
 InstallMethod(ReqComRingEl, [IsRingElement], function(a)
 	if not a in ComRing then
@@ -188,6 +190,20 @@ InstallMethod(ReqComRingEl, [IsList], function(list)
 	local a;
 	for a in list do
 		ReqComRingEl(a);
+	od;
+end;)
+
+InstallMethod(ReqConicAlgEl, [IsRingElement], function(a)
+	if not a in ConicAlg then
+		Error("Invalid input: Must be in ConicAlg.")
+		return false;
+	fi;
+	return true;
+end;)
+InstallMethod(ReqConicAlgEl, [IsList], function(list)
+	local a;
+	for a in list do
+		ReqConicAlgEl(a);
 	od;
 end;)
 

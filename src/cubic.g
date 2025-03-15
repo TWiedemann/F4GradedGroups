@@ -125,10 +125,7 @@ end;
 # I.e., the element t[ii].
 CubicComEl := function(i, t)
 	local comList, conicList;
-	if not t in ComRing then
-		Error("CubicComEl is only defined for elements of ComRing");
-		return fail;
-	fi;
+	ReqComRingEl(t);
 	comList := [Zero(ComRing), Zero(ComRing), Zero(ComRing)];
 	comList[i] := t;
 	conicList := [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)];
@@ -145,8 +142,7 @@ end;
 # I.e., the element a[jl] if [i, j, l] is the cyclic permutation starting from i.
 CubicAlgEl := function(i, a)
 	local comList, conicList;
-	if not a in ConicAlg then
-		Error("CubicAlgEl is only defined for elements of ConicAlg");
+	if not ReqConicAlgEl(a) then
 		return fail;
 	fi;
 	comList := [Zero(ComRing), Zero(ComRing), Zero(ComRing)];

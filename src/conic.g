@@ -172,6 +172,23 @@ ConicAlgBasicIndets := ConicAlgIndets{[1..ConicAlg_rank]};
 ConicAlgMagInvIndets := ConicAlgMagIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 ConicAlgInvIndets := ConicAlgIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 
+##
+
+DeclareOperation("ReqComRingEl", [IsRingElement]);
+DeclareOperation("ReqComRingEl", [IsList]);
+
+InstallMethod(ReqComRingEl, [IsRingElement], function(a)
+	if not a in ComRing then
+		Error("Invalid input: Must be in ComRing.")
+	fi;
+end;)
+InstallMethod(ReqComRingEl, [IsList], function(list)
+	local a;
+	for a in list do
+		ReqComRingEl(a);
+	od;
+end;)
+
 ## Constructors for indeterminates
 
 ConicAlgBasicIndet := function(i)

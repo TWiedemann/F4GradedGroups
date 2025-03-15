@@ -180,7 +180,9 @@ DeclareOperation("ReqComRingEl", [IsList]);
 InstallMethod(ReqComRingEl, [IsRingElement], function(a)
 	if not a in ComRing then
 		Error("Invalid input: Must be in ComRing.")
+		return false;
 	fi;
+	return true;
 end;)
 InstallMethod(ReqComRingEl, [IsList], function(list)
 	local a;

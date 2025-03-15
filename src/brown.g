@@ -17,8 +17,7 @@ BrownZero := Brown(BrownSpec.Zero(fail));
 DeclareOperation("BrownElFromTuple", [IsRingElement, IsCubicElement, IsCubicElement, IsRingElement]);
 InstallMethod(BrownElFromTuple, [IsRingElement, IsCubicElement, IsCubicElement, IsRingElement],
 	function(a, b, c, d)
-		if not (a in ComRing and d in ComRing) then
-			Error("BrownElFromTuple: Invalid input");
+		if not ReqComRingEl([a,d]) then
 			return fail;
 		else
 			return Brown([a, b, c, d]);

@@ -127,7 +127,8 @@ LieSpec := rec(
 			pos1 := pos1,
 			pos2 := pos2
 		);
-	end
+	end,
+	MathInfo := IsAdditivelyCommutativeElement
 );
 
 Lie := ArithmeticElementCreator(LieSpec);

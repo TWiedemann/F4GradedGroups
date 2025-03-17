@@ -181,31 +181,31 @@ DeclareOperation("ReqConicAlgEl", [IsList]);
 
 InstallMethod(ReqComRingEl, [IsRingElement], function(a)
 	if not a in ComRing then
-		Error("Invalid input: Must be in ComRing.")
+		Error("Invalid input: Must be in ComRing.");
 		return false;
 	fi;
 	return true;
-end;)
+end);
 InstallMethod(ReqComRingEl, [IsList], function(list)
 	local a;
 	for a in list do
 		ReqComRingEl(a);
 	od;
-end;)
+end);
 
 InstallMethod(ReqConicAlgEl, [IsRingElement], function(a)
 	if not a in ConicAlg then
-		Error("Invalid input: Must be in ConicAlg.")
+		Error("Invalid input: Must be in ConicAlg.");
 		return false;
 	fi;
 	return true;
-end;)
+end);
 InstallMethod(ReqConicAlgEl, [IsList], function(list)
 	local a;
 	for a in list do
 		ReqConicAlgEl(a);
 	od;
-end;)
+end);
 
 ## Constructors for indeterminates
 

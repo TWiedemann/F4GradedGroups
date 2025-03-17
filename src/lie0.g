@@ -279,19 +279,19 @@ DeclareOperation("L0DDCoeff", [IsL0Element]);
 
 InstallMethod(L0XiCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).xiCoeff;
-);
+end);
 InstallMethod(L0ZetaCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).ZetaCoeff;
-);
+end);
 InstallMethod(L0CubicPosCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).cubicPos;
-);
+end);
 InstallMethod(L0CubicNegCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).cubicNeg;
-);
+end);
 InstallMethod(L0DDCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).dd;
-);
+end);
 
 ## Action of L0 on Lie
 
@@ -327,7 +327,7 @@ ZetaPosEndo := function(a)
 	if a in ComRing then
 		return a;
 	elif IsBrownElement(a) then
-		return Brown(-BrownPart(a, 1), CubicZero, BrownPart(a, 3), 2*BrownPart(a, 4));
+		return Brown([-BrownElPart(a, 1), CubicZero, BrownElPart(a, 3), 2*BrownElPart(a, 4)]);
 	else
 		Error("zeta not defined on this element");
 		return fail;
@@ -340,7 +340,7 @@ ZetaNegEndo := function(a)
 	if a in ComRing then
 		return -a;
 	elif IsBrownElement(a) then
-		return Brown(-2*BrownPart(a, 1), -BrownPart(a, 2), CubicZero, BrownPart(a, 4));
+		return Brown([-2*BrownElPart(a, 1), -BrownElPart(a, 2), CubicZero, BrownElPart(a, 4)]);
 	else
 		Error("zeta not defined on this element");
 		return fail;
@@ -366,12 +366,12 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 		end;
 	elif i = 1 or i = -1 then
 		return function(brownEl)
-			local lam, b, b2, mu, newLam, newB, newB2, newMu, coeff, c1, c2, result, summand;
+			local lam, b, b2, mu, newLam, newB, newB2, newMu, coeff, c, c2, result, summand;
 			## Components of brownEl
-			lam := BrownPart(brownEl, 1);
-			b := BrownPart(brownEl, 2);
-			b2 := BrownPart(brownEl, 3);
-			mu := BrownPart(brownEl, 4);
+			lam := BrownElPart(brownEl, 1);
+			b := BrownElPart(brownEl, 2);
+			b2 := BrownElPart(brownEl, 3);
+			mu := BrownElPart(brownEl, 4);
 			## Return value
 			# Action of Cubic and Cubic'
 			newLam := -CubicTr(b, a2);
@@ -381,12 +381,12 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 			# Action of DD
 			for summand in ddList do
 				coeff := summand[1]; # in ComRing
-				c1 := summand[2]; # in Cubic
+				c := summand[2]; # in Cubic
 				c2 := summand[3]; # in Cubic'
-				newLam := newLam - lam*cubicTr(c1, c2);
-				newB := newB + JordanD(c1, c2, b) - CubicTr(c1, c2)*b;
-				newB2 := newB2 - JordanD(c2, c, b2) + CubicTr(c1, c2)*b2;
-				newMu := newMu + mu*cubicTr(c1, c2);
+				newLam := newLam - lam*CubicTr(c, c2);
+				newB := newB + JordanD(c, c2, b) - CubicTr(c, c2)*b;
+				newB2 := newB2 - JordanD(c2, c, b2) + CubicTr(c, c2)*b2;
+				newMu := newMu + mu*CubicTr(c, c2);
 			od;
 			result := Brown([newLam, newB, newB2, newMu]);
 			# Action of xi and zeta. This is the only part where i is relevant.

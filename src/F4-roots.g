@@ -3,7 +3,7 @@ F4Vec := FullRowSpace(Rationals, 4); # Euclidean space (with standard inner prod
 
 # Return list of positive short roots
 _F4ShortPosRoots := function()
-	local list, i, j, ei, ej;
+	local list, i, j, ei, ej, a;
 	list := [];
 	for i in [1..4] do
 		for j in [i+1..4] do

@@ -27,17 +27,17 @@ InstallMethod(BrownElFromTuple, [IsRingElement, IsCubicElement, IsCubicElement, 
 
 ## Getters for components
 
-DeclareOperation(BrownElTuple, [IsBrownElement]);
-DeclareOperation(BrownElPart, [IsBrownElement, IsInteger]);
-DeclareOperation(BrownElComPart, [IsBrownElement, IsInteger]);
-DeclareOperation(BrownElCubicPart, [IsBrownElement, IsInteger]);
+DeclareOperation("BrownElTuple", [IsBrownElement]);
+DeclareOperation("BrownElPart", [IsBrownElement, IsInt]);
+DeclareOperation("BrownElComPart", [IsBrownElement, IsInt]);
+DeclareOperation("BrownElCubicPart", [IsBrownElement, IsInt]);
 
 # Output: List [a, b, c, d] of the entries of brownEl
 InstallMethod(BrownElTuple, [IsBrownElement], function(brownEl)
 	return UnderlyingElement(brownEl);
 end);
 
-InstallMethod(BrownElPart, [IsBrownElement, IsInteger], function(brownEl, i)
+InstallMethod(BrownElPart, [IsBrownElement, IsInt], function(brownEl, i)
 	if i in [1,2,3,4] then
 		return UnderlyingElement(brownEl)[i];
 	else
@@ -46,7 +46,7 @@ InstallMethod(BrownElPart, [IsBrownElement, IsInteger], function(brownEl, i)
 	fi;
 end);
 
-InstallMethod(BrownElComPart, [IsBrownElement, IsInteger], function(brownEl, i)
+InstallMethod(BrownElComPart, [IsBrownElement, IsInt], function(brownEl, i)
 	if i = 1 then
 		return BrownElPart(brownEl, 1);
 	elif i = 2 then
@@ -56,7 +56,7 @@ InstallMethod(BrownElComPart, [IsBrownElement, IsInteger], function(brownEl, i)
 	fi;
 end);
 
-InstallMethod(BrownElCubicPart, [IsBrownElement, IsInteger], function(brownEl, i)
+InstallMethod(BrownElCubicPart, [IsBrownElement, IsInt], function(brownEl, i)
 	if i = 1 then
 		return BrownElPart(brownEl, 2);
 	elif i = 2 then

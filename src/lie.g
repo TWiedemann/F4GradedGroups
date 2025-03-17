@@ -33,7 +33,7 @@ InstallMethod(LieBracketBrownPosPos, [IsBrownElement, IsBrownElement], function(
 	c2 := BrownElPart(brown2, 3);
 	rho := BrownElPart(brown2, 4);
 	return CubicTr(b1, c2) - CubicTr(c1, b2) + mu*nu - lam*rho;
-end;)
+end);
 
 # brown1: Element of Brown, regarded as element of L_{-1}
 # brown2: Element of Brown, regarded as element of L_1
@@ -54,11 +54,11 @@ InstallMethod(LieBracketBrownNegPos, [IsBrownElement, IsBrownElement], function(
 				+ (CubicTr(c1, b2) - mu*nu) * (L0Xi - L0Zeta)
 				+ dd(b1, c2) + dd(c1, b2))
 			+ (-rho*b1 + CubicCross(b2, c2) - mu*c1);
-end;)
+end);
 
 # Elements of L are represented by records with entries "neg2" (in ComRing),
 # "neg1" (in Brown), "zero" (in L0), "pos1" (in Brown) and "pos2" (in ComRing).
-LieStruc := rec(
+LieSpec := rec(
 	ElementName := "LieElement",
 	Addition := function(a, b)
 		return rec(
@@ -86,7 +86,7 @@ LieStruc := rec(
 		);
 	end,
 	Print := function(a)
-		Print(LRepToString(a));
+		Print(LieRepToString(a));
 	end,
 	Multiplication := function(a, b)
 		local neg2, neg1, zero, pos1, pos2;
@@ -130,10 +130,10 @@ LieStruc := rec(
 	end
 );
 
-Lie := ArithmeticElementCreator(LSpec);
+Lie := ArithmeticElementCreator(LieSpec);
 
 ## Constructors for elements of Lie
-LieZero := Lie(LSpec.Zero(fail));
+LieZero := Lie(LieSpec.Zero(fail));
 LieX := Lie(rec(
 	neg2 := One(ComRing),
 	neg1 := BrownZero,
@@ -149,7 +149,7 @@ LieY := Lie(rec(
 	pos2 := Zero(ComRing)
 ));
 
-DeclareOperation(LiePart, [IsLieElement, IsInt]);
+DeclareOperation("LiePart", [IsLieElement, IsInt]);
 InstallMethod(LiePart, [IsLieElement, IsInt], function(lieEl, i)
 	if i = -2 then
 		return UnderlyingElement(lieEl).neg2;
@@ -165,4 +165,4 @@ InstallMethod(LiePart, [IsLieElement, IsInt], function(lieEl, i)
 		Error("LiePart: Invalid position");
 		return fail;
 	fi;
-);
+end);

@@ -1,14 +1,22 @@
-# The Brown algebra (ComRing, Cubic, Cubic, ComRing) to which L_{\pm 1} is isomorphic
+
+BrownRepToString := rep -> String(rep);
+
+# Elements of the Brown algebra are represented by lists [ComRing, Cubic, Cubic, ComRing]
 BrownSpec := rec(
 	ElementName := "BrownElement",
 	Zero := a -> [Zero(ComRing), CubicZero, CubicZero, Zero(ComRing)],
 	Addition := function(a, b)
 		return a+b;
 	end,
+	Print := function(a)
+		Print(BrownRepToString(a));
+	end,
 	AdditiveInverse := a -> -a,
 	MathInfo := IsAdditivelyCommutativeElement
 );
 Brown := ArithmeticElementCreator(BrownSpec);
+
+InstallMethod(String, [IsBrownElement], x -> BrownRepToString(UnderlyingElement(x)));
 
 ## Constructors for elements of Brown
 

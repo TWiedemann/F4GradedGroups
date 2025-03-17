@@ -1,16 +1,28 @@
 LieZeroString := "0_L";
+LieNeg2String := "x";
+LiePos2String := "y";
 
 # rep: Internal representation of an element of L
 # Output: A string representing this element
 LieRepToString := function(rep)
-	local stringList, name;
+	local stringList, name, s;
 	stringList := [];
 	for name in ["neg2", "neg1", "zero", "pos1", "pos2"] do
 		if not IsZero(rep.(name)) then
-			Add(stringList, String(rep.(name)));
+			s := String(rep.(name));
+			if name = "neg2" then
+				s := Concatenation("(", s, ")*", LieNeg2String);
+			elif name = "pos2" then
+				s := Concatenation("(", s, ")*", LiePos2String);
+			elif name = "pos1" then
+				s := Concatenation(s, "_+");
+			elif name = "neg1" then
+				s := Concatenation(s, "_-");
+			fi;
+			Add(stringList, s);
 		fi;
 	od;
-	return StringSum(stringList);
+	return StringSum(stringList, LieZeroString);
 end;
 
 ## Define Lie bracket for all combinations of components
@@ -49,11 +61,11 @@ InstallMethod(LieBracketBrownNegPos, [IsBrownElement, IsBrownElement], function(
 	c1 := BrownElPart(brown2, 2);
 	c2 := BrownElPart(brown2, 3);
 	rho := BrownElPart(brown2, 4);
-	return (-lam*c2 + CubicCross(b1, c2) - nu*b2)
+	return CubicNegToL0Emb(-lam*c2 + CubicCross(b1, c1) - nu*b2)
 			+ ((lam*rho - CubicBiTr(b1, c2)) * L0Zeta
 				+ (CubicBiTr(c1, b2) - mu*nu) * (L0Xi - L0Zeta)
-				+ dd(b1, c2) + dd(c1, b2))
-			+ (-rho*b1 + CubicCross(b2, c2) - mu*c1);
+				+ L0dd(b1, c2) + L0dd(c1, b2))
+			+ CubicPosToL0Emb(-rho*b1 + CubicCross(b2, c2) - mu*c1);
 end);
 
 # Elements of L are represented by records with entries "neg2" (in ComRing),
@@ -63,7 +75,7 @@ LieSpec := rec(
 	Addition := function(a, b)
 		return rec(
 			neg2 := a.neg2 + b.neg2,
-			neg2 := a.neg1 + b.neg1,
+			neg1 := a.neg1 + b.neg1,
 			zero := a.zero + b.zero,
 			pos1 := a.pos1 + b.pos1,
 			pos2 := a.pos2 + b.pos2
@@ -79,7 +91,7 @@ LieSpec := rec(
 	AdditiveInverse := function(a)
 		return rec(
 			neg2 := -a.neg2,
-			neg2 := -a.neg1,
+			neg1 := -a.neg1,
 			zero := -a.zero,
 			pos1 := -a.pos1,
 			pos2 := -a.pos2
@@ -92,9 +104,9 @@ LieSpec := rec(
 		local neg2, neg1, zero, pos1, pos2;
 		# Initialisation of the components of [a, b]
 		neg2 := Zero(ComRing);
-		neg1 := CubicZero;
+		neg1 := BrownZero;
 		zero := L0Zero;
-		pos1 := CubicZero;
+		pos1 := BrownZero;
 		pos2 := Zero(ComRing);
 		# [a.neg2, b]
 		neg2 := neg2 - L0AsEndo(b.zero, -2)(a.neg2); # [a.neg2, b.zero]
@@ -135,59 +147,49 @@ Lie := ArithmeticElementCreator(LieSpec);
 
 ## Constructors and embeddings for elements of Lie
 LieZero := Lie(LieSpec.Zero(fail));
-LieX := Lie(rec(
-	neg2 := One(ComRing),
-	neg1 := BrownZero,
-	zero := L0Zero,
-	pos1 := BrownZero,
-	pos2 := Zero(ComRing)
-));
-LieY := Lie(rec(
-	neg2 := One(ComRing),
-	neg1 := BrownZero,
-	zero := L0Zero,
-	pos1 := BrownZero,
-	pos2 := Zero(ComRing)
-));
+
+DeclareOperation("LieElFromTuple", [IsRingElement, IsBrownElement, IsL0Element,
+		IsBrownElement, IsRingElement]);
+InstallMethod(LieElFromTuple, [IsRingElement, IsBrownElement, IsL0Element,
+	IsBrownElement, IsRingElement],
+	function(neg2, neg1, zero, pos1, pos2)
+		ReqComRingEl([neg2, pos2]);
+		return Lie(rec(
+			neg2 := neg2,
+			neg1 := neg1,
+			zero := zero,
+			pos1 := pos1,
+			pos2 := pos2
+		));
+	end
+);
+
+LieX := LieElFromTuple(One(ComRing), BrownZero, L0Zero, BrownZero, Zero(ComRing));
+LieY := LieElFromTuple(Zero(ComRing), BrownZero, L0Zero, BrownZero, One(ComRing));
 
 DeclareOperation("L0ToLieEmb", [IsL0Element]);
 DeclareOperation("BrownPosToLieEmb", [IsBrownElement]);
 DeclareOperation("BrownNegToLieEmb", [IsBrownElement]);
 
 InstallMethod(L0ToLieEmb, [IsL0Element], function(L0el)
-	return Lie(rec(
-	neg2 := Zero(ComRing),
-	neg1 := BrownZero,
-	zero := L0el,
-	pos1 := BrownZero,
-	pos2 := Zero(ComRing)
-	));
+	return LieElFromTuple(Zero(ComRing), BrownZero, L0el, BrownZero, Zero(ComRing));
 end);
 
 InstallMethod(BrownPosToLieEmb, [IsBrownElement], function(brownEl)
-	return Lie(rec(
-	neg2 := Zero(ComRing),
-	neg1 := BrownZero,
-	zero := L0Zero,
-	pos1 := brownEl,
-	pos2 := Zero(ComRing)
-	));
+	return LieElFromTuple(Zero(ComRing), BrownZero, L0Zero, brownEl, Zero(ComRing));
 end);
 
 InstallMethod(BrownNegToLieEmb, [IsBrownElement], function(brownEl)
-	return Lie(rec(
-	neg2 := Zero(ComRing),
-	neg1 := brownEl,
-	zero := L0Zero,
-	pos1 := BrownZero,
-	pos2 := Zero(ComRing)
-	));
+	return LieElFromTuple(Zero(ComRing), brownEl, L0Zero, BrownZero, Zero(ComRing));
 end);
 
 DeclareOperation("Liedd", [IsCubicElement, IsCubicElement]);
 InstallMethod(Liedd, [IsCubicElement, IsCubicElement], function(cubicEl1, cubicEl2)
-	return DDToL0Emb(dd(cubicEl1, cubicEl2));
+	return L0ToLieEmb(L0dd(cubicEl1, cubicEl2));
 end);
+
+LieZeta := L0ToLieEmb(L0Zeta);
+LieXi := L0ToLieEmb(L0Xi);
 
 ## Getters for components
 
@@ -226,6 +228,9 @@ InstallMethod(String, [IsLieElement], x -> LieRepToString(UnderlyingElement(x)))
 InstallMethod(Display, [IsLieElement], function(lieEl)
 	local i;
 	for i in [-2..2] do
+		if i >= 0 then
+			Print(" ");
+		fi;
 		Print(String(i), " part: ", String(LiePart(lieEl, i)), "\n");
 	od;
 end);

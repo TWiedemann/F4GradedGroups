@@ -13,7 +13,7 @@ L0RepToString := function(rep)
 			elif s = "cubicPos" then
 				Add(stringList, Concatenation(CubicInL0SymStringPos,
 						"_{", String(rep.(s)), "}"));
-			elif s = "cubicPos" then
+			elif s = "cubicNeg" then
 				Add(stringList, Concatenation(CubicInL0SymStringNeg,
 						"_{", String(rep.(s)), "}"));
 			fi;
@@ -26,15 +26,15 @@ L0RepToString := function(rep)
 			if rep.(name) = One(ComRing) then
 				Add(stringList, sym);
 			else
-				Add(stringList, Concatenation("(", String(rep.(name)), ")", sym));
+				Add(stringList, Concatenation("(", String(rep.(name)), ")*", sym));
 			fi;
 		fi;
 	od;
 	return StringSum(stringList, L0ZeroString);
 end;
 
-# Elements of L0 are represented by records with entries "dd", "xiCoeff", "zetaCoeff",
-# "cubicPos" and "cubicNeg"
+# Elements of L0 are represented by records with entries "dd" (in DD), "xiCoeff" (in ComRing),
+# "zetaCoeff" (in ComRing), "cubicPos" (in Cubic) and "cubicNeg" (in Cubic')
 L0Spec := rec(
 	ElementName := "L0Element",
 	Addition := function(a, b)
@@ -56,7 +56,7 @@ L0Spec := rec(
 		);
 	end,
 	Zero := a -> rec(
-		dd := [],
+		dd := DDZero,
 		xiCoeff := Zero(ComRing),
 		zetaCoeff := Zero(ComRing),
 		cubicPos := CubicZero,

@@ -105,11 +105,13 @@ DDSpec := rec(
 DD := ArithmeticElementCreator(DDSpec);
 DDZero := DD([]);
 
+DeclareOperation("DDCoeffList", [IsDDElement]);
+
 # ddEl: c1*dd_{a1,b1} + c2*dd_{a2,b2} + ...
 # Output: [[c1, a1, b1], [c2, a2, b2], ...]
-DDCoeffList := function(ddEl)
+InstallMethod(DDCoeffList, [IsDDElement], function(ddEl)
 	return UnderlyingElement(ddEl);
-end;
+end);
 
 InstallMethod(String, [IsDDElement], x -> DDRepToString(UnderlyingElement(x)));
 

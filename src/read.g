@@ -16,6 +16,7 @@ Reread("./brown.g");
 myUnbind("IsDDElement");
 myUnbind("IsL0Element");
 myUnbind("IsLieElement");
+Reread("./DD.g");
 Reread("./lie0.g");
 Reread("./lie.g");
 myUnbind("IsF4GroupElement");

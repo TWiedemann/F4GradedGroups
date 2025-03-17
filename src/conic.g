@@ -189,8 +189,11 @@ end);
 InstallMethod(ReqComRingEl, [IsList], function(list)
 	local a;
 	for a in list do
-		ReqComRingEl(a);
+		if not ReqComRingEl(a) then
+			return false;
+		fi;
 	od;
+	return true;
 end);
 
 InstallMethod(ReqConicAlgEl, [IsRingElement], function(a)

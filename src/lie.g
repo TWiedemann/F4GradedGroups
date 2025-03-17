@@ -167,3 +167,14 @@ InstallMethod(LiePart, [IsLieElement, IsInt], function(lieEl, i)
 		return fail;
 	fi;
 end);
+
+## Scalar multiplication ComRing x Lie -> Lie
+InstallOtherMethod(\*, "for ComRingElement and LieElement", [IsRingElement, IsLieElement], 2, function(comEl, lieEl)
+	return Lie(rec(
+		neg2 := comEl * LiePart(lieEl, -2),
+		neg1 := comEl * LiePart(lieEl, -1),
+		zero := comEl * LiePart(lieEl, 0),
+		pos1 := comEl * LiePart(lieEl, 1),
+		pos2 := comEl * LiePart(lieEl, 2)
+	));
+end);

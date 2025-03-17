@@ -172,7 +172,7 @@ InstallMethod(L0XiCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).xiCoeff;
 end);
 InstallMethod(L0ZetaCoeff, [IsL0Element], function(L0El)
-	return UnderlyingElement(L0El).ZetaCoeff;
+	return UnderlyingElement(L0El).zetaCoeff;
 end);
 InstallMethod(L0CubicPosCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).cubicPos;
@@ -182,6 +182,17 @@ InstallMethod(L0CubicNegCoeff, [IsL0Element], function(L0El)
 end);
 InstallMethod(L0DDCoeff, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).dd;
+end);
+
+## Scalar multiplication ComRing x L0 -> L0
+InstallOtherMethod(\*, "for ComRingElement and L0Element", [IsRingElement, IsL0Element], 2, function(comEl, L0El)
+	return L0(rec(
+		dd := comEl * L0DDCoeff(L0El),
+		xiCoeff := comEl * L0XiCoeff(L0El),
+		zetaCoeff := comEl * L0ZetaCoeff(L0El),
+		cubicPos := comEl * L0CubicPosCoeff(L0El),
+		cubicNeg := comEl * L0CubicNegCoeff(L0El)
+	));
 end);
 
 ## Action of L0 on Lie

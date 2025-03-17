@@ -12,7 +12,7 @@ DDSanitizeRep := function(rep)
 			continue;
 		fi;
 		x := rep[i];
-		if x[1] = Zero(ComRing) then
+		if x[1] = Zero(ComRing) or IsZero(x[2]) or IsZero(x[3]) then
 			Remove(rep, i);
 			continue;
 		fi;

@@ -68,12 +68,21 @@ L0Spec := rec(
 	# Lie bracket
 	Multiplication := function(a, b)
 		local dd, xiCoeff, zetaCoeff, cubicPos, cubicNeg, summand, coeff, cubic1, cubic2;
-		dd := a.dd*b.dd + 
-			DD([[-One(ComRing), a.cubicPos, b.cubicNeg], [One(ComRing), b.cubicPos, a.cubicNeg]]);
+		# Init components of [a,b]
+		dd := DDZero;
 		xiCoeff := Zero(ComRing);
 		zetaCoeff := Zero(ComRing);
+		cubicPos := CubicZero;
+		cubicNeg := CubicZero;
+		# [a.dd, b.dd] + [a.cubicPos, b.cubicNeg] + [a.cubicNeg, b.cubicPos]
+		# ([ad_{a'}, ad_a] = dd(a, a') by [DMW, 3.5])
+		dd := a.dd*b.dd + 
+			DD([[-One(ComRing), a.cubicPos, b.cubicNeg], [One(ComRing), b.cubicPos, a.cubicNeg]]);
+		# [a.zeta, b.cubicPos + b.cubicNeg] + [a.cubicPos + a.cubicNeg, b.zeta]
+		# ([zeta, ad_a] = ad_a and [zeta, ad_{a'}] = -ad_{a'} by [DMW, 3.7])
 		cubicPos := a.zetaCoeff * b.cubicPos - b.zetaCoeff * a.cubicPos;
-		cubicNeg := -a.zetaCoeff * b.cubicNeg + b.zetaCoeff * a.Neg;
+		cubicNeg := -a.zetaCoeff * b.cubicNeg + b.zetaCoeff * a.cubicNeg;
+		# [a.dd, b.cubicPos + b.cubicNeg]
 		for summand in DDCoeffList(a.dd) do
 			coeff := summand[1]; # in ComRing
 			cubic1 := summand[2];
@@ -81,6 +90,7 @@ L0Spec := rec(
 			cubicPos := cubicPos + JordanD(cubic1, cubic2, b.cubicPos);
 			cubicNeg := cubicNeg - JordanD(cubic2, cubic1, b.cubicNeg);
 		od;
+		# [a.cubicPos + b.cubicNeg, b.dd]
 		for summand in DDCoeffList(b.dd) do
 			coeff := summand[1]; # in ComRing
 			cubic1 := summand[2];
@@ -88,6 +98,8 @@ L0Spec := rec(
 			cubicPos := cubicPos - JordanD(cubic1, cubic2, a.cubicPos);
 			cubicNeg := cubicNeg + JordanD(cubic2, cubic1, a.cubicNeg);
 		od;
+		# Every other pair of summands has zero bracket: xi and zeta centralise DD+xi+zeta
+		# and xi centralises L0 ([DMW, 3.7]).
 		return rec(
 			dd := dd,
 			xiCoeff := xiCoeff,

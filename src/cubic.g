@@ -170,8 +170,8 @@ CubicAlgElOne := function(i, j)
 	return CubicAlgEl(i, j, One(ConicAlg));
 end;
 
-CubicEl := function(t11, t22, t33, a12, a13, a23)
-	return CubicComEl(1, t11) + CubicComEl(2, t22) + CubicComEl(3, t33) + CubicAlgEl(1, 2, a12) + CubicAlgEl(1, 3, a13) + CubicAlgEl(2, 3, a23);
+CubicEl := function(t11, t22, t33, a1, a2, a3)
+	return CubicComEl(1, t11) + CubicComEl(2, t22) + CubicComEl(3, t33) + CubicAlgEl(1, a1) + CubicAlgEl(2, a2) + CubicAlgEl(3, a3);
 end;
 
 # CubicGenericElForIndets := function(i11, i22, i33, j12, j13, j23)
@@ -183,13 +183,13 @@ end;
 # end;
 
 # Returns generic element with indeterminate numbers 3*i+1, 3*i+2, 3*i+3
-# CubicGenericEl := function(i)
-# 	if 3*i+3 > ConicAlg_rank or 3*i+3 > ComRing_rank then
-# 		return fail;
-# 	else
-# 		return CubicEl(ComRingBasicIndet(3*i+1), ComRingBasicIndet(3*i+2), ComRingBasicIndet(3*i+3), ConicAlgBasicIndet(3*i+1), ConicAlgBasicIndet(3*i+2), ConicAlgBasicIndet(3*i+3));
-# 	fi;
-# end;
+CubicGenericEl := function(i)
+	if 3*i+3 > ConicAlg_rank or 3*i+3 > ComRing_rank then
+		return fail;
+	else
+		return CubicEl(ComRingBasicIndet(3*i+1), ComRingBasicIndet(3*i+2), ComRingBasicIndet(3*i+3), ConicAlgBasicIndet(3*i+1), ConicAlgBasicIndet(3*i+2), ConicAlgBasicIndet(3*i+3));
+	fi;
+end;
 
 
 

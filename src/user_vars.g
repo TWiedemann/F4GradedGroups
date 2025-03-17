@@ -10,5 +10,7 @@ t3 := ComRingBasicIndet(3);
 t4 := ComRingBasicIndet(4);
 t5 := ComRingBasicIndet(5);
 t6 := ComRingBasicIndet(6);
+cubicGen1 := CubicGenericEl(0);
+cubicGen2 := CubicGenericEl(1);
 c1 := CubicComEl(1, t1);
 c2 := CubicAlgEl(2, a1);

@@ -65,9 +65,10 @@ CubicZero := Cubic([[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAl
 
 InstallMethod(String, [IsCubicElement], x -> CubicRepToString(UnderlyingElement(x)));
 
-# Scalar multiplication ComRing x Cubic -> Cubic
-InstallMethod(\*, "for ComRingElement and CubicElement", [IsRingElement, IsCubicElement], function(a,b)
+# Scalar multiplication ComRing x Cubic -> Cubic (with priority 2, i.e., high enough to be used)
+InstallMethod(\*, "for ComRingElement and CubicElement", [IsRingElement, IsCubicElement], 2, function(a,b)
 	local rep, productRep;
+	ReqComRingEl(a);
 	rep := UnderlyingElement(b);
 	productRep := [];
 	productRep[1] := List(rep[1], x -> a*x);

@@ -3,8 +3,9 @@
 ### Functions on strings
 
 # stringList: A (possibly empty) list of non-empty strings
+# plusString: A string for the plus symbol. E.g. could be "+" or " + ".
 # Output: The string "$stringList[1] + $stringList[2] + ..."
-StringSum := function(stringList, zeroString)
+StringSum := function(stringList, plusString, zeroString)
 	local l, s, i;
 	l := Length(stringList);
 	if l = 0 then
@@ -14,7 +15,7 @@ StringSum := function(stringList, zeroString)
 	else
 		s := stringList[1];
 		for i in [2..l] do
-			s := Concatenation(s, "+", stringList[i]);
+			s := Concatenation(s, plusString, stringList[i]);
 		od;
 		return s;
 	fi;

@@ -30,7 +30,7 @@ L0RepToString := function(rep)
 			fi;
 		fi;
 	od;
-	return StringSum(stringList, L0ZeroString);
+	return StringSum(stringList, "+", L0ZeroString);
 end;
 
 # Elements of L0 are represented by records with entries "dd" (in DD), "xiCoeff" (in ComRing),

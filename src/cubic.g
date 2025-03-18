@@ -41,7 +41,7 @@ CubicRepToString := function(a)
 			Add(stringList, s);
 		fi;
 	od;
-	return StringSum(stringList, CubicZeroString);
+	return StringSum(stringList, "+", CubicZeroString);
 end;
 
 CubicSpec := rec(

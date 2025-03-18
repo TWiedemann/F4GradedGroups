@@ -42,7 +42,7 @@ DDRepToString := function(a)
 		fi;
 		Add(stringList, s);
 	od;
-	return StringSum(stringList, L0ZeroString);
+	return StringSum(stringList, "+", L0ZeroString);
 end;
 
 DDSpec := rec(

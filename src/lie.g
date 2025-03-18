@@ -22,7 +22,7 @@ LieRepToString := function(rep)
 			Add(stringList, s);
 		fi;
 	od;
-	return StringSum(stringList, LieZeroString);
+	return StringSum(stringList, " + ", LieZeroString);
 end;
 
 ## Define Lie bracket for all combinations of components

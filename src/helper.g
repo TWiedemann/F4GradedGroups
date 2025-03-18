@@ -21,6 +21,44 @@ StringSum := function(stringList, plusString, zeroString)
 	fi;
 end;
 
+### Functions on lists
+
+# rep: External representation of an element of a free magma. I.e. either an integer or a list [ rep1, rep2 ] where rep1, rep2 are external representations.
+# Output: The corresponding associative list.
+# Example: 0 -> [ ], i -> [ i ], [ [ 1, 2 ], 3 ] -> [ 1, 2, 3 ]
+assocRepFromNonAssocRep := function(rep)
+	if rep = 0 then
+		return [];
+	elif rep in Integers then
+		return [ rep ];
+	elif IsList(rep) then
+		return Concatenation(assocRepFromNonAssocRep(rep[1]), assocRepFromNonAssocRep(rep[2]));
+	else
+		return fail;
+	fi;
+end;
+
+# list: Either a single element (e.g. an integer) or a list with exactly 2 entries, each of which satisfies the same conditions.
+# Output: The reversed list. E.g. [ [ 1, 2 ], 3 ] -> [ 3, [ 2, 1 ] ]
+reverseNonassocList := function(list)
+	if IsList(list) then
+		if Length(list) <> 2 then
+			return fail;
+		else
+			return [ reverseNonassocList(list[2]), reverseNonassocList(list[1]) ];
+		fi;
+	else
+		return list;
+	fi;
+end;
+
+# list: A list.
+# i: Integer with 1 <= i <= Length(list)
+# Output: [ list[i], list[i+1], ..., list[Length(list)], list[1], ..., list[i-1] ]
+swapListAtIndex := function(list, i)
+	return Concatenation(list{[i..Length(list)]}, list{[1..i-1]});
+end;
+
 ### Functions on magmas
 
 # Magma: A free Magma.
@@ -69,20 +107,6 @@ end;
 # m: An element of a free magma.
 # Output: The "reversed" element, e.g. (x_1*x_2)*x_3 -> x_3*(x_2*x_1).
 reverseInMagma := function(m)
-	local reverseNonassocList;
-	# list: Either a single element (e.g. an integer) or a list with exactly 2 entries, each of which satisfies the same conditions.
-	# Output: The reversed list. E.g. [ [ 1, 2 ], 3 ] -> [ 3, [ 2, 1 ] ]
-	reverseNonassocList := function(list)
-		if IsList(list) then
-			if Length(list) <> 2 then
-				return fail;
-			else
-				return [ reverseNonassocList(list[2]), reverseNonassocList(list[1]) ];
-			fi;
-		else
-			return list;
-		fi;
-	end;
 	return ObjByExtRep(FamilyObj(m), reverseNonassocList(ExtRepOfObj(m)));
 end;
 
@@ -105,20 +129,7 @@ changeRingElByMagmaTrans := function(MagmaRing, r, magmaFunc)
 	return ElementOfMagmaRing(FamilyObj(Zero(MagmaRing)), Zero(Integers), newListOfCoeff, newListOfMagmaEl);
 end;
 
-# rep: External representation of an element of a free magma. I.e. either an integer or a list [ rep1, rep2 ] where rep1, rep2 are external representations.
-# Output: The corresponding associative list.
-# Example: 0 -> [ ], i -> [ i ], [ [ 1, 2 ], 3 ] -> [ 1, 2, 3 ]
-assocRepFromNonAssocRep := function(rep)
-	if rep = 0 then
-		return [];
-	elif rep in Integers then
-		return [ rep ];
-	elif IsList(rep) then
-		return Concatenation(assocRepFromNonAssocRep(rep[1]), assocRepFromNonAssocRep(rep[2]));
-	else
-		return fail;
-	fi;
-end;
+
 
 readAll := function()
 	Read("/cygdrive/c/Users/Torben/OneDrive/Dokumente/F4-Konstruktion/Brown algebra/F4-5Grading.g");

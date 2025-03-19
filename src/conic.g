@@ -1,12 +1,12 @@
 BaseRing := Rationals;
 # ConicAlg contains indeterminates a_1, ... a_{ConicAlg_rank} (and their conjugations)
-ConicAlg_rank := 6;
+ConicAlg_rank := 5;
 # ComRing contains indeterminates t_1, ..., t_{ComRing_rank} (and the norms and traces of elements of ConicAlg) 
-ComRing_rank := 6;
+ComRing_rank := 5;
 # Let t = Trace_MaxLength. For all k <= t and all i_1, ..., i_k in [ 1..ConicAlg_rank ],
 # an indeterminate which represents tr(a_{i_1} ... a_{i_t}) will be created.
 # If longer products are needed during the runtime, then an error message is printed.
-Trace_MaxLength := 3; 
+Trace_MaxLength := 4; 
 
 ## ConicAlg indeterminates
 

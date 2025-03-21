@@ -136,6 +136,7 @@ _CanonicalIndexList := function(indexList)
 	return Minimum(candidates); # Minimum w.r.t. lex order
 end;
 
+# TODO: Remove indet names for tr(a_i a_i') because they are not need (tr(a_i a_i') = 2*n(a_i))
 # indexList: A list [i_1, ..., i_k] (for some k) of integers i with 1 <= i <= 2*ConicAlg_rank.
 # Output: The name of the indeterminate of ComRing which represents
 ComRingTraceIndetName := function(indexList)
@@ -232,6 +233,7 @@ ComRing := PolynomialRing(BaseRing, ComRingIndetNames);
 ConicAlgMag := FreeMagmaWithOne(ConicAlgIndetNames);
 ConicAlg := FreeMagmaRing(ComRing, ConicAlgMag);
 ConicAlgMagToAlg := x -> ImageElm(Embedding(ConicAlgMag, ConicAlg), x);
+ConicAlgElFam := FamilyObj(Zero(ConicAlg));
 
 ConicAlgMagIndets := GeneratorsOfMagmaWithOne(ConicAlgMag);
 embConicAlgMag := x -> ImageElm(Embedding(ConicAlgMag, ConicAlg), x);
@@ -282,6 +284,10 @@ end);
 
 ## Constructors for indeterminates
 
+ConicAlgMagBasicIndet := function(i)
+	return ConicAlgMagBasicIndets[i];
+end;
+
 ConicAlgBasicIndet := function(i)
 	return ConicAlgBasicIndets[i];
 end;
@@ -326,8 +332,8 @@ ConicAlgInv := function(a)
 	return changeRingElByMagmaTrans(ConicAlg, a, ConicAlgMagInv);
 end;
 
-# magFunc: A function ConicAlgMag -> Comring.
-# Outpunt: The linear extension ConicAlg -> Comring of magFunc.
+# magFunc: A function ConicAlgMag -> ComRing.
+# Output: The linear extension ConicAlg -> Comring of magFunc.
 # (This is only used for the trace, which makes it a bit useless. I accidentally thought I could use it for the trace and for the norm, but the norm is of course not linear.)
 ConicAlgFunctionalFromMagFunctional := function(magFunc)
 	return function(a)
@@ -344,9 +350,6 @@ ConicAlgFunctionalFromMagFunctional := function(magFunc)
 end;
 
 
-
-# ConicAlgNorm := ConicAlgFunctionalFromMagFunctional(ConicAlgMagNorm);
-
 ConicAlgMagTrOnRep := function(mRep)
 	local assocRep;
 	assocRep := assocRepFromNonAssocRep(mRep);
@@ -359,8 +362,43 @@ ConicAlgMagTrOnRep := function(mRep)
 	fi;
 end;
 
+# We have tr(a_i a_i') = 2*n(a_i). The list _ConicAlgTrExceptions stores the
+# elements a_1*a_1', a_1'*a_1, a_2*a_2', ... of ConicAlgMag and _ConicAlgTrExceptionTraces stores
+# the corresponding elements 2*n(a_1), 2*n(a_1), 2*n(a_2), ...
+# I.e., tr(_ConicAlgTrExceptions[i]) = _ConicAlgTrExceptionTraces[i]
+_ComputeConicAlgTrExceptions := function()
+	local result, i, a;
+	result := [];
+	for i in [1..ConicAlg_rank] do
+		a := ConicAlgMagBasicIndet(i);
+		Add(result, a*ConicAlgMagInv(a));
+		Add(result, ConicAlgMagInv(a)*a);
+	od;
+	return result;
+end;
+
+_ComputeConicAlgTrExceptionTraces := function()
+	local result, i, a;
+	result := [];
+	for i in [1..ConicAlg_rank] do
+		a := 2*ComRingNormIndet(i);
+		Add(result, a);
+		Add(result, a);
+	od;
+	return result;
+end;
+
+_ConicAlgTrExceptions := _ComputeConicAlgTrExceptions();
+_ConicAlgTrExceptionTraces := _ComputeConicAlgTrExceptionTraces();
+
 ConicAlgMagTr := function(m)
-	return ConicAlgMagTrOnRep(ExtRepOfObj(m));
+	local k;
+	k := Position(_ConicAlgTrExceptions, m);
+	if k <> fail then
+		return _ConicAlgTrExceptionTraces[k];
+	else
+		return ConicAlgMagTrOnRep(ExtRepOfObj(m));
+	fi;
 end;
 
 ConicAlgTr := ConicAlgFunctionalFromMagFunctional(ConicAlgMagTr);
@@ -409,3 +447,36 @@ ConicAlgNorm := function(a)
 	od;
 	return result;
 end;
+
+## ---- Simplifiers ----
+
+# a: Element of ComRing or ConicAlg
+# Output: a with all occurences of tr(a_i a_i') replaced by 2n(a_i)
+# DeclareOperation("CleanTraces", [IsRingElement]);
+# InstallMethod(CleanTraces, [IsRingElement], function(a)
+# 	local indets, values, i, a_i, coeffList, newCoeffs, newMagEls;
+# 	if a in ComRing then
+# 		indets := [];
+# 		values := [];
+# 		for i in [1..ConicAlg_rank] do
+# 			a_i := ConicAlgBasicIndet(i);
+# 			Add(indets, ConicAlgTr(a_i * ConicAlgInv(a_i)));
+# 			Add(values, 2*ConicAlgNorm(a_i));
+# 		od;
+# 		# Multiply with 1 to ensure that constant polynomials are in ComRing and
+# 		# not in the coefficient ring
+# 		return Value(a, indets, values)*One(ComRing);
+# 	elif a in ConicAlg then
+# 		coeffList := CoefficientsAndMagmaElements(a);
+# 		newCoeffs := [];
+# 		newMagEls := [];
+# 		for i in [1..Length(coeffList)/2] do
+# 			Add(newCoeffs, CleanTraces(coeffList[2*i]));
+# 			Add(newMagEls, coeffList[2*i - 1]);
+# 		od;
+# 		return ElementOfMagmaRing(ConicAlgElFam, Zero(ComRing), newCoeffs, newMagEls);
+# 	else
+# 		Error("Invalid input");
+# 		return fail;
+# 	fi;
+# end);

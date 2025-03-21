@@ -256,6 +256,19 @@ end);
 # 	return List(SummandsWithPos, x -> x[3]);
 # end);
 
+## ---- Simplifiers ----
+# DeclareOperation("CleanTraces", [IsCubicElement]);
+# InstallMethod(CleanTraces, [IsCubicElement], function(cubicEl)
+# 	return CubicElFromTuple(
+# 		CleanTraces(CubicElComCoeff(cubicEl, 1)),
+# 		CleanTraces(CubicElComCoeff(cubicEl, 2)),
+# 		CleanTraces(CubicElComCoeff(cubicEl, 3)),
+# 		CleanTraces(CubicElAlgCoeff(cubicEl, 1)),
+# 		CleanTraces(CubicElAlgCoeff(cubicEl, 2)),
+# 		CleanTraces(CubicElAlgCoeff(cubicEl, 3))
+# 	);
+# end);
+
 
 ## ----- Structural maps of a cubic norm structure ------
 

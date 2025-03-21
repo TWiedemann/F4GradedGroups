@@ -95,6 +95,18 @@ BrownGensAsModule := function(i)
 	return result;
 end;
 
+## ---- Simplifiers ----
+
+# DeclareOperation("CleanTraces", [IsBrownElement]);
+# InstallMethod(CleanTraces, [IsBrownElement], function(brownEl)
+# 	return BrownElFromTuple(
+# 		CleanTraces(BrownElPart(brownEl, 1)),
+# 		CleanTraces(BrownElPart(brownEl, 2)),
+# 		CleanTraces(BrownElPart(brownEl, 3)),
+# 		CleanTraces(BrownElPart(brownEl, 4))
+# 	);
+# end);
+
 ## Root homomorphisms
 
 DeclareOperation("BrownRootHomF4", [IsList, IsRingElement]);

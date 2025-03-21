@@ -167,8 +167,12 @@ CubicAlgElMat := function(j, l, a)
 	fi;
 end;
 
-CubicAlgElOne := function(i, j)
-	return CubicAlgEl(i, j, One(ConicAlg));
+CubicAlgElOne := function(i)
+	return CubicAlgEl(i, One(ConicAlg));
+end;
+
+CubicAlgElOneMat := function(i, j)
+	return CubicAlgElMat(i, j, One(ConicAlg));
 end;
 
 # i, j: Indices 1, 2 or 3
@@ -185,7 +189,15 @@ CubicElMat := function(i, j, a)
 	fi;
 end;
 
-CubicEl := function(t11, t22, t33, a1, a2, a3)
+CubicElOneMat := function(i, j)
+	if i = j then
+		return CubicComEl(i, One(ComRing));
+	else
+		return CubicAlgElMat(i, j, One(ConicAlg));
+	fi;
+end;
+
+CubicElFromTuple := function(t11, t22, t33, a1, a2, a3)
 	return CubicComEl(1, t11) + CubicComEl(2, t22) + CubicComEl(3, t33) + CubicAlgEl(1, a1) + CubicAlgEl(2, a2) + CubicAlgEl(3, a3);
 end;
 
@@ -195,7 +207,7 @@ CubicGenericEl := function(i)
 	if 3*i+3 > ConicAlg_rank or 3*i+3 > ComRing_rank then
 		return fail;
 	else
-		return CubicEl(
+		return CubicElFromTuple(
 			ComRingBasicIndet(3*i+1), ComRingBasicIndet(3*i+2), ComRingBasicIndet(3*i+3),
 			ConicAlgBasicIndet(3*i+1), ConicAlgBasicIndet(3*i+2), ConicAlgBasicIndet(3*i+3)
 		);

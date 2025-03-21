@@ -69,14 +69,28 @@ end;
 
 DeclareOperation("LieEndoIsAuto", [IsLieEndo]);
 InstallMethod(LieEndoIsAuto, [IsLieEndo], function(f)
-	local lieGens1, lieGens2, isAuto, lieEl1, lieEl2;
-	lieGens1 := LieGensAsModule(0);
-	lieGens2 := LieGensAsModule(1);
+	local lieGens1, lieGens2, isAuto, lieEl1, lieEl2, counter, total, test;
+	lieGens1 := LieGensAsModule(1, 1);
+	lieGens2 := LieGensAsModule(2, 3);
 	isAuto := true;
+	counter := 1;
+	total := Length(lieGens1);
 	for lieEl1 in lieGens1 do
+		Print("Progress: ", counter, "/", total, "\n");
 		for lieEl2 in lieGens2 do
-			isAuto := TestEquality(f(lieEl1 * lieEl2), f(lieEl1) * f(lieEl2), true) and isAuto;
+			test := TestEquality(f(lieEl1 * lieEl2), f(lieEl1) * f(lieEl2), false);
+			if not test then
+				isAuto := false;
+				Display("No proven equality for:");
+				Display(lieEl1);
+				Display(lieEl2);
+				Display("Problem:");
+				# Test equality again with error message - not efficient, but
+				# a single equality test is not too expensive.
+				TestEquality(f(lieEl1 * lieEl2), f(lieEl1) * f(lieEl2), true);
+			fi;
 		od;
+		counter := counter + 1;
 	od;
 	return isAuto;
 end);

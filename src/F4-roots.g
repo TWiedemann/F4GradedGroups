@@ -46,6 +46,7 @@ end;
 F4ShortRoots := _F4ShortRoots();
 F4LongRoots := _F4LongRoots();
 F4Roots := Concatenation(F4ShortRoots, F4LongRoots);
+F4RootsZero := Concatenation(F4Roots, [[0,0,0,0]]);
 
 A2Roots := [[1,-1,0], [1,0,-1], [0,1,-1], [0,-1,1], [-1,0,1], [-1,1,0]];
 
@@ -58,9 +59,11 @@ F4Refl := function(a, b)
 	return b - F4CartanInt(a,b)*a;
 end;
 
+# root: Element of F4Roots or [0,0,0,0]
+# Output: The corresponding root in G2
 F4RootG2Coord := function(root)
 	local sum;
-	if not root in F4Roots then
+	if not root in F4RootsZero then
 		Error("Not a root in F4");
 		return fail;
 	fi;

@@ -81,8 +81,10 @@ InstallMethod(LieEndoIsAuto, [IsLieEndo], function(f)
 			test := TestEquality(f(lieEl1 * lieEl2), f(lieEl1) * f(lieEl2), false);
 			if not test then
 				isAuto := false;
-				Display("No proven equality for:");
+				Display("No proven equality f([a,b]) = [f(a), f(b)] for:");
+				Display("a:");
 				Display(lieEl1);
+				Display("b:");
 				Display(lieEl2);
 				Display("Problem:");
 				# Test equality again with error message - not efficient, but

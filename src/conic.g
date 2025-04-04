@@ -2,11 +2,11 @@ BaseRing := Rationals;
 # ConicAlg contains indeterminates a_1, ... a_{ConicAlg_rank} (and their conjugations)
 ConicAlg_rank := 5;
 # ComRing contains indeterminates t_1, ..., t_{ComRing_rank} (and the norms and traces of elements of ConicAlg) 
-ComRing_rank := 6;
+ComRing_rank := 3;
 # Let t = Trace_MaxLength. For all k <= t and all i_1, ..., i_k in [ 1..ConicAlg_rank ],
 # an indeterminate which represents tr(a_{i_1} ... a_{i_t}) will be created.
 # If longer products are needed during the runtime, then an error message is printed.
-Trace_MaxLength := 4; 
+Trace_MaxLength := 3; 
 
 ## ConicAlg indeterminates
 
@@ -54,27 +54,6 @@ ComRingNormIndetName := function(i)
 		return fail;
 	fi;
 end;
-
-# Obsolete because < does the same
-# list1, list2: Lists of integers of the same length.
-# Output: true if list1 <= list2 w.r.t the lex order, false otherwise.
-# _LexSmallerEqual := function(list1, list2)
-# 	local l, i;
-# 	l := Length(list1);
-# 	if Length(list2) <> l then
-# 		Error("Lists do not have the same length");
-# 		return fail;
-# 	fi;
-# 	for i in [1..l] do
-# 		if list1[i] < list2[i] then
-# 			return true;
-# 		elif list1[i] > list2[i] then
-# 			return false;
-# 		fi;
-# 	od;
-# 	# list1 = list2
-# 	return true;
-# end;
 
 _ConicAlgInvOnIndexList := function(list)
 	local result, i;
@@ -252,7 +231,7 @@ DeclareOperation("ReqConicAlgEl", [IsRingElement]);
 DeclareOperation("ReqConicAlgEl", [IsList]);
 
 InstallMethod(ReqComRingEl, [IsRingElement], function(a)
-	if not a in ComRing then
+	if not IsPolynomial(a) then
 		Error("Invalid input: Must be in ComRing.");
 		return false;
 	fi;

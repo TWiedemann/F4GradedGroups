@@ -320,7 +320,25 @@ end);
 ## ---- Generators ----
 
 # comIndetNum, conicIndetNum: Numbers of the indeterminates that should be used.
-# Output: A list of generic basic elements of Lie, involving indeterminates
+# Output: A list of generic basic elements of Lie (as a Lie algebra), involving indeterminates
+# t_comIndetNum, a_conicIndetNum
+LieGensAsLie := function(comIndetNum, conicIndetNum)
+	local a, t, gens, root;
+	t := ComRingBasicIndet(comIndetNum);
+	a := ConicAlgBasicIndet(conicIndetNum);
+	gens := [LieX];
+	for root in Filtered(F4Roots, x -> F4RootG2Coord(x)[1] = 1) do
+		if root in F4ShortRoots then
+			Add(gens, LieRootHomF4(root, a));
+		else
+			Add(gens, LieRootHomF4(root, t));
+		fi;
+	od;
+	return gens;
+end;
+
+# comIndetNum, conicIndetNum: Numbers of the indeterminates that should be used.
+# Output: A list of generic basic elements of Lie (as a module), involving indeterminates
 # t_comIndetNum, a_conicIndetNum, a_{conicIndetNum+1}.
 # Uses the formulas from [DMW, 5.20] (d_{a[ij],b[jk]} = TwistDiag[j]*d_{1[ii],ab[kk]})
 # to reduce the number of generators.

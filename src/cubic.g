@@ -179,9 +179,11 @@ end;
 # a: Element of ComRing or ConicAlg
 # Output: The element of Cubic with a at position (i, j).
 CubicElMat := function(i, j, a)
-	if i = j and a in ComRing then
+	if i = j then
+		ReqComRingEl(a);
 		return CubicComEl(i, a);
-	elif i <> j and a in ConicAlg then
+	elif i <> j then
+		ReqConicAlgEl(a);
 		return CubicAlgElMat(i, j, a);
 	else
 		Error("Invalid input");

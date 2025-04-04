@@ -56,7 +56,7 @@ end;
 
 # Returns \sigma_a(b), the reflection along a applied to b
 F4Refl := function(a, b)
-	return b - F4CartanInt(a,b)*a;
+	return b - F4CartanInt(b, a)*a;
 end;
 
 # root: Element of F4Roots or [0,0,0,0]

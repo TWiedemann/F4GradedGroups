@@ -5,7 +5,7 @@ ComRing_rank := 6;
 # Let t = Trace_MaxLength. For all k <= t and all i_1, ..., i_k in [ 1..ConicAlg_rank ],
 # an indeterminate which represents tr(a_{i_1} ... a_{i_t}) will be created.
 # If longer products are needed during the runtime, then an error message is printed.
-Trace_MaxLength := 4;
+Trace_MaxLength := 5;
 # Dictionary with precomputed values for all traces. Will be initalised later.
 _TrDict := fail;
 
@@ -209,4 +209,4 @@ _InitTrDict := function()
 end;
 
 _ComRingNumIndets := _InitTrDict();
-ComRing := PolynomialRing(BaseRing, _ComRingNumIndets);
+ComRing := FunctionField(BaseRing, _ComRingNumIndets);

@@ -20,7 +20,8 @@ DeclareOperation("ReqConicAlgEl", [IsRingElement]);
 DeclareOperation("ReqConicAlgEl", [IsList]);
 
 InstallMethod(ReqComRingEl, [IsRingElement], function(a)
-	if not IsPolynomial(a) then
+	if not IsRationalFunction(a) then
+		Display(a);
 		Error("Invalid input: Must be in ComRing.");
 		return false;
 	fi;
@@ -38,6 +39,7 @@ end);
 
 InstallMethod(ReqConicAlgEl, [IsRingElement], function(a)
 	if not a in ConicAlg then
+		Display(a);
 		Error("Invalid input: Must be in ConicAlg.");
 		return false;
 	fi;

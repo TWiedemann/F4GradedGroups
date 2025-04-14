@@ -403,14 +403,14 @@ InstallMethod(CubicRootHomF4, [IsList, IsRingElement], function(root, a)
 		else
 			ReqConicAlgEl(a);
 			k := Position(root{[2..4]}, 0);
-			return CubicAlgEl(k, a);
+			return CubicAlgEl(k, ComRingGamIndet(k)*a); # TODO: Is this correct?
 		fi;
 	else
 		# L_{+-1}
 		if 0 in root{[2..4]} then
 			ReqConicAlgEl(a);
 			k := PositionProperty(root{[2..4]}, x -> x <> 0); # First (and only) non-zero position of roots[2..4]
-			return CubicAlgEl(k, a);
+			return CubicAlgEl(k, ComRingGamIndet(k)*a); # TODO: Is this correct?
 		else
 			ReqComRingEl(a);
 			# k is the only position of root{[2..4]} whose entry appears only once

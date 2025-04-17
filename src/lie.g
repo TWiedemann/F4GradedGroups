@@ -294,9 +294,9 @@ InstallMethod(LieRootHomF4, [IsList, IsRingElement], function(root, a)
 		return BrownNegToLieEmb(BrownRootHomF4(root, a));
 	# L_0
 	elif G2Root = [0, 1] then
-		return CubicPosToLieEmb(CubicRootHomF4(root, a));
+		return CubicPosToLieEmb(CubicRootHomF4(root, a, 1));
 	elif G2Root = [0, -1] then
-		return CubicNegToLieEmb(CubicRootHomF4(root, a));
+		return CubicNegToLieEmb(CubicRootHomF4(root, a, -1));
 	elif G2Root = [0,0] then
 		return DDToLieEmb(DDRootHomA2(root{[2..4]}, a));
 	# L_1

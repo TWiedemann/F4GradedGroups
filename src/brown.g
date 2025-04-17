@@ -129,8 +129,8 @@ InstallMethod(BrownRootHomF4, [IsList, IsRingElement], function(root, a)
 	elif root{[2..4]} = [-1, -1, -1] then
 		return BrownElFromTuple(a, CubicZero, CubicZero, Zero(ComRing));
 	elif Sum(root{[2..4]}) = 1 then
-		return BrownElFromTuple(Zero(ComRing), CubicZero, CubicRootHomF4(root, a), Zero(ComRing));
+		return BrownElFromTuple(Zero(ComRing), CubicZero, CubicRootHomF4(root, a, -1), Zero(ComRing));
 	else
-		return BrownElFromTuple(Zero(ComRing), CubicRootHomF4(root, a), CubicZero, Zero(ComRing));
+		return BrownElFromTuple(Zero(ComRing), CubicRootHomF4(root, a, 1), CubicZero, Zero(ComRing));
 	fi;
 end);

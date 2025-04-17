@@ -234,7 +234,7 @@ end;
 # but simplified:
 # 1. For each i <> j, there is at most one summands from Z_{i \to j}, and it is
 # of the form d_{1[ii], c[ij]} for some c in ConicAlg.
-# 2. For each i, there is at most one summand from Z_{ii,ii}, ant it is
+# 2. For each i, there is at most one summand from Z_{ii,ii}, and it is
 # of the form d_{1[ii], t[ii]} for some t in ComRing.
 # 3. Summands from Z_{ij,ji} for i <> j are of the form t*d_{a[ij],b[ji]} where
 # t \in ComRing and a, b \in ConicAlg are monomial (i.e., lie in the image of ConicAlgMag).
@@ -320,5 +320,5 @@ InstallMethod(DDRootHomA2, [IsList, IsRingElement], function(root, a)
     i := Position(root, 1);
     j := Position(root, -1);
     l := Position(root, 0);
-    return dd(CubicAlgElMat(i, l, One(ConicAlg)), CubicAlgElMat(l, j, a));
+    return dd(CubicComEl(i, One(ComRing)), CubicAlgElMat(i, j, a)); # TODO: Is this correct?
 end);

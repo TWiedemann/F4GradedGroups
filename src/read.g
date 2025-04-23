@@ -1,8 +1,10 @@
-windows := false; # If true, the absolute paths to the files on my Windows PC are used
+mode := "wsl"; # If true, the absolute paths to the files on my Windows PC are used
 
 myFilePath := function(s)
-	if windows then
+	if mode = "windows" then
 		return Concatenation("C:/Users/Torben/Documents/Repositories/F4-graded-groups/src/", s);
+	elif mode = "wsl" then
+		return Concatenation("/mnt/c/Users/Torben/Documents/Repositories/F4-graded-groups/src/", s);
 	else
 		return Concatenation("./", s);
 	fi;

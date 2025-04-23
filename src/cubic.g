@@ -403,12 +403,11 @@ InstallMethod(CubicRootHomF4, [IsList, IsRingElement, IsInt], function(root, a, 
 		ReqComRingEl(a);
 		i := CycPerm[l][2];
 		j := CycPerm[l][3];
-		if sign = 1 then
-			lambda := ComRingGamIndet(i) * ComRingGamIndet(j);
-		else
-			lambda := ComRingGamIndet(i)^-1 * ComRingGamIndet(j)^-1;
+		lambda := ComRingGamIndet(j) * ComRingGamIndet(i)^-1;
+		if sign = -1 then
+			lambda := lambda^-1;
 		fi;
-		lambda := One(ComRing); # Revert to naive parametrisation
+		# lambda := One(ComRing); # Revert to naive parametrisation
 		return CubicComEl(l, lambda * a); # TODO: Is this correct?
 	end;
 	conicAlgHom := function(l, a)
@@ -417,11 +416,11 @@ InstallMethod(CubicRootHomF4, [IsList, IsRingElement, IsInt], function(root, a, 
 		i := CycPerm[l][2];
 		j := CycPerm[l][3];
 		if sign = 1 then
-			lambda := ComRingGamIndet(j);
+			lambda := ComRingGamIndet(j)^-1;
 		else
-			lambda := ComRingGamIndet(i);
+			lambda := ComRingGamIndet(i)^-1;
 		fi;
-		lambda := One(ComRing); # Revert to naive parametrisation
+		# lambda := One(ComRing); # Revert to naive parametrisation
 		return CubicAlgEl(l, lambda * a); # TODO: Is this correct?
 	end;
 	if root[1] = 0 then

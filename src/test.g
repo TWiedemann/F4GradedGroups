@@ -341,7 +341,7 @@ PrintLieComRel := function()
 				continue;
 			fi;
 			count := count+1;
-			Print(root1, " * ", root2, ": ", LieRootHomF4(root1, a1) * LieRootHomF4(root2, a2), "\n");
+			Print(root1, " * ", root2, ": ", ApplyDistAndPeirceLaw(LieRootHomF4(root1, a1) * LieRootHomF4(root2, a2)), "\n");
 			Print(root3, ": ", LieRootHomF4(root3, a3), "\n\n");
 		od;
 	od;

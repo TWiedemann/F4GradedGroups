@@ -314,11 +314,15 @@ DeclareOperation("DDRootHomA2", [IsList, IsRingElement]);
 # a: An element of ConicAlg.
 # Output: The a-element in the root space of DD w.r.t root.
 InstallMethod(DDRootHomA2, [IsList, IsRingElement], function(root, a)
-    local i, j, l;
+    local i, j, l, lambda;
     ReqConicAlgEl(a);
     # The root space w.r.t. root is Z_{i \to j}
     i := Position(root, 1);
     j := Position(root, -1);
     l := Position(root, 0);
-    return dd(CubicComEl(i, One(ComRing)), CubicAlgElMat(i, j, a)); # TODO: Is this correct?
+	lambda := ComRingGamIndet(i)^-1 * ComRingGamIndet(j)^-1 * ComRingGamIndet(l);
+	if not [i, j, l] in CycPerm then
+		lambda := lambda^-1;
+	fi;
+    return dd(CubicComEl(i, One(ComRing)), lambda*CubicAlgElMat(i, j, a)); # TODO: Is this correct?
 end);

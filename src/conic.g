@@ -74,7 +74,7 @@ end;
 
 ConicAlgInv := function(a)
 	ReqConicAlgEl(a);
-	return changeRingElByMagmaTrans(ConicAlg, a, ConicAlgMagInv);
+	return ChangeRingElByMagmaTrans(ConicAlg, a, ConicAlgMagInv);
 end;
 
 # magFunc: A function ConicAlgMag -> ComRing.

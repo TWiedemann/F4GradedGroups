@@ -276,7 +276,7 @@ end);
 DeclareOperation("LieRootHomF4", [IsList, IsRingElement]);
 
 InstallMethod(LieRootHomF4, [IsList, IsRingElement], function(root, a)
-	local sum, G2Root, minusSignRoots;
+	local sum, G2Root, minusSignRootsLong, minusSignRootsShort;
 	if root in F4LongRoots then
 		ReqComRingEl(a);
 	elif root in F4ShortRoots then
@@ -286,14 +286,14 @@ InstallMethod(LieRootHomF4, [IsList, IsRingElement], function(root, a)
 		return fail;
 	fi;
 	# Add minus signs to ensure that elements w(1, -1) are Weyl elements
-	minusSignRoots := Difference(F4NegLongRoots, [
-		# Long roots
+	minusSignRootsLong := Difference(F4NegLongRoots, [
 		[-1, -1, -1, 1], [1, 1, -1, 1], [1, -1, 1, 1], [-1, 1, 1, 1],
-		# Short roots
-		[0, -1, 0, 1],
-		[0, 0, -1, 1], [0, 1, -1, 0], [0, 1, 0, 1]
 	]);
-	if root in minusSignRoots then
+	minusSignRootsShort := [
+		[1, 0, -1, 0], [0, 1, 0, 1], [0, 0, 1, 1], [0, -1, -1, 0],
+		[-1, 1, 0, 0], [-1, 0, 0, 1]
+	];
+	if root in Union(minusSignRootsLong, minusSignRootsShort) then
 		a := -a;
 	fi;
 	G2Root := F4RootG2Coord(root);

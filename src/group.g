@@ -102,16 +102,24 @@ end);
 
 DeclareOperation("GrpStandardWeylF4", [IsList]);
 InstallMethod(GrpStandardWeylF4, [IsList], function(root)
-	local exceptions;
-	if not root in F4LongRoots then
-		return fail;
-	fi;
-	exceptions := [[1, 1, 1, -1], [1, 1, -1, 1], [1, -1, 1, 1], [-1, 1, 1, 1]];
-	if root in exceptions or -root in exceptions then
-		return GrpWeylF4(root, One(ComRing), -One(ComRing));
+	local one;
+	if root in F4LongRoots then
+		one := One(ComRing);
 	else
-		return GrpWeylF4(root, One(ComRing), One(ComRing));
+		one := One(ConicAlg);
 	fi;
+	return GrpWeylF4(root, one, -one);
+end);
+
+DeclareOperation("GrpStandardWeylInvF4", [IsList]);
+InstallMethod(GrpStandardWeylInvF4, [IsList], function(root)
+	local one;
+	if root in F4LongRoots then
+		one := One(ComRing);
+	else
+		one := One(ConicAlg);
+	fi;
+	return GrpWeylF4(root, -one, one);
 end);
 
 DeclareOperation("GrpWeylOneF4", [IsList]);

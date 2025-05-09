@@ -283,24 +283,54 @@ GrpRootHomComm := function(root1, root2, param1, param2)
 		* GrpRootHomF4(root1, param1) * GrpRootHomF4(root2, param2);
 end;
 
-TestLieH := function(root)
-	local a, one, x, h;
-	if root in F4ShortRoots then
-		a := ConicAlgBasicIndet(1);
-		one := One(ConicAlg);
-	else
-		a := ComRingBasicIndet(1);
-		one := One(ComRing);
-	fi;
-	x := LieRootHomF4(root, a);
-	h := LieRootHomF4(root, one) * LieRootHomF4(-root, one);
-	return [ApplyDistAndPeirceLaw(h*x), ApplyDistAndPeirceLaw(2*x)];
+# Returns true if c(root1, root2) = -c(-root1, -root2) for all roots root1, root2 in F4
+# where c = ChevStrucConst
+TestChevStrucConstSigns := function()
+	local i, j, root1, root2;
+	for i in [1..Length(F4Roots)] do
+		for j in [1..Length(F4Roots)] do
+			# (It would be sufficient to test only the cases with i<j, but the
+			# whole test runs in less than a minute anyway.)
+			root1 := F4Roots[i];
+			root2 := F4Roots[j];
+			if ChevStrucConst(root1, root2) <> -ChevStrucConst(-root1, -root2) then
+				return false;
+			fi;
+		od;
+	od;
+	return true;
 end;
 
-TestLieHBool := function(root)
-	local test;
-	test := TestLieH(root);
-	return test[1] = test[2];
+# root: Root in F4.
+# Output: true if ChevHEl(root) acts as the scalar F4CartanInt(alpha, root)
+# on every root space L_alpha of Lie, and false otherwise
+TestChevHOnRoot := function(root)
+	local h, alpha, a, x, coeff;
+	h := ChevHEl(root);
+	for alpha in F4Roots do
+		if alpha in F4ShortRoots then
+			a := ConicAlgBasicIndet(1);
+		else
+			a := ComRingBasicIndet(1);
+		fi;
+		x := LieRootHomF4(alpha, a);
+		coeff := F4CartanInt(alpha, root) * One(ComRing);
+		if ApplyDistAndPeirceLaw(h*x - coeff*x) <> LieZero then
+			return false;
+		fi;
+	od;
+	return true;
+end;
+
+# Returns true if TestChevHOnRoot(alpha) = true for all alpha \in F4
+TestChevH := function()
+	local root;
+	for root in F4Roots do
+		if TestChevHOnRoot(root) = false then
+			return false;
+		fi;
+	od;
+	return true;
 end;
 
 # Uses indeterminates t_1, t_2, a_1, ..., a_4

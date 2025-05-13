@@ -103,8 +103,9 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 	rootG2 := F4RootG2Coord(root);
 	if rootG2 = [-2, -1] then
 		return LieEndo(function(lieEl)
-			local lie0, lieXiCoeff, lieZetaCoeff, liePos1, lieYCoeff, result;
-			a := LiePart(LieRootHomF4(root, a), -2); # If rescaling happens in Lie, do the same in Grp
+			local lie0, lieXiCoeff, lieZetaCoeff, liePos1, lieYCoeff, result, rho;
+			# Define rho so that LieRootHomF4(root, a) = rho*x
+			rho := LiePart(LieRootHomF4(root, a), -2);
 			# Components of lieEl
 			lie0 := LiePart(lieEl, 0);
 			lieXiCoeff := L0XiCoeff(lie0);
@@ -114,18 +115,19 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 			result := lieEl;
 			# Action on L_{-2} + L_{-1} + DD + Cubic + Cubic' is id
 			# Action on xi and zeta
-			result := result + 2*a*lieXiCoeff*LieX;
-			result := result + a*lieZetaCoeff*LieX;
+			result := result + 2*rho*lieXiCoeff*LieX;
+			result := result + rho*lieZetaCoeff*LieX;
 			# Action on L_1
-			result := result - a*BrownNegToLieEmb(liePos1);
+			result := result - rho*BrownNegToLieEmb(liePos1);
 			# Action on L_2
-			result := result + a*lieYCoeff*LieXi + a^2*lieYCoeff*LieX;
+			result := result + rho*lieYCoeff*LieXi + rho^2*lieYCoeff*LieX;
 			return result;
 		end);
-	elif rootG2 = [2, 1] then # Not thoroughly tested
+	elif rootG2 = [2, 1] then
 		return LieEndo(function(lieEl)
-			local lie0, lieXiCoeff, lieZetaCoeff, lieNeg1, lieXCoeff, result;
-			a := LiePart(LieRootHomF4(root, a), 2); # If rescaling happens in Lie, do the same in Grp
+			local lie0, lieXiCoeff, lieZetaCoeff, lieNeg1, lieXCoeff, result, rho;
+			# Define rho so that LieRootHomF4(root, a) = rho*y
+			rho := LiePart(LieRootHomF4(root, a), 2);
 			# Components of lieEl
 			lieXCoeff := LiePart(lieEl, -2);
 			lieNeg1 := LiePart(lieEl, -1);
@@ -135,12 +137,12 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 			result := lieEl;
 			# Action on L_{2} + L_{1} + DD + Cubic + Cubic' is id
 			# Action on xi and zeta
-			result := result + 2*a*lieXiCoeff*LieX;
-			result := result + a*lieZetaCoeff*LieX;
+			result := result - 2*rho*lieXiCoeff*LieY;
+			result := result - rho*lieZetaCoeff*LieY;
 			# Action on L_{-1}
-			result := result + a*BrownPosToLieEmb(lieNeg1);
+			result := result + rho*BrownPosToLieEmb(lieNeg1);
 			# Action on L_{-2}
-			result := result - a*lieXCoeff*LieXi + a^2*lieXCoeff*LieY;
+			result := result - rho*lieXCoeff*LieXi + rho^2*lieXCoeff*LieY;
 			return result;
 		end);
 	elif rootG2 = [1, 0] then

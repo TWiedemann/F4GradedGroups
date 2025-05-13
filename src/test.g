@@ -62,7 +62,7 @@ InstallMethod(TestEquality, [IsLieEndo, IsLieEndo, IsInt, IsInt],
 	function(lieEndo1, lieEndo2, comIndetNum, conicIndetNum)
 		local genList;
 		genList := LieGensAsLie(comIndetNum, conicIndetNum);
-		return TestEquality(lieEndo1, lieEndo2, genList);
+		return TestEqualityOnGenList(lieEndo1, lieEndo2, genList);
 	end
 );
 

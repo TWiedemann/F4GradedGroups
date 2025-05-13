@@ -24,25 +24,17 @@ InstallMethod(TestEquality, [IsLieElement, IsLieElement, IsBool], function(lieEl
 	return isEqual;
 end);
 
-
-# Tests equality of two endomorphisms f, g of the Lie algebra on
-# If they can be proven to be equal, the output is true.
-# Otherwise the output is a list of lists [a, b] where a is an element of the Lie
-# algebra and b = f(a) - g(a).
-# If two integers comIndetNum and conicIndetNum are provided, they are used
-# as the indeterminates numbers for the generators of Lie in the test.
-# If only one integer is provided, it is used for both indeterminates numbers.
-# If no integer is provided, we use ConicAlg_rank and ComRing_rank.
-DeclareOperation("TestEquality", [IsLieEndo, IsLieEndo, IsInt, IsInt]);
-DeclareOperation("TestEquality", [IsLieEndo, IsLieEndo, IsInt]);
-DeclareOperation("TestEquality", [IsLieEndo, IsLieEndo]);
-
-InstallMethod(TestEquality, [IsLieEndo, IsLieEndo, IsInt, IsInt],
-	function(lieEndo1, lieEndo2, comIndetNum, conicIndetNum)
-		local gens, gen, test, errorList;
-		gens := LieGensAsLie(comIndetNum, conicIndetNum);
+# lieEndo1, lieEndo2: Elements of LieEndo
+# genList: List of elements of Lie
+# Output: true if lieEndo1 and lieEndo2 agree on all elements of genList.
+# Otherwise the output is the list of all lists [a, b] where a is an element of genList
+# algebra and b = lieEndo1(a) - lieEndo2(a) <> 0.
+DeclareOperation("TestEqualityOnGenList", [IsLieEndo, IsLieEndo, IsList]);
+InstallMethod(TestEqualityOnGenList, [IsLieEndo, IsLieEndo, IsList], 
+	function(lieEndo1, lieEndo2, genList)
+		local gen, test, errorList;
 		errorList := [];
-		for gen in gens do
+		for gen in genList do
 			test := ApplyDistAndPeirceLaw(lieEndo1(gen) - lieEndo2(gen));
 			if not IsZero(test) then
 				Add(errorList, [gen, test]);
@@ -56,15 +48,59 @@ InstallMethod(TestEquality, [IsLieEndo, IsLieEndo, IsInt, IsInt],
 	end
 );
 
+# TestEquality(f, g, comIndetNum, conicIndetNum) calls
+# TestEqualityOnGenList(f, g, LieGensAsLie(comIndetNum, conicIndetNum)).
+# If only one integer n is provided, then TestEquality(f, g, n, n) is called.
+# If no integer is provided, then TestEquality(f, g, ComRing_rank, ConicAlg_rank)
+# is called.
+# Uses indeterminates t_comIndetNum and a_conicIndetNum
+DeclareOperation("TestEquality", [IsLieEndo, IsLieEndo, IsInt, IsInt]);
+DeclareOperation("TestEquality", [IsLieEndo, IsLieEndo, IsInt]);
+DeclareOperation("TestEquality", [IsLieEndo, IsLieEndo]);
+
+InstallMethod(TestEquality, [IsLieEndo, IsLieEndo, IsInt, IsInt],
+	function(lieEndo1, lieEndo2, comIndetNum, conicIndetNum)
+		local genList;
+		genList := LieGensAsLie(comIndetNum, conicIndetNum);
+		return TestEquality(lieEndo1, lieEndo2, genList);
+	end
+);
+
 InstallMethod(TestEquality, [IsLieEndo, IsLieEndo, IsInt], 
 	function(lieEndo1, lieEndo2, indetNum)
-		return TestEquality(lieEndo1,lieEndo2, indetNum, indetNum);
+		return TestEquality(lieEndo1, lieEndo2, indetNum, indetNum);
 	end
 );
 
 InstallMethod(TestEquality, [IsLieEndo, IsLieEndo], 
 	function(lieEndo1, lieEndo2)
-		return TestEquality(lieEndo1,lieEndo2, ComRing_rank, ConicAlg_rank);
+		return TestEquality(lieEndo1, lieEndo2, ComRing_rank, ConicAlg_rank);
+	end
+);
+
+# Like TestEquality, but uses LieGensAsModule in place of LieGensAsLie.
+# Uses indeterminates t_comIndetNum, a_conicIndetNum AND a_{conicIndetNum+1}
+DeclareOperation("TestEqualityOnModuleGens", [IsLieEndo, IsLieEndo, IsInt, IsInt]);
+DeclareOperation("TestEqualityOnModuleGens", [IsLieEndo, IsLieEndo, IsInt]);
+DeclareOperation("TestEqualityOnModuleGens", [IsLieEndo, IsLieEndo]);
+
+InstallMethod(TestEqualityOnModuleGens, [IsLieEndo, IsLieEndo, IsInt, IsInt],
+	function(lieEndo1, lieEndo2, comIndetNum, conicIndetNum)
+		local genList;
+		genList := LieGensAsModule(comIndetNum, conicIndetNum);
+		return TestEqualityOnGenList(lieEndo1, lieEndo2, genList);
+	end
+);
+
+InstallMethod(TestEqualityOnModuleGens, [IsLieEndo, IsLieEndo, IsInt], 
+	function(lieEndo1, lieEndo2, indetNum)
+		return TestEqualityOnModuleGens(lieEndo1, lieEndo2, indetNum, indetNum);
+	end
+);
+
+InstallMethod(TestEqualityOnModuleGens, [IsLieEndo, IsLieEndo], 
+	function(lieEndo1, lieEndo2)
+		return TestEqualityOnModuleGens(lieEndo1, lieEndo2, ComRing_rank, ConicAlg_rank-1);
 	end
 );
 
@@ -428,6 +464,16 @@ TestStabNormalise := function()
 		[Concatenation(-Reversed(stab32), [hom3(a)], stab32), [hom3(a)]],
 		[Concatenation(-Reversed(stab33), [hom3(a)], stab33), [hom3(ConicAlgInv(a))]]
 	]);
+end;
+
+TestGrpRootHomExp := function(root)
+	local a;
+	if root in F4ShortRoots then
+		a := ConicAlgBasicIndet(1);
+	elif root in F4LongRoots then
+		a := ComRingBasicIndet(1);
+	fi;
+	return TestEqualityOnModuleGens(GrpRootHomF4(root, a), GrpRootHomF4NonDiv(root, a));
 end;
 
 # Uses indeterminates t_1, t_2, a_1, ..., a_4

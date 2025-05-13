@@ -41,7 +41,7 @@ InstallMethod(CallFuncList,
     [IsLieEndo, IsList],
     function(f, args)
         if Length(args) = 1 and IsLieElement(args[1]) then
-            return UnderlyingElement(f)(args[1]);  # Ersetze dies durch die gewünschte Berechnung
+            return UnderlyingElement(f)(args[1]);
         else
             Error("Invalid argument type for LieEndo application");
         fi;
@@ -87,6 +87,141 @@ InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
 		return fail;
 	fi;
 	return F4Exp(LieRootHomF4(root, a));
+end);
+
+DeclareOperation("GrpRootHomF4NonDiv", [IsList, IsRingElement]);
+InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
+	local rootG2;
+	if root in F4LongRoots then
+		ReqComRingEl(a);
+	elif root in F4ShortRoots then
+		ReqConicAlgEl(a);
+	else
+		Error("Argument must be a root in F4");
+		return fail;
+	fi;
+	rootG2 := F4RootG2Coord(root);
+	if rootG2 = [-2, -1] then
+		return LieEndo(function(lieEl)
+			local lie0, lieXiCoeff, lieZetaCoeff, liePos1, lieYCoeff, result;
+			a := LiePart(LieRootHomF4(root, a), -2); # If rescaling happens in Lie, do the same in Grp
+			# Components of lieEl
+			lie0 := LiePart(lieEl, 0);
+			lieXiCoeff := L0XiCoeff(lie0);
+			lieZetaCoeff := L0ZetaCoeff(lie0);
+			liePos1 := LiePart(lieEl, 1);
+			lieYCoeff := LiePart(lieEl, 2);
+			result := lieEl;
+			# Action on L_{-2} + L_{-1} + DD + Cubic + Cubic' is id
+			# Action on xi and zeta
+			result := result + 2*a*lieXiCoeff*LieX;
+			result := result + a*lieZetaCoeff*LieX;
+			# Action on L_1
+			result := result - a*BrownNegToLieEmb(liePos1);
+			# Action on L_2
+			result := result + a*lieYCoeff*LieXi + a^2*lieYCoeff*LieX;
+			return result;
+		end);
+	elif rootG2 = [2, 1] then # Not thoroughly tested
+		return LieEndo(function(lieEl)
+			local lie0, lieXiCoeff, lieZetaCoeff, lieNeg1, lieXCoeff, result;
+			a := LiePart(LieRootHomF4(root, a), 2); # If rescaling happens in Lie, do the same in Grp
+			# Components of lieEl
+			lieXCoeff := LiePart(lieEl, -2);
+			lieNeg1 := LiePart(lieEl, -1);
+			lie0 := LiePart(lieEl, 0);
+			lieXiCoeff := L0XiCoeff(lie0);
+			lieZetaCoeff := L0ZetaCoeff(lie0);
+			result := lieEl;
+			# Action on L_{2} + L_{1} + DD + Cubic + Cubic' is id
+			# Action on xi and zeta
+			result := result + 2*a*lieXiCoeff*LieX;
+			result := result + a*lieZetaCoeff*LieX;
+			# Action on L_{-1}
+			result := result + a*BrownPosToLieEmb(lieNeg1);
+			# Action on L_{-2}
+			result := result - a*lieXCoeff*LieXi + a^2*lieXCoeff*LieY;
+			return result;
+		end);
+	elif rootG2 = [1, 0] then
+		return LieEndo(function(lieEl)
+			local bLie, bBrown, b, lieXCoeff, lieNeg1, lie0, liePos1, lieYCoeff, result,
+				nu, rho, c, c2, lieXiCoeff, b2, list, scalar;
+			# Use name "b" instead of "a", as in the paper
+			bLie := LieRootHomF4(root, a);
+			bBrown := LiePart(bLie, 1); # We have bLie = bBrown_+
+			b := BrownElCubicPart(bBrown, 1); # We have bBrown = [0, b, 0, 0]
+			# Components of lieEl
+			lieXCoeff := LiePart(lieEl, -2);
+			lieNeg1 := LiePart(lieEl, -1);
+			lie0 := LiePart(lieEl, 0);
+			liePos1 := LiePart(lieEl, 1);
+			lieYCoeff := LiePart(lieEl, 2);
+			result := lieEl;
+			## Action on zeta and L_2 is id
+			## Action on L_{-2}
+			result := result + lieXCoeff * (
+				LieBrownNegElFromTuple(Zero(ComRing), b, CubicZero, Zero(ComRing))
+				- CubicNegToLieEmb(CubicAdj(b))
+				- LieBrownPosElFromTuple(CubicNorm(b), CubicZero, CubicZero, Zero(ComRing))
+			);
+			## Action on L_{-1}
+			# Define nu, c, c2, rho as in the paper
+			nu := BrownElComPart(lieNeg1, 1);
+			rho := BrownElComPart(lieNeg1, 2);
+			c := BrownElCubicPart(lieNeg1, 1);
+			c2 := BrownElCubicPart(lieNeg1, 2);
+			result := Sum([
+				result,
+				CubicNegToLieEmb(-CubicCross(b, c)),
+				CubicPosToLieEmb(rho*b),
+				CubicBiTr(b, c2) * (LieZeta-LieXi) - Liedd(b, c2),
+				LieBrownPosElFromTuple(
+					-CubicBiTr(c, CubicAdj(b)),
+					CubicBiTr(b, c2)*b - CubicCross(CubicAdj(b), c2),
+					-rho*CubicAdj(b),
+					Zero(ComRing)
+				),
+				-rho*CubicNorm(b)*LieY
+			]);
+			## Action on L_0
+			lieXiCoeff := L0XiCoeff(lie0);
+			c := L0CubicPosCoeff(lie0);
+			b2 := L0CubicNegCoeff(lie0);
+			# Action on xi
+			result := result - lieXiCoeff * bLie;
+			# Action on Cubic
+			result := Sum([
+				result,
+				- LieBrownPosElFromTuple(Zero(ComRing), CubicZero, CubicCross(b, c), Zero(ComRing)),
+				-CubicBiTr(c, CubicAdj(b))*LieY
+			]);
+			# Action on Cubic'
+			result := result
+				+ LieBrownPosElFromTuple(CubicBiTr(b, b2), CubicZero, CubicZero, Zero(ComRing));
+			# Action on DD
+			for list in DDCoeffList(L0DDCoeff(lie0)) do
+				# list represents scalar*d_{c, c2}
+				scalar := list[1];
+				c := list[2];
+				c2 := list[3];
+				result := Sum([
+					result,
+					scalar*LieBrownPosElFromTuple(
+						Zero(ComRing),
+						-JordanD(c, c2, b) + CubicBiTr(c, c2)*b,
+						CubicZero, Zero(ComRing)
+					)
+				]);
+			od;
+			## Action on L_1
+			c2 := BrownElCubicPart(liePos1, 2);
+			result := result + CubicBiTr(b, c2)*LieY;
+			return result;
+		end);
+	else
+		return fail;
+	fi;
 end);
 
 DeclareOperation("GrpWeylF4", [IsList, IsRingElement, IsRingElement]);

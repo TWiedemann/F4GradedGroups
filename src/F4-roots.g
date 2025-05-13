@@ -87,6 +87,16 @@ F4ReflProd := function(argRoot, reflRootList)
 	return result;
 end;
 
+F4ReflProdEqual := function(rootList1, rootList2)
+	local root;
+	for root in F4roots do
+		if F4ReflProd(root, rootList1) <> F4ReflProd(root, rootList2) then
+			return false;
+		fi;
+	od;
+	return true;
+end;
+
 # a: A root in F4.
 # Output: List of all roots in F4 which are orthogonal to a.
 F4OrthoRoots := function(a)

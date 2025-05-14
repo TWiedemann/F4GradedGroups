@@ -24,6 +24,12 @@ c1 := CubicComEl(1, t1);
 c2 := CubicAlgEl(2, a1);
 c3 := CubicElFromTuple(t1, t2, t3, a1, a2, a1);
 
+## Simple roots
+d1 := F4SimpleRoots[1];
+d2 := F4SimpleRoots[2];
+d3 := F4SimpleRoots[3];
+d4 := F4SimpleRoots[4];
+
 ## Weyl elements
 w1 := GrpStandardWeylF4(F4SimpleRoots[1]);
 w1Inv := GrpStandardWeylInvF4(F4SimpleRoots[1]);

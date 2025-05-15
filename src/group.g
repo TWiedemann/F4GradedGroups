@@ -353,11 +353,11 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 			else
 				nextSummand := Sum([
 					nu*mu*(LieZeta-LieXi) - mu*CubicPosToLieEmb(c),
-					-LieBrownNegElFromTuple(Zero(ComRing), CubicZero, CubicZero, mu*nu^2)
+					-LieBrownNegElFromTuple(Zero(ComRing), CubicZero, CubicZero, mu^2*nu)
 				]);
 			fi;
 			result := result + nextSummand;
-			## Action on L_{-2}
+			## Action on L_2
 			if rootG2[2] = -2 then
 				nextSummand := -LieBrownPosElFromTuple(lam, CubicZero, CubicZero, Zero(ComRing));
 			elif rootG2[2] = -1 then
@@ -373,7 +373,7 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 					LieBrownNegElFromTuple(Zero(ComRing), CubicZero, CubicZero, CubicNorm(b2))
 				]);
 			else
-				nextSummand := -LieBrownNegElFromTuple(Zero(ComRing), CubicZero, CubicZero, mu);
+				nextSummand := -LieBrownPosElFromTuple(Zero(ComRing), CubicZero, CubicZero, mu);
 			fi;
 			result := result + lieYCoeff*nextSummand;
 			return result;
@@ -402,18 +402,18 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 				);
 			od;
 			## Action on zeta
-			result := result - aLie;
+			result := result - lieZetaCoeff*aLie;
 			## Action on DD
 			for list in lieDDCoeffList do
 				# list represents scalar*d_{c, c2}
 				scalar := list[1];
 				c := list[2];
 				c2 := list[3];
-				result := result - JordanD(c, c2, aCubic);
+				result := result - CubicPosToLieEmb(JordanD(c, c2, aCubic));
 			od;
 			## Action on Cubic'
 			c2 := lieCubicNeg;
-			result := result - Liedd(a, c2) + CubicPosToLieEmb(JordanU(a, c2));
+			result := result - Liedd(aCubic, c2) + CubicPosToLieEmb(JordanU(aCubic, c2));
 			return result;
 		elif rootG2 = [0, -1] then
 			aLie := LieRootHomF4(root, a);
@@ -434,24 +434,24 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 				mu := BrownElComPart(brown, 2);
 				result := result + LieBrownElFromTuple(
 					-CubicBiTr(b, aCubic2) + CubicBiTr(CubicAdj(aCubic2), b2) - mu*CubicNorm(aCubic2),
-					CubicCross(aCubic2, b2) + mu*CubicAdj(aCubic2),
-					mu*aCubic2,
+					-CubicCross(aCubic2, b2) + mu*CubicAdj(aCubic2),
+					-mu*aCubic2,
 					Zero(ComRing)
 				);
 			od;
 			## Action on zeta
-			result := result + aLie;
+			result := result + lieZetaCoeff*aLie;
 			## Action on DD
 			for list in lieDDCoeffList do
 				# list represents scalar*d_{c, c2}
 				scalar := list[1];
 				c := list[2];
 				c2 := list[3];
-				result := result + JordanD(c2, c, aCubic2);
+				result := result + CubicNegToLieEmb(JordanD(c2, c, aCubic2));
 			od;
 			## Action on Cubic
 			c := lieCubicPos;
-			result := result + Liedd(c, aCubic2) - CubicNegToLieEmb(JordanU(aCubic2, c));
+			result := result + Liedd(c, aCubic2) + CubicNegToLieEmb(JordanU(aCubic2, c));
 			return result;
 		# Old version using section 4
 		# elif rootG2 = [1, 0] then

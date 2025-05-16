@@ -252,25 +252,6 @@ InstallMethod(Summands, [IsCubicElement], function(cubicEl)
 	return result;
 end);
 
-# cubicEl: Element of Cubic.
-# Output: List of the (at most 6) basic summands of cubicEl, regarded as elements of Cubic.
-# InstallMethod(Summands, [IsCubicElement], function(cubicEl)
-# 	return List(SummandsWithPos, x -> x[3]);
-# end);
-
-## ---- Simplifiers ----
-# DeclareOperation("CleanTraces", [IsCubicElement]);
-# InstallMethod(CleanTraces, [IsCubicElement], function(cubicEl)
-# 	return CubicElFromTuple(
-# 		CleanTraces(CubicElComCoeff(cubicEl, 1)),
-# 		CleanTraces(CubicElComCoeff(cubicEl, 2)),
-# 		CleanTraces(CubicElComCoeff(cubicEl, 3)),
-# 		CleanTraces(CubicElAlgCoeff(cubicEl, 1)),
-# 		CleanTraces(CubicElAlgCoeff(cubicEl, 2)),
-# 		CleanTraces(CubicElAlgCoeff(cubicEl, 3))
-# 	);
-# end);
-
 
 ## ----- Structural maps of a cubic norm structure ------
 

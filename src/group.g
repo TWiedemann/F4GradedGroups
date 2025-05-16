@@ -76,19 +76,8 @@ end);
 InstallMethod(F4Exp, [IsLieElement], a -> F4Exp(a, 3));
 
 ## ------- Root homomorphisms ----
-DeclareOperation("GrpRootHomF4", [IsList, IsRingElement]);
-InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
-	if root in F4LongRoots then
-		ReqComRingEl(a);
-	elif root in F4ShortRoots then
-		ReqConicAlgEl(a);
-	else
-		Error("Argument must be a root in F4");
-		return fail;
-	fi;
-	return F4Exp(LieRootHomF4(root, a));
-end);
 
+# Explicit formulas for all roots except for those in the (0, 0)-part
 DeclareOperation("GrpRootHomF4NonDiv", [IsList, IsRingElement]);
 InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 	local rootG2, lieXCoeff, lieNeg1, lie0, lieDDCoeffList, lieXiCoeff, lieZetaCoeff,
@@ -409,7 +398,7 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 				scalar := list[1];
 				c := list[2];
 				c2 := list[3];
-				result := result - CubicPosToLieEmb(JordanD(c, c2, aCubic));
+				result := result - scalar*CubicPosToLieEmb(JordanD(c, c2, aCubic));
 			od;
 			## Action on Cubic'
 			c2 := lieCubicNeg;
@@ -447,82 +436,38 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 				scalar := list[1];
 				c := list[2];
 				c2 := list[3];
-				result := result + CubicNegToLieEmb(JordanD(c2, c, aCubic2));
+				result := result + scalar*CubicNegToLieEmb(JordanD(c2, c, aCubic2));
 			od;
 			## Action on Cubic
 			c := lieCubicPos;
 			result := result + Liedd(c, aCubic2) + CubicNegToLieEmb(JordanU(aCubic2, c));
 			return result;
-		# Old version using section 4
-		# elif rootG2 = [1, 0] then
-		# 	# Use name "b" instead of "a", as in the paper
-		# 	bLie := LieRootHomF4(root, a);
-		# 	bBrown := LiePart(bLie, 1); # We have bLie = bBrown_+
-		# 	b := BrownElCubicPart(bBrown, 1); # We have bBrown = [0, b, 0, 0]
-		# 	## Action on zeta and L_2 is id
-		# 	## Action on L_{-2}
-		# 	result := result + lieXCoeff * (
-		# 		LieBrownNegElFromTuple(Zero(ComRing), b, CubicZero, Zero(ComRing))
-		# 		- CubicNegToLieEmb(CubicAdj(b))
-		# 		- LieBrownPosElFromTuple(CubicNorm(b), CubicZero, CubicZero, Zero(ComRing))
-		# 	);
-		# 	## Action on L_{-1}
-		# 	# Define nu, c, c2, rho as in the paper
-		# 	nu := BrownElComPart(lieNeg1, 1);
-		# 	rho := BrownElComPart(lieNeg1, 2);
-		# 	c := BrownElCubicPart(lieNeg1, 1);
-		# 	c2 := BrownElCubicPart(lieNeg1, 2);
-		# 	result := Sum([
-		# 		result,
-		# 		CubicNegToLieEmb(-CubicCross(b, c)),
-		# 		CubicPosToLieEmb(rho*b),
-		# 		CubicBiTr(b, c2) * (LieZeta-LieXi) - Liedd(b, c2),
-		# 		LieBrownPosElFromTuple(
-		# 			-CubicBiTr(c, CubicAdj(b)),
-		# 			CubicBiTr(b, c2)*b - CubicCross(CubicAdj(b), c2),
-		# 			-rho*CubicAdj(b),
-		# 			Zero(ComRing)
-		# 		),
-		# 		-rho*CubicNorm(b)*LieY
-		# 	]);
-		# 	## Action on L_0
-		# 	lieXiCoeff := L0XiCoeff(lie0);
-		# 	c := L0CubicPosCoeff(lie0);
-		# 	b2 := L0CubicNegCoeff(lie0);
-		# 	# Action on xi
-		# 	result := result - lieXiCoeff * bLie;
-		# 	# Action on Cubic
-		# 	result := Sum([
-		# 		result,
-		# 		- LieBrownPosElFromTuple(Zero(ComRing), CubicZero, CubicCross(b, c), Zero(ComRing)),
-		# 		-CubicBiTr(c, CubicAdj(b))*LieY
-		# 	]);
-		# 	# Action on Cubic'
-		# 	result := result
-		# 		+ LieBrownPosElFromTuple(CubicBiTr(b, b2), CubicZero, CubicZero, Zero(ComRing));
-		# 	# Action on DD
-		# 	for list in DDCoeffList(L0DDCoeff(lie0)) do
-		# 		# list represents scalar*d_{c, c2}
-		# 		scalar := list[1];
-		# 		c := list[2];
-		# 		c2 := list[3];
-		# 		result := Sum([
-		# 			result,
-		# 			scalar*LieBrownPosElFromTuple(
-		# 				Zero(ComRing),
-		# 				-JordanD(c, c2, b) + CubicBiTr(c, c2)*b,
-		# 				CubicZero, Zero(ComRing)
-		# 			)
-		# 		]);
-		# 	od;
-		# 	## Action on L_1
-		# 	c2 := BrownElCubicPart(liePos1, 2);
-		# 	result := result + CubicBiTr(b, c2)*LieY;
-		# 	return result;
 		else
 			return fail;
 		fi;
 	end);
+end);
+
+DeclareOperation("GrpRootHomF4Div", [IsList, IsRingElement]);
+InstallMethod(GrpRootHomF4Div, [IsList, IsRingElement], function(root, a)
+	return F4Exp(LieRootHomF4(root, a));
+end);
+
+DeclareOperation("GrpRootHomF4", [IsList, IsRingElement]);
+InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
+	if root in F4LongRoots then
+		ReqComRingEl(a);
+	elif root in F4ShortRoots then
+		ReqConicAlgEl(a);
+	else
+		Error("Argument must be a root in F4");
+		return fail;
+	fi;
+	if F4RootG2Coord(root) = [0,0] then
+		return GrpRootHomF4Div(root, a);
+	else
+		return GrpRootHomF4NonDiv(root, a);
+	fi;
 end);
 
 DeclareOperation("GrpWeylF4", [IsList, IsRingElement, IsRingElement]);

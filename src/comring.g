@@ -178,32 +178,40 @@ _ComRingGamIndetNum := []; # Contains the indeterminate number of gamma_i at pos
 # Returns the maximal indeterminate number that appears in ComRing
 _InitTrDict := function()
 	local maxIndetNum, magEl, magEls, trace, polyRep, monomial, i, j;
+	_ComRingIndetInfo := [];
 	# Initialise all the other indeterminates of ComRing in the desired order
 	for i in [1..3] do
 		ComRingGamIndet(i);
 		_ComRingGamIndetNum[i] := i;
+		Add(_ComRingIndetInfo, ["g", i]);
 	od;
 	for i in [1..ComRing_rank] do
 		ComRingBasicIndet(i);
+		Add(_ComRingIndetInfo, ["t", i]);
 	od;
 	for i in [1..ConicAlg_rank] do
 		ComRingNormIndet(i);
+		Add(_ComRingIndetInfo, ["n", ConicAlgMagBasicIndet(i)]);
 	od;
 	# Initialise dictionary
-	maxIndetNum := 0;
+	maxIndetNum := 3 + ComRing_rank + ConicAlg_rank;
 	magEls := Concatenation(_AllConicAlgMagEls(Trace_MaxLength));
 	magEls := Concatenation([One(ConicAlgMag)], magEls);
 	_TrDict := NewDictionary(magEls[1], true, magEls);
 	for magEl in magEls do
 		trace := _ConicAlgMagTrUncached(magEl);
 		AddDictionary(_TrDict, magEl, trace);
+		## Update maxIndetNum
 		polyRep := ExtRepNumeratorRatFun(trace);
+		# Iterate through all monomials in trace
 		for i in [1..Length(polyRep)/2] do
-			# Iterate through all monomials in trace
 			monomial := polyRep[2*i - 1];
+			# Iterate through all indeterminate numbers in monomial
 			for j in [1..Length(monomial)/2] do
-				# Iterate through all indeterminate numbers in monomial
-				maxIndetNum := Maximum(maxIndetNum, monomial[2*j - 1]);
+				if monomial[2*j-1] > maxIndetNum then
+					maxIndetNum :=  monomial[2*j - 1];
+					Add(_ComRingIndetInfo, ["tr", magEl]);
+				fi;
 			od;
 		od;
 	od;

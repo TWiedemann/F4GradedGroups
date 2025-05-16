@@ -572,3 +572,20 @@ PrintLieComRel := function()
 	od;
 	Display(count);
 end;
+
+TestComRingIndetInfo := function()
+	local i, info, type, indet;
+	for i in [1..Length(_ComRingIndetInfo)] do
+		info := _ComRingIndetInfo[i];
+		type := info[1];
+		info := info[2];
+		indet := Indeterminate(BaseRing, i);
+		if (type = "t" and indet <> ComRingBasicIndet(info))
+			or (type = "g" and indet <> ComRingGamIndet(info))
+			or (type = "n" and indet <> ConicAlgMagNorm(info))
+			or (type = "tr" and indet <> ConicAlgMagTr(info)) then
+			return i;
+		fi;
+	od;
+	return true;
+end;

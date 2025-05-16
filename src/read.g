@@ -33,6 +33,12 @@ ConicAlg_rank := 2;
 Trace_MaxLength := 5;
 # Dictionary with precomputed values for all traces. Will be initalised later.
 _TrDict := fail;
+# List with information about the indeterminates of ComRing in the order in which they
+# appear in ComRing. I.e. _ComRingIndetInfo[i] contains information about the i-th indeterminate.
+# Each entry is a list [ type, info ] where type is one of the strings "g", "t", "n", "tr"
+# and info is additional information: For t_i and g_i, info is i. For n(x) and tr(x),
+# info is x (as an element of ConicAlgMag)
+_ComRingIndetInfo := fail;
 skip_tests := false; # If true, tests whether elements lie in ComRing or ConicAlg are skipped
 ### ----------
 

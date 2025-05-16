@@ -573,6 +573,7 @@ PrintLieComRel := function()
 	Display(count);
 end;
 
+# Returns true if the content of _ComRingIndetInfo is correct
 TestComRingIndetInfo := function()
 	local i, info, type, indet;
 	for i in [1..Length(_ComRingIndetInfo)] do

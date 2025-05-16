@@ -174,9 +174,12 @@ end;
 
 _ComRingGamIndetNum := []; # Contains the indeterminate number of gamma_i at position i
 
-# Initialises the dictionary with precomputed trace values.
+# Initialises:
+# - the dictionary _TrDict with precomputed trace values.
+# - the list _ComRingIndetInfo
+# For a documentation, see read.g.
 # Returns the maximal indeterminate number that appears in ComRing
-_InitTrDict := function()
+_InitDicts := function()
 	local maxIndetNum, magEl, magEls, trace, polyRep, monomial, i, j;
 	_ComRingIndetInfo := [];
 	# Initialise all the other indeterminates of ComRing in the desired order
@@ -209,6 +212,7 @@ _InitTrDict := function()
 			# Iterate through all indeterminate numbers in monomial
 			for j in [1..Length(monomial)/2] do
 				if monomial[2*j-1] > maxIndetNum then
+					# A new indeterminate has occured.
 					maxIndetNum :=  monomial[2*j - 1];
 					Add(_ComRingIndetInfo, ["tr", magEl]);
 				fi;
@@ -218,7 +222,7 @@ _InitTrDict := function()
 	return maxIndetNum;
 end;
 
-_ComRingNumIndets := _InitTrDict();
+_ComRingNumIndets := _InitDicts();
 ComRing := FunctionField(BaseRing, _ComRingNumIndets);
 
 # Function that cancels gamma_i if possible. GAP does not automatically

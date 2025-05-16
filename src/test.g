@@ -466,6 +466,7 @@ TestStabNormalise := function()
 	]);
 end;
 
+# Uses indeterminates a_1, a_{ConicAlg_rank-1}, a_{ConicAlg_rank}, t_1, t_{ComRing_rank}
 TestGrpRootHomExp := function(root)
 	local a;
 	if root in F4ShortRoots then
@@ -473,7 +474,21 @@ TestGrpRootHomExp := function(root)
 	elif root in F4LongRoots then
 		a := ComRingBasicIndet(1);
 	fi;
-	return TestEqualityOnModuleGens(GrpRootHomF4(root, a), GrpRootHomF4NonDiv(root, a));
+	return TestEqualityOnModuleGens(GrpRootHomF4Div(root, a), GrpRootHomF4NonDiv(root, a));
+end;
+
+TestAllGrpRootHomExp := function()
+	local root, test;
+	for root in F4Roots do
+		if F4RootG2Coord(root) <> [0,0] then
+			test := TestGrpRootHomExp(root);
+			if test <> true then
+				Print("Problem for ", root, "\n");
+				return test;
+			fi;
+		fi;
+	od;
+	return true;
 end;
 
 # Uses indeterminates t_1, t_2, a_1, ..., a_4

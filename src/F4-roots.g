@@ -60,6 +60,14 @@ F4RootFromBasisCoeffs := function(coeffs)
 	return coeffs * F4SimpleRoots;
 end;
 
+F4SimpleRootFromIndex := function(i)
+	if i > 0 then
+		return F4SimpleRoots[i];
+	else
+		return F4SimpleRoots[-i];
+	fi;
+end;
+
 F4PosRoots := Filtered(F4Roots, root -> Sum(F4RootBasisCoeffs(root)) > 0);
 F4NegRoots := Difference(F4Roots, F4PosRoots);
 F4PosShortRoots := Intersection(F4PosRoots, F4ShortRoots);

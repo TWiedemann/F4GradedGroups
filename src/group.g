@@ -35,6 +35,7 @@ LieEndoSpec := rec(
 
 LieEndo := ArithmeticElementCreator(LieEndoSpec);
 GrpOne := LieEndo(LieEndoSpec.One(fail));
+GrpZero := LieEndo(LieEndoSpec.Zero(fail));
 
 InstallMethod(CallFuncList,
     "Allow function-like syntax for LieEndo",

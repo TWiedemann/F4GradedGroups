@@ -4,6 +4,10 @@ SanitizeImmediately := true; # If true, DDSanitizeRep is applied after several t
 # An element t1 * dd_{a1, b1} + t2 * dd_{a2, b2} + ... is represented by
 # the list [[t1, a1, b2], [t2, a2, b2], ...].
 
+# rep: Representation of an element of DD.
+# Output: A representation of the same element, but the following sanitization steps are applied:
+# - Summands c*dd_{a,b} with one of a, b, c equal to zero are removed
+# - If two summands c1*dd_{a,b}, c2*dd_{a,b} appear, they are replaced by (c1+c2)*dd_{a,b}
 DDSanitizeRep := function(rep)
 	local i, j, x;
 	for i in [Length(rep), Length(rep)-1 .. 1] do
@@ -12,6 +16,7 @@ DDSanitizeRep := function(rep)
 			continue;
 		fi;
 		x := rep[i];
+		# Remove zero summands
 		if x[1] = Zero(ComRing) or IsZero(x[2]) or IsZero(x[3]) then
 			Remove(rep, i);
 			continue;
@@ -191,13 +196,18 @@ end;
 # i1, j1, i2, j2: Integers in {1,2,3} such that {i1, j1} = {i2, j2} and i1 <> j1
 # a, b: Elements of ConicAlg.
 # Put x1 := a[i1,j1] = CubicAlgElMat(i1, j1, a) and x2 := b[i2, j2].
-# Output: A list [i, j, coeffs, lConic, rConic] where {i, j} = {i1, j1}, i < j,
-# coeffs, lConic, rConic are lists of the same length,
+# Output: A list [i, j, c, coeffs, lConic, rConic] where {i, j} = {i1, j1}, i < j,
+# coeffs, lConic, rConic are lists of the same length, c \in ConicAlg,
 # the elements of coeffs are in ComRing and the elements of lConic, rConic are monimals in ConicAlg,
-# and dd(x1, x2) = \sum_{k=1}^{Length(coeffs)} coeffs[k] * dd((lConic[k])[ij], (rConic[k])[ji])
+# and dd(x1, x2) = dd_{1[ij],c[ji]}+\sum_{k=1}^{Length(coeffs)} coeffs[k]*dd((lConic[k])[ij], (rConic[k])[ji]).
+# Further, for all k we have (lConic[k] <> 1 implies rConic[k] <> 1) and
+# (lConic[k] = 1 implies coeffs[k] = 1). This says that whenever we have only one
+# non-zero coefficient from ConicAlg, we apply relations to ensure that the
+# non-zero coefficients appears on the right-hand side and that the coefficient
+# from ComRing is pulled into the coefficient from ConicAlg (via c*dd_{1,a} = dd_{1,c*a}).
 _ApplyDistAndPeirceLaw_OnSummands_int2 := function(i1, j1, a, i2, j2, b)
 	local i, j, coeffs, lConic, rConic, aCoeffList, aCoeff, bCoeff, bCoeffList,
-		aMonomial, bMonomial, p, q;
+		aMag, bMag, aTwist, p, q, c;
 	# Define i < j s.t. {i,j} = {i1,j1} and ensure that x1 = a[ij], x2 = b[ji].
 	if i1 = j1 or Set([i1, j1]) <> Set([i2, j2]) then
 		Error("Invalid input");
@@ -214,25 +224,40 @@ _ApplyDistAndPeirceLaw_OnSummands_int2 := function(i1, j1, a, i2, j2, b)
 	if i2 <> j then
 		b := ConicAlgInv(b);
 	fi;
-	# Return values
+	## Return values
 	coeffs := [];
 	lConic := [];
 	rConic := [];
-	# Split up a and b into sums of monomials
+	# All summands coeff*dd_{1[ij],a[ji]} are combined as dd_{1[ij], c[ji]}
+	c := Zero(ConicAlg);
+	## Split up a and b into sums of monomials
 	aCoeffList := CoefficientsAndMagmaElements(a);
 	bCoeffList := CoefficientsAndMagmaElements(b);
 	for p in [1..Length(aCoeffList)/2] do
 		for q in [1..Length(bCoeffList)/2] do
 			aCoeff := aCoeffList[2*p]; # in ComRing
 			bCoeff := bCoeffList[2*q]; # in ComRing
-			aMonomial := aCoeffList[2*p - 1]; # in ConicAlgMag
-			bMonomial := bCoeffList[2*q - 1]; # in ConicAlgMag
-			Add(coeffs, aCoeff*bCoeff);
-			Add(lConic, ConicAlgMagToAlg(aMonomial));
-			Add(rConic, ConicAlgMagToAlg(bMonomial));
+			aMag := aCoeffList[2*p - 1]; # in ConicAlgMag
+			bMag := bCoeffList[2*q - 1]; # in ConicAlgMag
+			if aMag = One(ConicAlgMag) then
+				c := c + aCoeff*bCoeff*ConicAlgMagToAlg(bMag);
+				# Add(coeffs, One(ComRing));
+				# Add(lConic, One(ConicAlg));
+				# Add(rConic, aCoeff*bCoeff*ConicAlgMagToAlg(bMag));
+			elif bMag = One(ConicAlgMag) then
+				# Use relation dd_{a[ij],1[ji]} = dd_{1[ij],a[ji]}
+				c := c + aCoeff*bCoeff*ConicAlgMagToAlg(aMag);
+				# Add(coeffs, One(ComRing));
+				# Add(lConic, One(ConicAlg));
+				# Add(rConic, aCoeff*bCoeff*ConicAlgMagToAlg(aMag));
+			else
+				Add(coeffs, aCoeff*bCoeff);
+				Add(lConic, ConicAlgMagToAlg(aMag));
+				Add(rConic, ConicAlgMagToAlg(bMag));
+			fi;
 		od;
 	od;
-	return [i, j, coeffs, lConic, rConic];
+	return [i, j, c, coeffs, lConic, rConic];
 end;
 
 # ddEl: Element of DD.
@@ -242,23 +267,32 @@ end;
 # of the form d_{1[ii], c[ij]} for some c in ConicAlg.
 # 2. For each i, there is at most one summand from Z_{ii,ii}, and it is
 # of the form d_{1[ii], t[ii]} for some t in ComRing.
-# 3. Summands from Z_{ij,ji} for i <> j are of the form t*d_{a[ij],b[ji]} where
-# t \in ComRing and a, b \in ConicAlg are monomial (i.e., lie in the image of ConicAlgMag).
+# 3. For each i<j, there is at most one summand of the form d_{1[ij],a[ji]}.
+# Every other summand in Z_{ij,ji} is of the form t*d_{a[ij],b[ji]} where
+# t \in ComRing and a, b \in ConicAlg are monomial (i.e., lie in the image of ConicAlgMag)
+# with a <> 1 and b <> 1.
 # 4. Summands from Z_{ij,kl} with Intersection([i,j], [k,l]) = [] are removed.
 # See [DMW, 3.8, 5.2, 5.20] for the mathematical justification.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsDDElement]);
 InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl)
-	local resultZ, resultRemainCoeffList, resultCoeffList, ddSummand, ddCoeff,
+	local resultZto, resultRemainCoeffList, resultCoeffList, ddSummand, ddCoeff,
 		cubic1, cubic2, cubSummandList1, cubSummandList2, i1, j1, a, i2, j2, b,
-		intersection, simp, i, j, coeffs, lCubic, rCubic, k;
-	# resultZ[i][j] will store an element x of ConicAlg or of ComRing such that the result has a
+		intersection, simp, i, j, coeffs, lCubic, rCubic, k, resultZShift, c;
+	# resultZto[i][j] will store an element x of ConicAlg or of ComRing such that the result has a
 	# summand dd(1[ii], x[ij]) \in Z_{i \to j}
-	resultZ := [
+	resultZto := [
 		[Zero(ComRing), Zero(ConicAlg), Zero(ConicAlg)],
 		[Zero(ConicAlg), Zero(ComRing), Zero(ConicAlg)],
 		[Zero(ConicAlg), Zero(ConicAlg), Zero(ComRing)]
 	];
-	# All remaining summands. I.e., those that lie in Z_{ij,ji} for some i <> j
+	# resultZShift[i][j] for i<j will store an element x of ConicAlg such that
+	# the result has a summand dd(1[ij],x[ji]).
+	resultZShift := [
+		[, Zero(ConicAlg), Zero(ConicAlg)],
+		[,, Zero(ConicAlg)]
+	];
+	# All remaining summands (as DDCoeffList). I.e., those that lie in Z_{ij,ji} for some i <> j
+	# and which cannot be expressed as dd(1[ij],b[ji])
 	resultRemainCoeffList := [];
 	# Simplify all summands in ddEl
 	for ddSummand in DDCoeffList(ddEl) do
@@ -279,14 +313,20 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl)
 					simp := _ApplyDistAndPeirceLaw_OnSummands_int1(i1, j1, a, i2, j2, ddCoeff*b);
 					i := simp[1];
 					j := simp[2];
-					resultZ[i][j] := resultZ[i][j] + simp[3];
+					resultZto[i][j] := resultZto[i][j] + simp[3];
 				elif Size(intersection) = 2 then
 					simp := _ApplyDistAndPeirceLaw_OnSummands_int2(i1, j1, a, i2, j2, ddCoeff*b);
 					i := simp[1];
 					j := simp[2];
-					coeffs := simp[3];
-					lCubic := List(simp[4], x -> CubicAlgElMat(i, j, x));
-					rCubic := List(simp[5], x -> CubicAlgElMat(j, i, x));
+					c := simp[3];
+					coeffs := simp[4];
+					lCubic := List(simp[5], x -> CubicAlgElMat(i, j, x));
+					rCubic := List(simp[6], x -> CubicAlgElMat(j, i, x));
+					if i<j then
+						resultZShift[i][j] := resultZShift[i][j] + c;
+					else
+						resultZShift[i][j] := resultZShift[i][j] + ConicAlgInv(c);
+					fi;
 					for k in [1..Length(coeffs)] do
 						Add(resultRemainCoeffList, [coeffs[k], lCubic[k], rCubic[k]]);
 					od;
@@ -300,7 +340,16 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl)
 	resultCoeffList := [];
 	for i in [1..3] do
 		for j in [1..3] do
-			Add(resultCoeffList, [One(ComRing), CubicComElOne(i), CubicElMat(i, j, resultZ[i][j])]);
+			Add(resultCoeffList, [
+				One(ComRing), CubicComElOne(i),
+				CubicElMat(i, j, resultZto[i][j])
+			]);
+			if i<j then
+				Add(resultCoeffList, [
+					One(ComRing), CubicAlgElOneMat(i,j), 
+					CubicElMat(j, i, resultZShift[i][j])
+				]);
+			fi;
 		od;
 	od;
 	resultCoeffList := Concatenation(resultCoeffList, resultRemainCoeffList);

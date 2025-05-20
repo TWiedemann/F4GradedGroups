@@ -1,5 +1,3 @@
-SanitizeImmediately := true; # If true, DDSanitizeRep is applied after several transformations which may produce unsanitized (but correct) output
-
 # DD is the ComRing-span of all dd_{a,b} for a, b \in Cubic.
 # An element t1 * dd_{a1, b1} + t2 * dd_{a2, b2} + ... is represented by
 # the list [[t1, a1, b2], [t2, a2, b2], ...].
@@ -58,7 +56,7 @@ DDSpec := rec(
 		# We have to copy a and b: Otherwise DDSanitizeRep(sum) will change
 		# a and b as well, which would be horrible
 		sum := Concatenation(StructuralCopy(a),StructuralCopy(b));
-		if SanitizeImmediately then
+		if _SanitizeImmediately then
 			DDSanitizeRep(sum);
 		fi;
 		return sum;
@@ -101,7 +99,7 @@ DDSpec := rec(
 				fi;
 			od;
 		od;
-		if SanitizeImmediately then
+		if _SanitizeImmediately then
 			DDSanitizeRep(productRep);
 		fi;
 		return productRep;
@@ -354,7 +352,7 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl)
 	od;
 	resultCoeffList := Concatenation(resultCoeffList, resultRemainCoeffList);
 
-	if SanitizeImmediately then
+	if _SanitizeImmediately then
 		DDSanitizeRep(resultCoeffList);
 	fi;
 	

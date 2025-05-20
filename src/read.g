@@ -19,6 +19,11 @@ end;
 
 ### ----- Global variables -----
 BaseRing := Rationals;
+# If _SanitizeImmediately = true, DDSanitizeRep is applied after several transformations which
+# may produce unsanitized (but correct) output
+_SanitizeImmediately := true;
+# If _CancelImmediately = true, ComRingCancel is applied after each Lie bracket
+_CancelImmediately := true;
 # ComRing contains indeterminates t_1, ..., t_{ComRing_rank}, g_1, ..., g_3 and
 # the norms and traces of elements of ConicAlg
 ComRing_rank := 6;

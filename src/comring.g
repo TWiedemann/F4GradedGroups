@@ -226,19 +226,49 @@ _ComRingNumIndets := _InitDicts();
 ComRing := FunctionField(BaseRing, _ComRingNumIndets);
 
 # a: Element of a.
-# Output: The same element, but the gcd(numerator, denominator) has been cancelled
+# Output: The same element, but all coefficients are multiplied by the lcm of all
+# denominators (so that only integers appear) and then divided by the gcd of the
+# remaining coefficients.
 DeclareOperation("ComRingCancel", [IsRationalFunction]);
 InstallMethod(ComRingCancel, [IsRationalFunction], function(a)
-	local fam, numRep, denRep, num, den, gcd, gcdRep, newNumRep, newDenRep;
+	# local fam, numRep, denRep, num, den, gcd, gcdRep, newNumRep, newDenRep;
+	local fam, numRep, denRep, denLcm, gcd, i, newNumRep, newDenRep;
 	fam := FamilyObj(a);
 	numRep := ExtRepNumeratorRatFun(a);
 	denRep := ExtRepDenominatorRatFun(a);
-	num := PolynomialByExtRep(fam, numRep);
-	den := PolynomialByExtRep(fam, denRep);
-	gcd := Gcd(num, den);
-	gcdRep := ExtRepNumeratorRatFun(gcd);
-	newNumRep := QuotientPolynomialsExtRep(fam, numRep, gcdRep);
-	newDenRep := QuotientPolynomialsExtRep(fam, denRep, gcdRep);
+	# If denominator is trivial, no extra work is necessary
+	if denRep = [[], 1] then
+		return a;
+	fi;
+	# Compute the lcm of the denominators appearing in numRep and denrep
+	denLcm := 1;
+	for i in [1..Length(denRep)/2] do
+		denLcm := Lcm(denLcm, DenominatorRat(denRep[2*i]));
+	od;
+	for i in [1..Length(numRep)/2] do
+		denLcm := Lcm(denLcm, DenominatorRat(numRep[2*i]));
+	od;
+	# Compute the gcd of all coeff*denLcm where coeff runs through all coefficients
+	# appearing in numRep and denRep
+	gcd := denRep[2]*denLcm;
+	for i in [2..Length(denRep)/2] do
+		gcd := Lcm(gcd, NumeratorRat(numRep[2*i]*denLcm));
+	od;
+	for i in [1..Length(numRep)/2] do
+		gcd := Lcm(gcd, NumeratorRat(denRep[2*i]*denLcm));
+	od;
+	# Create new representations in which each coefficient is multiplied by
+	# denLcm/gcd
+	newNumRep := [];
+	for i in [1..Length(numRep)/2] do
+		Add(newNumRep, numRep[2*i-1]);
+		Add(newNumRep, numRep[2*i]*denLcm/gcd);
+	od;
+	newDenRep := [];
+	for i in [1..Length(denRep)/2] do
+		Add(newDenRep, denRep[2*i-1]);
+		Add(newDenRep, denRep[2*i]*denLcm/gcd);
+	od;
 	if newDenRep = [[], 1] then
 		# trivial denominator
 		return PolynomialByExtRep(fam, newNumRep);

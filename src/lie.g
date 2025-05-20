@@ -306,6 +306,17 @@ InstallMethod(WithoutTraces, [IsLieElement], function(lieEl)
 	);
 end);
 
+# Applies ComRingCancel to all components.
+DeclareOperation("ComRingCancel", [IsLieElement]);
+InstallMethod(ComRingCancel, [IsLieElement], function(lieEl)
+	local parts, i;
+	parts := [];
+	for i in [-2..2] do
+		Add(parts, ComRingCancel(LiePart(lieEl, i)));
+	od;
+	return LieElFromTuple(parts[1], parts[2], parts[3], parts[4], parts[5]);
+end);
+
 ### Root homomorphisms
 
 DeclareOperation("LieRootHomF4", [IsList, IsRingElement]);

@@ -225,6 +225,28 @@ end;
 _ComRingNumIndets := _InitDicts();
 ComRing := FunctionField(BaseRing, _ComRingNumIndets);
 
+# a: Element of a.
+# Output: The same element, but the gcd(numerator, denominator) has been cancelled
+DeclareOperation("ComRingCancel", [IsRationalFunction]);
+InstallMethod(ComRingCancel, [IsRationalFunction], function(a)
+	local fam, numRep, denRep, num, den, gcd, gcdRep, newNumRep, newDenRep;
+	fam := FamilyObj(a);
+	numRep := ExtRepNumeratorRatFun(a);
+	denRep := ExtRepDenominatorRatFun(a);
+	num := PolynomialByExtRep(fam, numRep);
+	den := PolynomialByExtRep(fam, denRep);
+	gcd := Gcd(num, den);
+	gcdRep := ExtRepNumeratorRatFun(gcd);
+	newNumRep := QuotientPolynomialsExtRep(fam, numRep, gcdRep);
+	newDenRep := QuotientPolynomialsExtRep(fam, denRep, gcdRep);
+	if newDenRep = [[], 1] then
+		# trivial denominator
+		return PolynomialByExtRep(fam, newNumRep);
+	else
+		return RationalFunctionByExtRep(fam, newNumRep, newDenRep);
+	fi;
+end);
+
 # Function that cancels gamma_i if possible. GAP does not automatically
 # recognise that e.g. (g1*g2)/(g1*g3) can be simplified to g2/g3.
 # ComRingCancelGam := function(t)

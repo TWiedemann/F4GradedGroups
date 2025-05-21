@@ -35,7 +35,7 @@ InstallMethod(TestEqualityOnGenList, [IsLieEndo, IsLieEndo, IsList],
 		local gen, test, errorList;
 		errorList := [];
 		for gen in genList do
-			test := ApplyDistAndPeirceLaw(lieEndo1(gen) - lieEndo2(gen));
+			test := ComRingCancel(ApplyDistAndPeirceLaw(lieEndo1(gen) - lieEndo2(gen)));
 			if not IsZero(test) and not IsZero(WithoutTraces(test)) then
 				Add(errorList, [gen, test]);
 			fi;

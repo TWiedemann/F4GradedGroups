@@ -254,7 +254,7 @@ InstallMethod(ComRingCancel, [IsRationalFunction], function(a)
 	for i in [2..Length(denRep)/2] do
 		gcd := Lcm(gcd, NumeratorRat(numRep[2*i]*denLcm));
 	od;
-	for i in [1..Length(numRep)/2] do
+	for i in [1..Length(denRep)/2] do
 		gcd := Lcm(gcd, NumeratorRat(denRep[2*i]*denLcm));
 	od;
 	# Create new representations in which each coefficient is multiplied by

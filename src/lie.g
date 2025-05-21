@@ -132,13 +132,6 @@ LieSpec := rec(
 		zero := zero - a.pos2*b.neg2*L0Xi; # [a.pos2, b.neg2]
 		pos1 := pos1 + a.pos2*b.neg1; # [a.pos2, b.neg1]
 		pos2 := pos2 - L0AsEndo(b.zero, 2)(a.pos2); # [a.pos2, b.zero]
-		if _CancelImmediately then
-			neg2 := ComRingCancel(neg2);
-			neg1 := ComRingCancel(neg1);
-			zero := ComRingCancel(zero);
-			pos1 := ComRingCancel(pos1);
-			pos2 := ComRingCancel(pos2);
-		fi;
 		return rec(
 			neg2 := neg2,
 			neg1 := neg1,

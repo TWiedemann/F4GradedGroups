@@ -23,7 +23,7 @@ BaseRing := Rationals;
 # may produce unsanitized (but correct) output
 _SanitizeImmediately := true;
 # If _CancelImmediately = true, ComRingCancel is applied after each Lie bracket
-_CancelImmediately := true;
+_CancelImmediately := true; # Increases runtime by roughly 10%
 # ComRing contains indeterminates t_1, ..., t_{ComRing_rank}, g_1, ..., g_3 and
 # the norms and traces of elements of ConicAlg
 ComRing_rank := 6;

@@ -7,13 +7,10 @@
 DeclareOperation("TestEquality", [IsLieElement, IsLieElement, IsBool]);
 InstallMethod(TestEquality, [IsLieElement, IsLieElement, IsBool], function(lieEl1, lieEl2, print)
 	local diff, isEqual, i, part;
-	diff := lieEl1 - lieEl2;
+	diff := Simplify(lieEl1 - lieEl2);
 	isEqual := true;
 	for i in [-2..2] do
 		part := LiePart(diff, i);
-		if i = 0 then
-			part := ApplyDistAndPeirceLaw(part);
-		fi;
 		if not IsZero(part) and not IsZero(WithoutTraces(part)) then
 			isEqual := false;
 			if print then
@@ -35,7 +32,7 @@ InstallMethod(TestEqualityOnGenList, [IsLieEndo, IsLieEndo, IsList],
 		local gen, test, errorList;
 		errorList := [];
 		for gen in genList do
-			test := ComRingCancel(ApplyDistAndPeirceLaw(lieEndo1(gen) - lieEndo2(gen)));
+			test := Simplify(lieEndo1(gen) - lieEndo2(gen));
 			if not IsZero(test) and not IsZero(WithoutTraces(test)) then
 				Add(errorList, [gen, test]);
 			fi;

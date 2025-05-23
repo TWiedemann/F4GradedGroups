@@ -78,11 +78,11 @@ InstallMethod(F4Exp, [IsLieElement], a -> F4Exp(a, 3));
 
 ## --- Simplifier ---
 
-DeclareOperation("ComRingCancel", [IsLieEndo]);
-InstallMethod(ComRingCancel, [IsLieEndo], function(lieEndo)
+DeclareOperation("Simplify", [IsLieEndo]);
+InstallMethod(Simplify, [IsLieEndo], function(lieEndo)
 	return LieEndo(
 		function(lieEl)
-			return ComRingCancel(lieEndo(lieEl));
+			return Simplify(lieEndo(lieEl));
 		end
 	);
 end);
@@ -467,7 +467,6 @@ end);
 
 DeclareOperation("GrpRootHomF4", [IsList, IsRingElement]);
 InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
-	local g;
 	if root in F4LongRoots then
 		ReqComRingEl(a);
 	elif root in F4ShortRoots then
@@ -477,14 +476,10 @@ InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
 		return fail;
 	fi;
 	if F4RootG2Coord(root) = [0,0] then
-		g := GrpRootHomF4Div(root, a);
+		return GrpRootHomF4Div(root, a);
 	else
-		g := GrpRootHomF4NonDiv(root, a);
+		return GrpRootHomF4NonDiv(root, a);
 	fi;
-	if _CancelImmediately then
-		g := ComRingCancel(g);
-	fi;
-	return g;
 end);
 
 DeclareOperation("GrpWeylF4", [IsList, IsRingElement, IsRingElement]);

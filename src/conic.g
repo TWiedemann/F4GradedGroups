@@ -151,16 +151,16 @@ InstallMethod(WithoutTraces, [IsElementOfFreeMagmaRing], function(a)
 end);
 
 # a: Element of ConicAlg.
-# Output: The same element but with ComRingCancel applied to all ComRing-coefficients
-DeclareOperation("ComRingCancel", [IsElementOfFreeMagmaRing]);
-InstallMethod(ComRingCancel, [IsElementOfFreeMagmaRing], function(a)
+# Output: The same element but with Simplify applied to all ComRing-coefficients
+DeclareOperation("Simplify", [IsElementOfFreeMagmaRing]);
+InstallMethod(Simplify, [IsElementOfFreeMagmaRing], function(a)
 	local coeffMagList, resultCoeffList, resultMagList, i;
 	coeffMagList := CoefficientsAndMagmaElements(a);
 	resultCoeffList := [];
 	resultMagList := [];
 	for i in [1..Length(coeffMagList)/2] do
 		Add(resultMagList, coeffMagList[2*i-1]); # Magma element
-		Add(resultCoeffList, ComRingCancel(coeffMagList[2*i])); # Coefficient
+		Add(resultCoeffList, Simplify(coeffMagList[2*i])); # Coefficient
 	od;
 	return ElementOfMagmaRing(FamilyObj(a), Zero(ComRing), resultCoeffList, resultMagList);
 end);

@@ -335,6 +335,7 @@ end);
 
 # L0el: Element of L0.
 # Output: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
+# Usually not needed because Simplify also applies ApplyDistAndPeirceLaw to the DD-part.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsL0Element]);
 InstallMethod(ApplyDistAndPeirceLaw, [IsL0Element], function(L0el)
 	local rep;
@@ -352,9 +353,9 @@ InstallMethod(WithoutTraces, [IsL0Element], function(l0El)
 	]);
 end);
 
-# Applies ComRingCancel to all components.
-DeclareOperation("ComRingCancel", [IsL0Element]);
-InstallMethod(ComRingCancel, [IsL0Element], function(L0El)
+# Applies Simplify to all components.
+DeclareOperation("Simplify", [IsL0Element]);
+InstallMethod(Simplify, [IsL0Element], function(L0El)
 	local pos, neg, zeta, xi, dd;
 	pos := L0CubicPosCoeff(L0El);
 	neg := L0CubicNegCoeff(L0El);
@@ -362,10 +363,10 @@ InstallMethod(ComRingCancel, [IsL0Element], function(L0El)
 	xi := L0XiCoeff(L0El);
 	dd := L0DDCoeff(L0El);
 	return Sum([
-		CubicPosToL0Emb(ComRingCancel(pos)),
-		CubicNegToL0Emb(ComRingCancel(neg)),
-		ComRingCancel(zeta) * L0Zeta,
-		ComRingCancel(xi) * L0Xi,
-		DDToL0Emb(ComRingCancel(dd))
+		CubicPosToL0Emb(Simplify(pos)),
+		CubicNegToL0Emb(Simplify(neg)),
+		Simplify(zeta) * L0Zeta,
+		Simplify(xi) * L0Xi,
+		DDToL0Emb(Simplify(dd))
 	]);
 end);

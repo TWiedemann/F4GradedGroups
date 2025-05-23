@@ -440,15 +440,15 @@ InstallMethod(WithoutTraces, [IsCubicElement], function(cubEl)
 	);
 end);
 
-# Applies ComRingCancel to all components.
-DeclareOperation("ComRingCancel", [IsCubicElement]);
-InstallMethod(ComRingCancel, [IsCubicElement], function(cubEl)
+# Applies Simplify to all components.
+DeclareOperation("Simplify", [IsCubicElement]);
+InstallMethod(Simplify, [IsCubicElement], function(cubEl)
 	local t, a, i;
 	t := [];
 	a := [];
 	for i in [1..3] do
-		t[i] := ComRingCancel(CubicElComCoeff(cubEl, i));
-		a[i] := ComRingCancel(CubicElAlgCoeff(cubEl, i));
+		t[i] := Simplify(CubicElComCoeff(cubEl, i));
+		a[i] := Simplify(CubicElAlgCoeff(cubEl, i));
 	od;
 	return CubicElFromTuple(t[1], t[2], t[3], a[1], a[2], a[3]);
 end);

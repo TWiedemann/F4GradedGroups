@@ -289,9 +289,19 @@ InstallMethod(ComRingCancel, [IsRationalFunction], function(a)
 	fi;
 end);
 
+DeclareOperation("ComRingSimplifyTr", [IsRationalFunction]);
+InstallMethod(ComRingSimplifyTr, [IsRationalFunction], function(a)
+	return Value(a, _TrSubIndetList, _TrSubValueList, One(ComRing));
+end);
+
+DeclareOperation("Simplify", [IsRationalFunction]);
+InstallMethod(Simplify, [IsRationalFunction], function(a)
+	return ComRingCancel(ComRingSimplifyTr(a));
+end);
+
 # Function that cancels gamma_i if possible. GAP does not automatically
 # recognise that e.g. (g1*g2)/(g1*g3) can be simplified to g2/g3.
-# ComRingCancelGam := function(t)
+# SimplifyGam := function(t)
 #
 # 	fam := FamilyObj(t);
 # 	numRep := ExtRepNumeratorRatFun(t)

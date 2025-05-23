@@ -286,6 +286,7 @@ end);
 
 # lieEl: Element of Lie.
 # Output: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
+# Usually not needed because Simplify also applies ApplyDistAndPeirceLaw to the DD-part.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsLieElement]);
 InstallMethod(ApplyDistAndPeirceLaw, [IsLieElement], function(lieEl)
 	local rep;
@@ -306,13 +307,13 @@ InstallMethod(WithoutTraces, [IsLieElement], function(lieEl)
 	);
 end);
 
-# Applies ComRingCancel to all components.
-DeclareOperation("ComRingCancel", [IsLieElement]);
-InstallMethod(ComRingCancel, [IsLieElement], function(lieEl)
+# Applies Simplify to all components.
+DeclareOperation("Simplify", [IsLieElement]);
+InstallMethod(Simplify, [IsLieElement], function(lieEl)
 	local parts, i;
 	parts := [];
 	for i in [-2..2] do
-		Add(parts, ComRingCancel(LiePart(lieEl, i)));
+		Add(parts, Simplify(LiePart(lieEl, i)));
 	od;
 	return LieElFromTuple(parts[1], parts[2], parts[3], parts[4], parts[5]);
 end);

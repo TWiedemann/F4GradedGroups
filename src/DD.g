@@ -359,15 +359,16 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl)
 	return DD(resultCoeffList);
 end);
 
-# Applies ComRingCancel to all components.
-DeclareOperation("ComRingCancel", [IsDDElement]);
-InstallMethod(ComRingCancel, [IsDDElement], function(ddEl)
+# First applies ApplyDistAndPeirceLaw and then applies Simplify to all components.
+DeclareOperation("Simplify", [IsDDElement]);
+InstallMethod(Simplify, [IsDDElement], function(ddEl)
 	local coeffList, resultCoeffList, list;
+	ddEl := ApplyDistAndPeirceLaw(ddEl);
 	coeffList := DDCoeffList(ddEl);
 	resultCoeffList := [];
 	for list in coeffList do
 		Add(resultCoeffList,
-			[ComRingCancel(list[1]), ComRingCancel(list[2]), ComRingCancel(list[3])]
+			[Simplify(list[1]), Simplify(list[2]), Simplify(list[3])]
 		);
 	od;
 	return DDElFromCoeffList(resultCoeffList);

@@ -22,8 +22,6 @@ end;
 # If _SanitizeImmediately = true, DDSanitizeRep is applied after several transformations which
 # may produce unsanitized (but correct) output
 _SanitizeImmediately := true;
-# If _CancelImmediately = true, ComRingCancel is applied after each Lie bracket
-_CancelImmediately := true; # Increases runtime by roughly 10%
 # If true, the tests which check whether elements lie in ComRing or ConicAlg are skipped
 _SkipTests := false;
 # If true, the values of ConicAlgMagTr are precomputed and cached.

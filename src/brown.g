@@ -148,15 +148,15 @@ InstallMethod(WithoutTraces, [IsBrownElement], function(brownEl)
 	);
 end);
 
-# Applies ComRingCancel to all components.
-DeclareOperation("ComRingCancel", [IsBrownElement]);
-InstallMethod(ComRingCancel, [IsBrownElement], function(brownEl)
+# Applies Simplify to all components.
+DeclareOperation("Simplify", [IsBrownElement]);
+InstallMethod(Simplify, [IsBrownElement], function(brownEl)
 	local t, cub, i;
 	t := [];
 	cub := [];
 	for i in [1, 2] do
-		t[i] := ComRingCancel(BrownElComPart(brownEl, i));
-		cub[i] := ComRingCancel(BrownElCubicPart(brownEl, i));
+		t[i] := Simplify(BrownElComPart(brownEl, i));
+		cub[i] := Simplify(BrownElCubicPart(brownEl, i));
 	od;
 	return BrownElFromTuple(t[1], cub[1], cub[2], t[2]);
 end);

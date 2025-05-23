@@ -166,18 +166,6 @@ end);
 
 ## -------- DD --------
 
-# Apply WithoutTraces to all ConicAlg-components
-DeclareOperation("WithoutTraces", [IsDDElement]);
-InstallMethod(WithoutTraces, [IsDDElement], function(dd)
-	local coeffList, newCoeffList, list;
-	coeffList := DDCoeffList(dd);
-	newCoeffList := [];
-	for list in coeffList do
-		Add(newCoeffList, [list[1], WithoutTraces(list[2]), WithoutTraces(list[3])]);
-	od;
-	return ApplyDistAndPeirceLaw(DDElFromCoeffList(newCoeffList));
-end);
-
 # Helper functions for ApplyDistAndPeirceLaw
 
 # i1, j1, i2, j2: Integers in {1,2,3} such that the intersection of {i1, j1}
@@ -284,8 +272,8 @@ _ApplyDistAndPeirceLaw_OnSummands_int2 := function(i1, j1, a, i2, j2, b)
 end;
 
 # ddEl: Element of DD.
-# Output: An element of L0 (not of DD!) which (mathematically) represents the same element,
-# but simplified:
+# Output: An element of DD+ComRing*xi+ComRing*zeta (internally, an element of L0)
+# which (mathematically) represents the same element, but simplified:
 # 1. For each i <> j, there is at most one summands from Z_{i \to j}, and it is
 # of the form d_{1[ii], c[ij]} for some c in ConicAlg.
 # 2. For each i, there is at most one summand from Z_{ii,ii}, and it is
@@ -295,12 +283,17 @@ end;
 # t \in ComRing and a, b \in ConicAlg are monomial (i.e., lie in the image of ConicAlgMag)
 # with a <> 1 and b <> 1.
 # 4. Summands from Z_{ij,kl} with Intersection([i,j], [k,l]) = [] are removed.
+# If applyDDRels = true, then in addition the output has no summand of the form
+# d_{1[33],t[33]} and in al summands of the form d_{1[ij],a[ji]} with a \in ConicAlg,
+# a has no summand of the form t*1 for t \in ComRing. This is achieved by applying
+# certain relations in L0.
 # See [DMW, 3.8, 5.2, 5.20] for the mathematical justification.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsDDElement, IsBool]);
-InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl, applyDDRels)
+InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement, IsBool], function(ddEl, applyDDRels)
 	local resultZto, resultRemainCoeffList, resultCoeffList, ddSummand, ddCoeff,
 		cubic1, cubic2, cubSummandList1, cubSummandList2, i1, j1, a, i2, j2, b,
-		intersection, simp, i, j, coeffs, lCubic, rCubic, k, resultZShift, c;
+		intersection, simp, i, j, coeffs, lCubic, rCubic, k, resultZShift, c, t,
+		xiCoeff, zetaCoeff, list;
 	# resultZto[i][j] will store an element x of ConicAlg or of ComRing such that the result has a
 	# summand dd(1[ii], x[ij]) \in Z_{i \to j}
 	resultZto := [
@@ -363,6 +356,8 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl, applyDDRels)
 	od;
 
     # Apply DD-relations
+	xiCoeff := Zero(ComRing);
+	zetaCoeff := Zero(ComRing);
     if applyDDRels then
         # Replace dd(1[33], c[33]) by c*((2\zeta-\xi) - dd(1[11], 1[11]) - dd(1[22], 1[22]))
         zetaCoeff := 2*resultZto[3][3];
@@ -370,6 +365,19 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl, applyDDRels)
         resultZto[1][1] := resultZto[1][1] - resultZto[3][3];
         resultZto[2][2] := resultZto[2][2] - resultZto[3][3];
         resultZto[3][3] := Zero(ComRing);
+		# Replace dd(1[ij],c*1[ji]) for c \in ComRing by
+		# c*g_i*g_j*(dd(1[ii],1[ii])+dd(1[jj],1[jj]))
+		for i in [1,2] do
+			for j in [i+1..3] do
+				list := ConicAlgSplitOne(resultZShift[i][j]);
+				t := list[1];
+				c := list[2];
+				# resultZShift[i][j] = t*1 + c
+				resultZto[i][i] := resultZto[i][i] + t*ComRingGamIndet(i)*ComRingGamIndet(j);
+				resultZto[j][j] := resultZto[j][j] + t*ComRingGamIndet(i)*ComRingGamIndet(j);
+				resultZShift[i][j] := c;
+			od;
+		od;
     fi;
 
 	# Finalise coefficient list of the result
@@ -394,14 +402,27 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement], function(ddEl, applyDDRels)
 		DDSanitizeRep(resultCoeffList);
 	fi;
 	
-	return DD(resultCoeffList);
+	return DDToL0Emb(DD(resultCoeffList)) + xiCoeff*L0Xi + zetaCoeff*L0Zeta;
 end);
 
-# First applies ApplyDistAndPeirceLaw and then applies Simplify to all components.
+# Apply WithoutTraces to all ConicAlg-components
+DeclareOperation("WithoutTraces", [IsDDElement]);
+InstallMethod(WithoutTraces, [IsDDElement], function(dd)
+	local coeffList, newCoeffList, list;
+	coeffList := DDCoeffList(dd);
+	newCoeffList := [];
+	for list in coeffList do
+		Add(newCoeffList, [list[1], WithoutTraces(list[2]), WithoutTraces(list[3])]);
+	od;
+	return DDElFromCoeffList(newCoeffList);
+end);
+
+# Applies Simplify to all components.
+# Does NOT apply ApplyDistAndPeirceLaw because the output would be in L0, not in DD.
 DeclareOperation("Simplify", [IsDDElement]);
 InstallMethod(Simplify, [IsDDElement], function(ddEl)
 	local coeffList, resultCoeffList, list;
-	# ddEl := ApplyDistAndPeirceLaw(ddEl);
+	# ddEl := ApplyDistAndPeirceLaw(ddEl, false);
 	coeffList := DDCoeffList(ddEl);
 	resultCoeffList := [];
 	for list in coeffList do
@@ -417,11 +438,11 @@ end);
 # L0el: Element of L0.
 # Output: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
 # Usually not needed because Simplify also applies ApplyDistAndPeirceLaw to the DD-part.
-DeclareOperation("ApplyDistAndPeirceLaw", [IsL0Element]);
-InstallMethod(ApplyDistAndPeirceLaw, [IsL0Element], function(L0el)
+DeclareOperation("ApplyDistAndPeirceLaw", [IsL0Element, IsBool]);
+InstallMethod(ApplyDistAndPeirceLaw, [IsL0Element, IsBool], function(L0el, applyDDRels)
 	local rep;
 	rep := StructuralCopy(UnderlyingElement(L0el));
-	rep.dd := ApplyDistAndPeirceLaw(rep.dd);
+	rep.dd := ApplyDistAndPeirceLaw(rep.dd, applyDDRels);
 	return L0(rep);
 end);
 
@@ -435,7 +456,7 @@ InstallMethod(WithoutTraces, [IsL0Element], function(l0El)
 	]);
 end);
 
-# Applies Simplify to all components.
+# Applies Simplify to all components and applies ApplyDistAndPeirceLaw to the DD-part.
 DeclareOperation("Simplify", [IsL0Element]);
 InstallMethod(Simplify, [IsL0Element], function(L0El)
 	local pos, neg, zeta, xi, dd;
@@ -443,27 +464,14 @@ InstallMethod(Simplify, [IsL0Element], function(L0El)
 	neg := L0CubicNegCoeff(L0El);
 	zeta := L0ZetaCoeff(L0El);
 	xi := L0XiCoeff(L0El);
-	dd := L0DDCoeff(L0El);
+	l0 := ApplyDistAndPeirceLaw(L0DDCoeff(L0El), true);
 	return Sum([
 		CubicPosToL0Emb(Simplify(pos)),
 		CubicNegToL0Emb(Simplify(neg)),
-		Simplify(zeta) * L0Zeta,
-		Simplify(xi) * L0Xi,
-		DDToL0Emb(Simplify(dd))
+		Simplify(zeta + L0ZetaCoeff(l0)) * L0Zeta,
+		Simplify(xi + L0XiCoeff(l0)) * L0Xi,
+		Simplify(L0DDCoeff(l0))
 	]);
-end);
-
-# L0El: Element of L0.
-# Output: The element obtained from L0El by applying the following transformations:
-# - Replace dd(1[33], 1[33]) by (2\zeta-\xi) - dd(1[11], 1[11]) - dd(1[22], 1[22]).
-# - Replace dd(1[ij], c*One(ConicAlg)[ji]) for c \in ComRing
-# by c*g_i*g_j*(dd(1[ii], 1[ii])+dd(1[jj], 1[jj]).
-DeclareOperation("ApplyDDRels", [IsL0Element]);
-InstallMethod(ApplyDDRels, [IsL0Element], function(L0el)
-
-	ddEl := L0DDCoeff(L0el);
-	ddCoeff := DDCoeffList(ddEl);
-
 end);
 
 ## -------- Lie --------
@@ -471,11 +479,11 @@ end);
 # lieEl: Element of Lie.
 # Output: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
 # Usually not needed because Simplify also applies ApplyDistAndPeirceLaw to the DD-part.
-DeclareOperation("ApplyDistAndPeirceLaw", [IsLieElement]);
-InstallMethod(ApplyDistAndPeirceLaw, [IsLieElement], function(lieEl)
+DeclareOperation("ApplyDistAndPeirceLaw", [IsLieElement, IsBool]);
+InstallMethod(ApplyDistAndPeirceLaw, [IsLieElement, IsBool], function(lieEl, applyDDRels)
 	local rep;
 	rep := StructuralCopy(UnderlyingElement(lieEl));
-	rep.zero := ApplyDistAndPeirceLaw(rep.zero);
+	rep.zero := ApplyDistAndPeirceLaw(rep.zero, applyDDRels);
 	return Lie(rep);
 end);
 

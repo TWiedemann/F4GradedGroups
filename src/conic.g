@@ -128,7 +128,7 @@ ConicAlgSplitOne := function(a)
 	local coeffList, i, magEl, t;
 	coeffList := CoefficientsAndMagmaElements(a);
 	# Look for summand t*One(ConicAlg)
-	for i in [1..Length(coeffList)] do
+	for i in [1..Length(coeffList)/2] do
 		magEl := coeffList[2*i-1];
 		if magEl = One(ConicAlgMag) then
 			# Summand t*One(ConicAlg) found

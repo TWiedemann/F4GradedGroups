@@ -120,3 +120,22 @@ ConicAlgNorm := function(a)
 	od;
 	return result;
 end;
+
+# a: Element of ConicAlg.
+# Output: [t, b] with t \in ComRing, b \in ConicAlg such that a = t*One(ConicAlg)+b
+# and such that b has no summand of the form s*One(ConicAlg) for s \in ComRing
+ConicAlgSplitOne := function(a)
+	local coeffList, i, magEl, t;
+	coeffList := CoefficientsAndMagmaElements(a);
+	# Look for summand t*One(ConicAlg)
+	for i in [1..Length(coeffList)] do
+		magEl := coeffList[2*i-1];
+		if magEl = One(ConicAlgMag) then
+			# Summand t*One(ConicAlg) found
+			t := coeffList[2*i];
+			return [t, a - t*One(ConicAlg)];
+		fi;
+	od;
+	# No summand t*One(ConicAlg) found
+	return [Zero(ComRing), a];
+end;

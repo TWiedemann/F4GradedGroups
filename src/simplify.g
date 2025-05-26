@@ -283,17 +283,19 @@ end;
 # t \in ComRing and a, b \in ConicAlg are monomial (i.e., lie in the image of ConicAlgMag)
 # with a <> 1 and b <> 1.
 # 4. Summands from Z_{ij,kl} with Intersection([i,j], [k,l]) = [] are removed.
-# If applyDDRels = true, then in addition the output has no summand of the form
-# d_{1[33],t[33]} and in al summands of the form d_{1[ij],a[ji]} with a \in ConicAlg,
-# a has no summand of the form t*1 for t \in ComRing. This is achieved by applying
-# certain relations in L0.
+# If applyDDRels = true, then by applying certain relations in L0, we achieve that
+# the output has the following additional properties:
+# - it has no summand of the form d_{1[33],t[33]}.
+# - it has not summand of the form d_{a[ij],a'[ji]}.
+# - in all summands of the form d_{1[ij],a[ji]} with a \in ConicAlg,
+# a has no summand of the form t*1 for t \in ComRing.
 # See [DMW, 3.8, 5.2, 5.20] for the mathematical justification.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsDDElement, IsBool]);
 InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement, IsBool], function(ddEl, applyDDRels)
 	local resultZto, resultRemainCoeffList, resultCoeffList, ddSummand, ddCoeff,
 		cubic1, cubic2, cubSummandList1, cubSummandList2, i1, j1, a, i2, j2, b,
 		intersection, simp, i, j, coeffs, lCubic, rCubic, k, resultZShift, c, t,
-		xiCoeff, zetaCoeff, list;
+		xiCoeff, zetaCoeff, list, lConic, rConic, add;
 	# resultZto[i][j] will store an element x of ConicAlg or of ComRing such that the result has a
 	# summand dd(1[ii], x[ij]) \in Z_{i \to j}
 	resultZto := [
@@ -339,15 +341,26 @@ InstallMethod(ApplyDistAndPeirceLaw, [IsDDElement, IsBool], function(ddEl, apply
 					j := simp[2];
 					c := simp[3];
 					coeffs := simp[4];
-					lCubic := List(simp[5], x -> CubicAlgElMat(i, j, x));
-					rCubic := List(simp[6], x -> CubicAlgElMat(j, i, x));
+					lConic := simp[5];
+					rConic := simp[6];
 					if i<j then
 						resultZShift[i][j] := resultZShift[i][j] + c;
 					else
 						resultZShift[i][j] := resultZShift[i][j] + ConicAlgInv(c);
 					fi;
 					for k in [1..Length(coeffs)] do
-						Add(resultRemainCoeffList, [coeffs[k], lCubic[k], rCubic[k]]);
+						if applyDDRels and lConic[k] = ConicAlgInv(rConic[k]) then
+							# Apply relation
+							# d(a[ij],a'[ji]) = g_i g_j n(a) (d(1[ii],1[ii]) + d(1[jj],1[jj]))
+							add := coeffs[k]*ComRingGamIndet(i)
+									*ComRingGamIndet(j)*ConicAlgNorm(lConic[k]);
+							resultZto[i][i] := resultZto[i][i] + add;
+							resultZto[j][j] := resultZto[j][j] + add;
+						else
+							lCubic := CubicAlgElMat(i, j, lConic[k]);
+							rCubic := CubicAlgElMat(j, i, rConic[k]);
+							Add(resultRemainCoeffList, [coeffs[k], lCubic, rCubic]);
+						fi;
 					od;
 				fi;
 				# If intersection is empty, the summand is zero and we do nothing
@@ -452,6 +465,8 @@ InstallMethod(WithoutTraces, [IsL0Element], function(l0El)
 	return Sum([
 		CubicPosToL0Emb(WithoutTraces(L0CubicPosCoeff(l0El))),
 		CubicNegToL0Emb(WithoutTraces(L0CubicNegCoeff(l0El))),
+		L0XiCoeff(l0El)*L0Xi,
+		L0ZetaCoeff(l0El)*L0Zeta,
 		DDToL0Emb(WithoutTraces(L0DDCoeff(l0El)))
 	]);
 end);

@@ -6,6 +6,14 @@ a2 := ConicAlgBasicIndet(2);
 # a5 := ConicAlgBasicIndet(5);
 # a6 := ConicAlgBasicIndet(6);
 
+## Elements of ConicAlgMag
+aMag1 := ConicAlgMagBasicIndet(1);
+aMag2 := ConicAlgMagBasicIndet(2);
+# aMag3 := ConicAlgMagBasicIndet(3);
+# aMag4 := ConicAlgMagBasicIndet(4);
+# aMag5 := ConicAlgMagBasicIndet(5);
+# aMag6 := ConicAlgMagBasicIndet(6);
+
 ## Elements of Comring
 t1 := ComRingBasicIndet(1);
 t2 := ComRingBasicIndet(2);

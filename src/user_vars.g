@@ -1,18 +1,24 @@
-## Elements of ConicAlg
+## Elements of ConicAlg and ConicAlgMag
 a1 := ConicAlgBasicIndet(1);
 a2 := ConicAlgBasicIndet(2);
-# a3 := ConicAlgBasicIndet(3);
-# a4 := ConicAlgBasicIndet(4);
-# a5 := ConicAlgBasicIndet(5);
-# a6 := ConicAlgBasicIndet(6);
-
-## Elements of ConicAlgMag
 aMag1 := ConicAlgMagBasicIndet(1);
 aMag2 := ConicAlgMagBasicIndet(2);
-# aMag3 := ConicAlgMagBasicIndet(3);
-# aMag4 := ConicAlgMagBasicIndet(4);
-# aMag5 := ConicAlgMagBasicIndet(5);
-# aMag6 := ConicAlgMagBasicIndet(6);
+if ConicAlg_rank > 2 then
+    a3 := ConicAlgBasicIndet(3);
+    aMag3 := ConicAlgMagBasicIndet(3);
+fi;
+if ConicAlg_rank > 3 then
+    a4 := ConicAlgBasicIndet(4);
+    aMag4 := ConicAlgMagBasicIndet(4);
+fi;
+if ConicAlg_rank > 4 then
+    a5 := ConicAlgBasicIndet(5);
+    aMag5 := ConicAlgMagBasicIndet(5);
+fi;
+if ConicAlg_rank > 5 then
+    a6 := ConicAlgBasicIndet(6);
+    aMag6 := ConicAlgMagBasicIndet(6);
+fi;
 
 ## Elements of Comring
 t1 := ComRingBasicIndet(1);

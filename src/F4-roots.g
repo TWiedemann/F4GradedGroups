@@ -77,6 +77,8 @@ F4NegLongRoots := Intersection(F4NegRoots, F4LongRoots);
 
 A2Roots := [[1,-1,0], [1,0,-1], [0,1,-1], [0,-1,1], [-1,0,1], [-1,1,0]];
 
+F4ParityList := fail; # Not yet implemented
+
 F4CartanInt := function(a, b)
 	return 2 * (a*b) / (b*b);
 end;
@@ -95,6 +97,8 @@ F4ReflProd := function(argRoot, reflRootList)
 	return result;
 end;
 
+# rootList1, rootList2: List [a_1,...,a_k], [b_1,...,b_m] of roots
+# Output: True if \sigma(a_1...a_k) = \sigma(b_1...b_m), otherwise false
 F4ReflProdEqual := function(rootList1, rootList2)
 	local root;
 	for root in F4Roots do
@@ -196,74 +200,3 @@ PrintF4SumDecomp := function(root)
 		Print(entry[1], " * ", entry[2], "\n");
 	od;
 end;
-
-# Returns a table par such that par[i][j] is the parity of w_{F4SimpleRoots[j]} on
-# U_{F4Roots[i]}
-_ComputeF4ParityList := function()
-	local d1Par, d2Par, d3Par, d4Par, dPar, root, d1, d2, d3, d4, par, list, j;
-	d1 := F4SimpleRoots[1];
-	d2 := F4SimpleRoots[2];
-	d3 := F4SimpleRoots[3];
-	d4 := F4SimpleRoots[4];
-	d1Par := NewDictionary(F4Roots[1], true, F4Roots);
-	d2Par := NewDictionary(F4Roots[1], true, F4Roots);
-	d3Par := NewDictionary(F4Roots[1], true, F4Roots);
-	d4Par := NewDictionary(F4Roots[1], true, F4Roots);
-	# d1
-	for root in F4PosRoots do
-		if root in [d1, d1+d2, d1+d2+d3, d1+d2+2*d3, d1+d2+2*d3+d4, d1+d2+2*(d3+d4),
-			d1+3*d2+4*d3+2*d4] then
-			AddDictionary(d1Par, root, [-1, 1]);
-		else
-			AddDictionary(d1Par, root, [1, 1]);
-		fi;
-		AddDictionary(d1Par, -root, LookupDictionary(d1Par, root));
-	od;
-	# d2
-	for root in F4PosRoots do
-		if root in [d1, d2, d2+d3, d2+d3+d4, d1+d2+2*d3, d1+d2+2*d3+d4,
-			d1+d2+2*(d3+d4), d1+2*d2+4*d3+2*d4] then
-			AddDictionary(d2Par, root, [-1, 1]);
-		else
-			AddDictionary(d2Par, root, [1,1]);
-		fi;
-		AddDictionary(d2Par, -root, LookupDictionary(d2Par, root));
-	od;
-	# d3
-	for root in F4PosRoots do
-		if root in [d2, d3, d1+d2, d2+2*d3, d1+d2+2*d3, d2+2*d3+d4,
-			d1+d2+2*d3+d4, d1+2*(d2+d3)+d4, d1+2*(d2+d3+d4), d1+2*d2+4*d3+2*d4] then
-			AddDictionary(d3Par, root, [-1, 1]);
-		elif root in [d2+d3, d1+d2+d3, d1+2*d2+3*d3+2*d4] then
-			AddDictionary(d3Par, root, [-1, -1]);
-		else
-			AddDictionary(d3Par, root, [1,1]);
-		fi;
-		AddDictionary(d3Par, -root, LookupDictionary(d3Par, root));
-	od;
-	# d4
-	for root in F4PosRoots do
-		if root in [d3, d4, d2+d3, d1+d2+d3, d2+2*d3, d1+d2+2*d3, d1+2*(d2+d3),
-			d2+2*(d3+d4), d1+d2+2*(d3+d4), d1+2*(d2+d3+d4), d1+2*d2+3*d3+2*d4] then
-			AddDictionary(d4Par, root, [-1, 1]);
-		elif root in [d2+2*d3+d4, d1+d2+2*d3+d4, d1+2*(d2+d3)+d4] then
-			AddDictionary(d4Par, root, [-1, -1]);
-		else
-			AddDictionary(d4Par, root, [1,1]);
-		fi;
-		AddDictionary(d4Par, -root, LookupDictionary(d4Par, root));
-	od;
-	# Build par
-	dPar := [d1Par, d2Par, d3Par, d4Par];
-	par := [];
-	for root in F4Roots do
-		list := [];
-		for j in [1..4] do
-			Add(list, LookupDictionary(dPar[j], root));
-		od;
-		Add(par, list);
-	od;
-	return par;
-end;
-
-F4ParityList := _ComputeF4ParityList();

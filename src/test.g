@@ -342,7 +342,7 @@ TestStandardWeylParity := function(i)
 		y := GrpRootHomF4(F4Refl(baseRoot, d), b);
 		error := TestRelations([[wInv*x*w, y]]);
 		if not IsEmpty(error) then
-			Print(baseRoot, ":\n");
+			Print(baseRoot, " -> ", F4Refl(baseRoot, d), ":\n");
 			Display(error);
 			errorList := Concatenation(errorList, error);
 		fi;
@@ -373,11 +373,11 @@ TestComRels := function()
 		[GrpRootHomCom(d1, t1, d2, t2), GrpRootHomF4(d1+d2, t1*t2)],
 		# Commutator relation on [d2, d3]
 		[GrpRootHomCom(d2, t1, d3, a1),
-			GrpRootHomF4(d2+d3, -t1*a1) * GrpRootHomF4(d2+2*d3, -t1*ConicAlgNorm(a1))],
+			GrpRootHomF4(d2+d3, -t1*a1) * GrpRootHomF4(d2+2*d3, t1*ConicAlgNorm(a1))],
 		# Commutator relation on [d2+d3, d3]
-		[GrpRootHomCom(d2+d3, a1, d3, a2), GrpRootHomF4(d2+2*d3, ConicAlgNormLin(a1, a2))],
+		[GrpRootHomCom(d2+d3, a1, d3, a2), GrpRootHomF4(d2+2*d3, -ConicAlgNormLin(ConicAlgInv(a1), ConicAlgInv(a2)))],
 		# Commutator relation on [d3, d4]
-		[GrpRootHomCom(d3, a1, d4, a2), GrpRootHomF4(d3+d4, a1*a2)]
+		[GrpRootHomCom(d3, a1, d4, a2), GrpRootHomF4(d3+d4, -ConicAlgInv(a1)*ConicAlgInv(a2))]
 	]);
 end;
 

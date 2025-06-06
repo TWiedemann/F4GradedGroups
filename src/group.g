@@ -494,14 +494,6 @@ InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
 		Error("Argument must be a root in F4");
 		return fail;
 	fi;
-	minusRoots := [[1,0,1,0], [0,-2,0,0]];
-	invRoots := [[1,-1,0,0], [0,1,1,0], [-1,-1,0,0]];
-	if root in minusRoots then
-		a := -a;
-	fi;
-	if root in invRoots then
-		a := ConicAlgInv(a);
-	fi;
 	if F4RootG2Coord(root) = [0,0] then
 		roothom := GrpRootHomF4NonDiv;
 		weyl := GrpStandardWeylF4;

@@ -453,32 +453,13 @@ InstallMethod(GrpRootHomF4Div, [IsList, IsRingElement], function(root, a)
 end);
 
 DeclareOperation("GrpRootHomF4", [IsList, IsRingElement]);
-InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
-	if root in F4LongRoots then
-		ReqComRingEl(a);
-	elif root in F4ShortRoots then
-		ReqConicAlgEl(a);
-	else
-		Error("Argument must be a root in F4");
-		return fail;
-	fi;
-	if F4RootG2Coord(root) = [0,0] then
-		return GrpRootHomF4Div(root, a);
-	else
-		return GrpRootHomF4NonDiv(root, a);
-	fi;
-end);
+# Install method for GrpRootHomF4 later because it uses GrpWeylF4
 
 DeclareOperation("GrpWeylF4", [IsList, IsRingElement, IsRingElement]);
 InstallMethod(GrpWeylF4, [IsList, IsRingElement, IsRingElement], function(root, a, b)
 	local inv;
 	inv := GrpRootHomF4(-root, b);
 	return inv * GrpRootHomF4(root, a) * inv;
-end);
-
-DeclareOperation("GrpWeylF4", [IsList, IsRingElement]);
-InstallMethod(GrpWeylF4, [IsList, IsRingElement], function(root, a)
-	return GrpWeylF4(root, a, a); # For (some) long roots, we need a, a. For short roots, this is not yet clear.
 end);
 
 DeclareOperation("GrpStandardWeylF4", [IsList]);
@@ -503,24 +484,44 @@ InstallMethod(GrpStandardWeylInvF4, [IsList], function(root)
 	return GrpWeylF4(root, -one, one);
 end);
 
-DeclareOperation("GrpWeylOneF4", [IsList]);
-InstallMethod(GrpWeylOneF4, [IsList], function(root)
+InstallMethod(GrpRootHomF4, [IsList, IsRingElement], function(root, a)
+	local roothom, weyl, weylInv, d1, d4, minusRoots, invRoots;
 	if root in F4LongRoots then
-		return GrpWeylF4(root, One(ComRing));
+		ReqComRingEl(a);
 	elif root in F4ShortRoots then
-		return GrpWeylF4(root, One(ConicAlg));
+		ReqConicAlgEl(a);
 	else
+		Error("Argument must be a root in F4");
 		return fail;
 	fi;
-end);
-
-DeclareOperation("GrpWeylOneInvF4", [IsList]);
-InstallMethod(GrpWeylOneInvF4, [IsList], function(root)
-	if root in F4LongRoots then
-		return GrpWeylF4(root, -One(ComRing));
-	elif root in F4ShortRoots then
-		return GrpWeylF4(root, -One(ConicAlg));
+	minusRoots := [[1,0,1,0], [0,-2,0,0]];
+	invRoots := [[1,-1,0,0], [0,1,1,0], [-1,-1,0,0]];
+	if root in minusRoots then
+		a := -a;
+	fi;
+	if root in invRoots then
+		a := ConicAlgInv(a);
+	fi;
+	if F4RootG2Coord(root) = [0,0] then
+		roothom := GrpRootHomF4NonDiv;
+		weyl := GrpStandardWeylF4;
+		weylInv := GrpStandardWeylInvF4;
+		d1 := F4SimpleRoots[1];
+		d4 := F4SimpleRoots[4];
+		if root = [0, 1, -1, 0] then
+			return weylInv(d1) * roothom([-1, 0, 0, 1], a) * weyl(d1);
+		elif root = [0, -1, 1, 0] then
+			return weylInv(d1) * roothom([1, 0, 0, -1], a) * weyl(d1);
+		elif root = [0, 1, 0, -1] then
+			return weylInv(d1) * roothom([-1, 0, 1, 0], a) * weyl(d1);
+		elif root = [0, -1, 0, 1] then
+			return weylInv(d1) * roothom([1, 0, -1, 0], a) * weyl(d1);
+		elif root = [0, 0, 1, -1] then
+			return weylInv(d4) * roothom([0, -1, 0, -1], a) * weyl(d4);
+		else
+			return weylInv(d4) * roothom([0, 1, 0, 1], a) * weyl(d4);
+		fi;
 	else
-		return fail;
+		return GrpRootHomF4NonDiv(root, a);
 	fi;
 end);

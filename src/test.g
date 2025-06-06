@@ -128,6 +128,8 @@ InstallMethod(TestEqualityOnModuleGens, [IsLieEndo, IsLieEndo],
 
 # Tests of specific mathematical behaviour
 
+# Prints all terms that have to be proven to be zero to show that
+# d(a[ij], b[jl]) = d(1[ij], ab[jl]) for a cyclic permutation i,j,l of 1,2,3
 TestDDRelation := function()
 	local i, j, l, a1, a2, a3, t, f, gen, a;
 	i := 1;
@@ -148,6 +150,7 @@ TestDDRelation := function()
 	od;
 end;
 
+# Prints { a[ij], b[jl], . } for certain i, j, l
 TestDRelation := function()
 	local indices, list, i, j, l, a, x, b, y, cubicGeneric;
 	indices := [[1,1,2], [1,2,2], [1,3,2], [2,1,1], [2,2,1], [2,3,1]];
@@ -175,7 +178,7 @@ TestDRelation := function()
 	od;
 end;
 
-# Tests whether GrpRootHomF4(root, _) is a homomorphisms.
+# Tests whether GrpRootHomF4(root, _) is a homomorphism.
 # If root is short: Uses indeterminates a_1, a_2, a_(ConicAlg_rank), t_(ComRing_rank),
 # and it is assumed that ConicAlg_rank > 2.
 # If root is long: Uses indeterminates t_1, t_2, t_(ComRing_rank), a_(ConicAlg_rank),
@@ -343,7 +346,7 @@ TestChevH := function()
 end;
 
 # relations: A list of lists [g1, g2] where g1, g2 are automorphisms of Lie
-# Prints all relations which have to be proven by hand to verify that g1 = g2 for
+# Returns a list of all relations which have to be proven by hand to verify that g1 = g2 for
 # all [g1, g2] \in relations.
 # Uses indeterminates t_(ComRing_rank), a_(ConicAlg_rank).
 TestRelations := function(relations)
@@ -514,6 +517,37 @@ TestAllGrpRootHomExp := function()
 		fi;
 	od;
 	return true;
+end;
+
+RootHomCom := function(root1, a1, root2, a2)
+	local hom;
+	hom := GrpRootHomF4;
+	return hom(root1, -a1)*hom(root2, -a2)*hom(root1, a1)*hom(root2, a2);
+end;
+
+# Returns a list of all relations which have to be verified by hand to prove that
+# all desired commutator relations are satisfied.
+TestComRels := function()
+	local t1, t2, a1, a2, d1, d2, d3, d4, comm, test, rel;
+	t1 := ComRingBasicIndet(1);
+	t2 := ComRingBasicIndet(2);
+	a1 := ConicAlgBasicIndet(1);
+	a2 := ConicAlgBasicIndet(2);
+	d1 := F4SimpleRoots[1];
+	d2 := F4SimpleRoots[2];
+	d3 := F4SimpleRoots[3];
+	d4 := F4SimpleRoots[4];
+	return TestRelations([
+		# Commutator relation on [d1, d2]
+		[RootHomCom(d1, t1, d2, t2), GrpRootHomF4(d1+d2, t1*t2)],
+		# Commutator relation on [d2, d3]
+		[RootHomCom(d2, t1, d3, a1),
+			GrpRootHomF4(d2+d3, -t1*a1) * GrpRootHomF4(d2+2*d3, -t1*ConicAlgNorm(a1))],
+		# Commutator relation on [d2+d3, d3]
+		[RootHomCom(d2+d3, a1, d3, a2), GrpRootHomF4(d2+2*d3, ConicAlgNormLin(a1, a2))],
+		# Commutator relation on [d3, d4]
+		[RootHomCom(d3, a1, d4, a2), GrpRootHomF4(d3+d4, a1*a2)]
+	]);
 end;
 
 # Uses indeterminates t_1, t_2, a_1, ..., a_4

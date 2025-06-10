@@ -66,6 +66,7 @@ BaseRing := Rationals;
 
 # Reread("F4-5Grading.g");
 Reread(myFilePath("F4-roots.g"));
+Read(myFilePath("parity_lists.g"));
 Reread(myFilePath("helper.g"));
 Reread(myFilePath("conic_mag.g"));
 Reread(myFilePath("comring.g"));

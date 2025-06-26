@@ -201,7 +201,7 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement], function(root, a)
 					-rho*lam^2 - CubicBiTr(CubicAdj(b), c),
 					JordanU(b, c2) + nu*CubicAdj(b2),
 					-rho*CubicAdj(b) - JordanU(b2, c),
-					CubicBiTr(c2, CubicAdj(b2)) + CubicNorm(b2) + nu*mu^2
+					CubicBiTr(c2, CubicAdj(b2)) + nu*mu^2
 				),
 				(-rho*CubicNorm(b) - nu*CubicNorm(b2))*LieY
 			]);

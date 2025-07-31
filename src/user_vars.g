@@ -82,3 +82,35 @@ end;
 # w := GrpStandardWeylF4([1,-1,1,1])*GrpStandardWeylF4([1,1,-1,1])*GrpStandardWeylF4([1,1,1,-1]);
 # wInv := GrpStandardWeylInvF4([1,1,1,-1])*GrpStandardWeylInvF4([1,1,-1,1])
 #         *GrpStandardWeylInvF4([1,-1,1,1]);
+
+triple := function(a, b, c)
+    local p;
+    Display("J:");
+    p := function(a,b,c)
+        Print(a, ", ", CubicCross(b, c), "\n");
+    end;
+    p(a,b,c);
+    p(b,c,a);
+    p(c,a,b);
+    p := function(a, b, c)
+        Print(CubicCross(a, b), ", ", c, "\n");
+    end;
+    Display("J':");
+    p(a,b,c);
+    p(b,c,a);
+    p(c,a,b);
+end;
+
+cubId := function(a)
+    local d, d2;
+    d := Simplify(Liedd(a, CubicAdj(a)));
+    d2 := CubicNorm(a) * (2*LieZeta - LieXi);
+    Print(d, " = ", d2, "\n");
+end;
+
+cubIdLin := function(a, b)
+    local d, d2;
+    d := Liedd(a, CubicAdj(b)) + Liedd(b, CubicCross(a, b));
+    d2 := CubicBiTr(a, CubicAdj(b)) * (2*LieZeta - LieXi);
+    Print(d, " = ", d2, "\n");
+end;

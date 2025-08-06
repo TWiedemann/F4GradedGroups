@@ -440,16 +440,28 @@ TestStandardWeylParity := function(i)
 	return errorList;
 end;
 
-GrpRootHomCom := function(root1, a1, root2, a2)
+GrpRootHomCom := function(root1, a1, root2, a2, naive...)
 	local hom;
-	hom := GrpRootHomF4;
+	if Length(naive) = 0 then
+		naive := false;
+	else
+		naive := naive[1];
+	fi;
+	hom := function(root, a)
+		return GrpRootHomF4(root, a, naive);
+	end;
 	return hom(root1, -a1)*hom(root2, -a2)*hom(root1, a1)*hom(root2, a2);
 end;
 
 # Returns a list of all relations which have to be verified by hand to prove that
 # all desired commutator relations are satisfied.
-TestComRels := function()
+TestComRels := function(naive...)
 	local t1, t2, a1, a2, d1, d2, d3, d4, comm, test, rel;
+	if Length(naive) = 0 then
+		naive := false;
+	else
+		naive := naive[1];
+	fi;
 	t1 := ComRingBasicIndet(1);
 	t2 := ComRingBasicIndet(2);
 	a1 := ConicAlgBasicIndet(1);
@@ -458,18 +470,37 @@ TestComRels := function()
 	d2 := F4SimpleRoots[2];
 	d3 := F4SimpleRoots[3];
 	d4 := F4SimpleRoots[4];
-	return TestRelations([
-		# Commutator relation on [d1, d2]
-		[GrpRootHomCom(d1, t1, d2, t2), GrpRootHomF4(d1+d2, t1*t2)],
-		# Commutator relation on [d2, d3]
-		[GrpRootHomCom(d2, t1, d3, a1),
-			GrpRootHomF4(d2+d3, -t1*a1) * GrpRootHomF4(d2+2*d3, t1*ConicAlgNorm(a1))],
-		# Commutator relation on [d2+d3, d3]
-		[GrpRootHomCom(d2+d3, a1, d3, a2), GrpRootHomF4(d2+2*d3, -ConicAlgNormLin(ConicAlgInv(a1), ConicAlgInv(a2)))],
-		# Commutator relation on [d3, d4]
-		[GrpRootHomCom(d3, a1, d4, a2), GrpRootHomF4(d3+d4, -ConicAlgInv(a1)*ConicAlgInv(a2))]
-	]);
+	g1 := ComRingGamIndet(1);
+	g2 := ComRingGamIndet(2);
+	g3 := ComRingGamIndet(3);
+	if not naive then
+		return TestRelations([
+			# Commutator relation on [d1, d2]
+			[GrpRootHomCom(d1, t1, d2, t2), GrpRootHomF4(d1+d2, t1*t2)],
+			# Commutator relation on [d2, d3]
+			[
+				GrpRootHomCom(d2, t1, d3, a1),
+				GrpRootHomF4(d2+d3, -t1*a1) * GrpRootHomF4(d2+2*d3, t1*ConicAlgNorm(a1))
+			],
+			# Commutator relation on [d2+d3, d3]
+			[
+				GrpRootHomCom(d2+d3, a1, d3, a2),
+				GrpRootHomF4(d2+2*d3, -ConicAlgNormLin(ConicAlgInv(a1), ConicAlgInv(a2)))
+			],
+			# Commutator relation on [d3, d4]
+			[GrpRootHomCom(d3, a1, d4, a2), GrpRootHomF4(d3+d4, -ConicAlgInv(a1)*ConicAlgInv(a2))]
+		]);
+	else
+		return TestRelations([
+			[
+				GrpRootHomCom(d2, t1, d3, a1, true),
+				GrpRootHomF4(d2+d3, -t1*a1, true) * GrpRootHomF4(d2+2*d3, g2*g3*t1*ConicAlgNorm(a1), true)
+			]
+		]);
+	fi;
 end;
+
+
 
 # Returns true if c(root1, root2) = -c(-root1, -root2) for all roots root1, root2 in F4
 # where c = ChevStrucConst

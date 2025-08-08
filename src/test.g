@@ -456,7 +456,7 @@ end;
 # Returns a list of all relations which have to be verified by hand to prove that
 # all desired commutator relations are satisfied.
 TestComRels := function(naive...)
-	local t1, t2, a1, a2, d1, d2, d3, d4, comm, test, rel;
+	local t1, t2, a1, a2, d1, d2, d3, d4, g1, g2, g3, comm, test, rel;
 	if Length(naive) = 0 then
 		naive := false;
 	else

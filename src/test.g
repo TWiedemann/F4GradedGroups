@@ -251,7 +251,7 @@ end;
 # baseRoot is a root and errorList is the list of Lie algebra elements which have to
 # be proven to be zero.
 # (To decide the parity, the sign with the shortest error list is chosen. There
-# is no guarantee that this is the correct sign, but it normally works and will
+# is no guarantee that this is the correct sign, but it usually works and will
 # be tested by hand later.)
 # Uses indeterminates a_1, t_1, a_{ConicAlg_rank}, t_{ComRing_rank}
 _WeylErrorAndParity := function(root, onRootList, w, wInv, naive...)

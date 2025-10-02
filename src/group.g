@@ -421,6 +421,8 @@ InstallMethod(GrpStandardWeylInvF4, [IsList], function(root)
 	return GrpWeylF4(root, -one, one);
 end);
 
+# I think the following comment is actually incorrect: The parameter "naive" does not influcence
+# the Weyl elements.
 # For naive = true, the root homomorphism for the (0, 0)-roots do not work.
 # This is not a bug but a mathematical issue: In the naive parametrisation,
 # it is not evident which elements are Weyl elements.
@@ -436,14 +438,15 @@ InstallMethod(GrpRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, n
 	fi;
 	if F4RootG2Coord(root) = [0,0] then
 		roothom := rootArg -> GrpRootHomF4NonDiv(rootArg, a, naive);
+		roothomNeg := rootArg -> GrpRootHomF4NonDiv(rootArg, -a, naive);
 		weyl := GrpStandardWeylF4;
 		weylInv := GrpStandardWeylInvF4;
 		d1 := F4SimpleRoots[1];
 		d4 := F4SimpleRoots[4];
 		if root = [0, 1, -1, 0] then
-			return weylInv(d1) * roothom([-1, 0, 0, 1]) * weyl(d1);
+			return weylInv(d1) * roothomNeg([-1, 0, 0, 1]) * weyl(d1);
 		elif root = [0, -1, 1, 0] then
-			return weylInv(d1) * roothom([1, 0, 0, -1]) * weyl(d1);
+			return weylInv(d1) * roothomNeg([1, 0, 0, -1]) * weyl(d1);
 		elif root = [0, 1, 0, -1] then
 			return weylInv(d1) * roothom([-1, 0, 1, 0]) * weyl(d1);
 		elif root = [0, -1, 0, 1] then

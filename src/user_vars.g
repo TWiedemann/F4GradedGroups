@@ -118,3 +118,11 @@ end;
 root := [1, 0, 0, -1];
 w := GrpWeylF4(root, a1, a2, true);
 wInv := GrpWeylF4(root, -a1, -a2, true);
+
+checkParity := function(root, weylIndex)
+    local delta, w;
+    delta := F4SimpleRoots[weylIndex];
+    w := GrpStandardWeylInvF4(delta);
+    Display(LieRootHomF4(F4Refl(root, delta), One(ConicAlg)));
+    Display(Simplify(w(LieRootHomF4(root, One(ConicAlg)))));
+end;

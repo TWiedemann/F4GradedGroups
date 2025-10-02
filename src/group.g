@@ -427,7 +427,7 @@ end);
 # This is not a bug but a mathematical issue: In the naive parametrisation,
 # it is not evident which elements are Weyl elements.
 InstallMethod(GrpRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, naive)
-	local roothom, weyl, weylInv, d1, d4, minusRoots, invRoots;
+	local roothom, roothomNeg, weyl, weylInv, d1, d4, minusRoots, invRoots;
 	if root in F4LongRoots then
 		ReqComRingEl(a);
 	elif root in F4ShortRoots then

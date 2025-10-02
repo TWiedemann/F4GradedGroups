@@ -335,33 +335,31 @@ end;
 #### ---- Misc ----
 
 # Prints all examples roots a, b, c and integers i, j > 1 with the following properties:
-# - a and b are adjacent
+# - a and b are adjacent (i.e. a <> b and a <> -b and a+b is not a root, which implies that the crystallographic interval ]a,b[ is empty)
 # - c + i*a + j*b is a root
-# - c + i*a or c + j*b is a root
-# It does this first for F4 and then for G2 and then for A3
+# It does this first for F4 and then for G2 and then for A3. It turns out that no such examples exist.
 findGradingCounterExample := function()
 	local G2PosLC, G2RootsLC, A3PosLC, A3RootsLC, rootSys, a, b, c, i, j;
 	G2PosLC := [ [1,0], [0,1], [1,1], [2,1], [3,1], [3,2] ];
 	G2RootsLC := Concatenation(G2PosLC, -G2PosLC);
 	A3PosLC := [ [1,0,0], [0,1,0], [0,0,1], [1,1,0], [0,1,1], [1,1,1] ];
 	A3RootsLC := Concatenation(A3PosLC, -A3PosLC);
-	for i in [ 2..4 ] do # Root strings have length at most 4
-		for j in [ 2..4 ] do
-			for rootSys in [ F4RootsLC, G2RootsLC, A3RootsLC ] do
-				# Display(rootSys);
-				for a in rootSys do
-					for b in rootSys do
-						for c in rootSys do
-							if not (a+b in rootSys) and a <> -b then # a, b are adjacent
-								if c+2*a+2*b in rootSys and (c+2*a in rootSys or c+2*b in rootSys) then
-									Print(a, ", ", b, ", ", c, "\n");
+	for rootSys in [ F4RootsLC, G2RootsLC, A3RootsLC ] do
+		# Display(rootSys);
+		for a in rootSys do
+			for b in rootSys do
+				for c in rootSys do
+					if not (a+b in rootSys) and a <> -b and a <> b then # a, b are adjacent
+						for i in [ 2..4 ] do # Root strings have length at most 4
+							for j in [ 2..4 ] do
+								if  c+i*a+j*b in rootSys then
+									Print(a, ", ", b, ", ", c, ", ", i, ", ", j, "\n");
 								fi;
-							fi;
+							od;
 						od;
-					od;
+					fi;
 				od;
 			od;
 		od;
 	od;
-
 end;

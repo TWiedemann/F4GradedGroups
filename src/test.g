@@ -1,19 +1,18 @@
 ### ---- Membership test ----
 
 TestInF4RootSpace := function(lieEl, root)
-
 	# Should be used for 0-space
-	Lieddi := function(i, j)
-		local t, a1, a2;
-		if i = j then
-			t := ComRingBasicIndet(1);
-			return Liedd(CubicComEl(i, One(ComRing)), CubicComEl(i, t));
-		else
-			a1 := ConicAlgBasicIndet(1);
-			a2 := ConicAlgBasicIndet(2);
-			return Liedd(CubicAlgElMat(i, j, a1), CubicAlgElMat(j, i, a2));
-		fi;
-	end;
+	# Lieddi := function(i, j)
+	# 	local t, a1, a2;
+	# 	if i = j then
+	# 		t := ComRingBasicIndet(1);
+	# 		return Liedd(CubicComEl(i, One(ComRing)), CubicComEl(i, t));
+	# 	else
+	# 		a1 := ConicAlgBasicIndet(1);
+	# 		a2 := ConicAlgBasicIndet(2);
+	# 		return Liedd(CubicAlgElMat(i, j, a1), CubicAlgElMat(j, i, a2));
+	# 	fi;
+	# end;
 end;
 
 ### ---- Equality test ----
@@ -534,7 +533,12 @@ TestComRels := function(naive...)
 			# Commutator relation on [d2+d3, d3]
 			[
 				GrpRootHomCom(d2+d3, a1, d3, a2),
-				GrpRootHomF4(d2+2*d3, -ConicAlgNormLin(ConicAlgInv(a1), ConicAlgInv(a2)))
+				GrpRootHomF4(d2+2*d3, -ConicAlgTr(a1 * ConicAlgInv(a2)))
+			],
+			# Commutator relation on [d2, d2+2*d3]
+			[
+				GrpRootHomCom(d2, t1, d2+2*d3, t2),
+				GrpOne
 			],
 			# Commutator relation on [d3, d4]
 			[GrpRootHomCom(d3, a1, d4, a2), GrpRootHomF4(d3+d4, -ConicAlgInv(a1)*ConicAlgInv(a2))]

@@ -210,3 +210,25 @@ GeneratedSubsystem := function(rootSystem, rootList)
 	subspace := Subspace(vecspace, rootList);
 	return Intersection(rootSystem, subspace);
 end;
+
+# rootlist: A set of roots in F4RootsLC which forms a root subsystem
+# Output: True if this subsystem is of type A_2
+SubsystemIsA2 := function(rootlist)
+	local vecspace;
+	vecspace := VectorSpace(Rationals, rootlist);
+	return (Dimension(vecspace) = 2 and Length(rootlist) = 6);
+end;
+
+# root: A root in F4
+# Output: A list of all subsystems of F4 of type A2 that contain root.
+AllA2Subsystems := function(root)
+	local result, root2, subsys;
+	result := [];
+	for root2 in F4Roots do
+		subsys := Set(GeneratedSubsystem(F4Roots, [root, root2]));
+		if SubsystemIsA2(subsys) and not subsys in result then
+			Add(result, subsys);
+		fi;
+	od;
+	return result;
+end;

@@ -305,7 +305,7 @@ getAllC3Subsystems := function()
 end;
 
 testG2ShortPreimage := function()
-	local alpha, preim, preimShort, preimLong, i, j, scp, subsys;
+	local alpha, preim, preimShort, preimLong, i, j, scp, subsys, e;
 	for alpha in Filtered(G2Roots, G2RootIsShort) do
 		preim := projW1Inv(alpha);
 		preimShort := Filtered(preim, F4RootIsShort);
@@ -354,6 +354,44 @@ testSubspacesOrtho := function()
 			if F4InnerProduct(a, b) <> 0 then
 				return false;
 			fi;
+		od;
+	od;
+	return true;
+end;
+
+# Returns true if:
+# - For all beta in G_2 short with long roots alpha_1, ..., alpha_3 in the preimage,
+# we have projW1(gamma^{\sigma(alpha_1 ... alpha_3)}) = projW1(gamma)^{\sigma(beta)}
+# for all gamma in F_4.
+# - For all beta in G_2 long with long root alpha in the preimage,
+# we have projW1(gamma^{\sigma(alpha)}) = projW1(gamma)^{\sigma(beta)}
+# for all gamma in F_4.
+# If one of these conditions is not satisfied, then returns false.
+testFoldWeylAction := function()
+	local gamma, beta, preimLong, perm, permList, refl1, refl2;
+	for beta in G2Roots do
+		preimLong := Filtered(projW1Inv(beta), x -> not F4RootIsShort(x));
+		# The assertion should hold for any ordering of the roots in the preimage,
+		# so we iterate through all permutations of preimLong
+		if G2RootIsShort(beta) then # Size(preimLong) = 3
+			permList := [[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]];
+		else # Size(preimLong) = 1
+			permList := [[1]];
+		fi;
+		for perm in permList do
+			refl1 := function(x)
+				local i;
+				for i in perm do
+					x := F4refl(preimLong[i], x);
+				od;
+				return x;
+			end;
+			refl2 := x -> F4refl(beta, x);
+			for gamma in F4RootsLC do
+				if projW1(refl1(gamma)) <> refl2(projW1(gamma)) then
+					return false;
+				fi;
+			od;
 		od;
 	od;
 	return true;

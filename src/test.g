@@ -622,6 +622,12 @@ TestLieComRel := function(root1, root2)
 		fi;
 		lie[i] := LieRootHomF4(roots[i], param[i][1]);
 	od;
+	c := ChevStrucConst(root1, root2);
+	for p1 in param[1] do
+		for p2 in param[2] do
+			prod := p1*p2;
+		od;
+	od;
 	if roots[3] in F4ShortRoots then
 		if root1 in F4LongRoots and roots2 in F4LongRoots then # prod in ComRing
 			parCand[3] := [prod*One(ConicAlg)];

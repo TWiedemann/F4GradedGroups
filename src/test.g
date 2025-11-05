@@ -605,6 +605,59 @@ TestChevH := function()
 	return true;
 end;
 
+TestLieComRel := function(root1, root2)
+	local roots, t, a, lieCand, i, c, lie1, lie2, lie3;
+	roots := [root1, root2, root1+root2];
+	t := [ComRingBasicIndet(1), ComRingBasicIndet(2)];
+	Add(t, t[1]*t[2]);
+	a := [ConicAlgBasicIndet(1), ConicAlgBasicIndet(2)];
+	Add(a, a[1]*a[2]);
+	# We will test lie_1*lie_2=lie_3 for all lie_i in lieCand[i]
+	# Initialise
+	lieCand := [];
+	for i in [1..2] do
+		if roots[i] in F4ShortRoots then
+			lieCand[i] := List([a[i], ConicAlgInv(a[i])], x -> LieRootHomF4(roots[i], x));
+		elif roots[i] in F4LongRoots then
+			lieCand[i] := [LieRootHomF4(roots[i], t[i])];
+		else # Only possible if l=3
+			lieCand[i] := [LieZero];
+		fi;
+	od;
+	# Actual test
+	c := ChevStrucConst(root1, root2);
+	for lie1 in lieCand[1] do
+		for lie2 in lieCand[2] do
+			for lie3 in lieCand[3] do
+				# Display(IsLieElement(lie1));
+				# Display(IsLieElement(lie2));
+				# Display(IsLieElement(lie3));
+				if TestEquality(lie1*lie2, lie3, false) then
+					return true;
+				fi;
+			od;
+		od;
+	od;
+	return false;
+end;
+
+TestLieComRels := function()
+	local t1, t2, a1, a2, root1, root2, rootSum, lie1, lie2, test, comm;
+	t1 := ComRingBasicIndet(1);
+	t2 := ComRingBasicIndet(2);
+	a1 := ConicAlgBasicIndet(1);
+	a2 := ConicAlgBasicIndet(2);
+	for root1 in F4Roots do
+		for root2 in F4Roots do
+			if not TestLieComRel(root1, root2) then
+				Print(root1, ", ", root2, "\n");
+				return false;
+			fi;
+		od;
+	od;
+	return true;
+end;
+
 # Tests whether GrpRootHomF4NonDiv and GrpRootHomF4Div coincide on root
 # Uses indeterminates a_1, a_{ConicAlg_rank-1}, a_{ConicAlg_rank}, t_1, t_{ComRing_rank}
 TestGrpRootHomExp := function(root)

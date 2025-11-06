@@ -21,7 +21,7 @@ ChevHEl := function(root)
 end;
 
 # root1, root2: Roots in F4
-# Output: Integer c (as an element of Comring) s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
+# Output: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
 # Here x_a = ChevBasEl(a) and the output is 0 if root1+root2 is not a root.
 ChevStrucConst := function(root1, root2)
 	local sum, candidates, comm, chevSum, c, diff;
@@ -33,7 +33,7 @@ ChevStrucConst := function(root1, root2)
 	# such that [ x_root1, x_root2 ] = c x_{root1+root2}. Hence we cannot use GAP functions
 	# to immediately obtain c. However, it turns out that there is only a low number of
 	# possibilities which may occur, so we simply try them all out.
-	candidates := List([-4,-3,-2,-1,1,2,3,4], x -> x*One(ComRing));
+	candidates := [-4,-3,-2,-1,1,2,3,4];
 	comm := ChevBasEl(root1) * ChevBasEl(root2);
 	chevSum := ChevBasEl(sum);
 	for c in candidates do

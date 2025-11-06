@@ -612,8 +612,8 @@ end;
 # is satisfied. In any other case, returns true if the commutator formula
 # LieRootHomF4(root1, a) * LieRootHomF4(root2, b) = LieRootHomF4(root1+root2, p)
 # is satisfied for some p, which may be one of the following:
-# - ChevStrucConst(root1, root2)/2 * tr(c*d) if root1+root2 is long and root1, root2 are short
-# - ChevStrucConst(root1, root2) * tr(c*d) otherwise
+# - ChevStrucConst(root1, root2)/2 * tr(c*d) if root1+root2 is long and one of root1, root2 is short
+# - ChevStrucConst(root1, root2) * c*d otherwise
 # where c in [a,a'], d in [b,b'].
 TestLieComRel := function(root1, root2)
 	local roots, t, a, i, c, param, lie, comm, test, prod, p1, p2, par;
@@ -640,9 +640,10 @@ TestLieComRel := function(root1, root2)
 		for p2 in param[2] do
 			prod := c*p1*p2;
 			if roots[3] in F4ShortRoots then
-				if root1 in F4LongRoots and root2 in F4LongRoots then # prod in ComRing
-					prod := prod * One(ConicAlg);
-				fi;
+				# In this case, one of root1 and root2 must be short, so prod lies in ConicAlg
+				# if root1 in F4LongRoots and root2 in F4LongRoots then # prod in ComRing
+				# 	prod := prod * One(ConicAlg);
+				# fi;
 				for par in [prod, ConicAlgInv(prod)] do
 					test := LieRootHomF4(roots[3], par);
 					if TestEquality(comm, test, false) then
@@ -650,7 +651,7 @@ TestLieComRel := function(root1, root2)
 					fi;
 				od;
 			elif roots[3] in F4LongRoots then
-				if not (root1 in F4LongRoots and root2 in F4LongRoots) then # prod in ConicAlg
+				if root1 in F4ShortRoots or root2 in F4ShortRoots then # prod in ConicAlg
 					# Remove factor that is contained in c because it is
 					# "already covered by the trace map"
 					if not IsEvenInt(c) then

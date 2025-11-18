@@ -1,7 +1,10 @@
+### The root system F4 and the rea
 
-F4Vec := FullRowSpace(Rationals, 4); # Euclidean space (with standard inner product) containing F_4
+# ----- Basic setup: Global variables -----
 
-# Return list of positive short roots
+F4Vec := FullRowSpace(Rationals, 4); # Euclidean space (with standard inner product) containing F4
+
+# Return list of positive short roots in F4 in the dual of the "standard Bourbaki description"
 _F4ShortRoots := function()
 	local list, i, j, ei, ej, a;
 	list := [];
@@ -20,7 +23,7 @@ _F4ShortRoots := function()
 	return list;
 end;
 
-# Return list of positive long roots
+# Return list of positive long roots in F4
 _F4LongRoots := function()
 	local list, i, e, a, b, c, d;
 	list := [];
@@ -43,6 +46,7 @@ _F4LongRoots := function()
 	return list;
 end;
 
+# Sets of roots in F4
 F4ShortRoots := _F4ShortRoots();
 F4LongRoots := _F4LongRoots();
 F4Roots := Concatenation(F4ShortRoots, F4LongRoots);
@@ -50,9 +54,13 @@ F4RootsZero := Concatenation(F4Roots, [[0,0,0,0]]);
 F4SimpleRoots := [[1,1,-1,-1], [-2, 0, 0, 0], [1, -1, 0, 0], [0, 1, 1, 0]]; # Dynkin diagram: 1-2>3-4
 F4SimpleRootsBas := Basis(F4Vec, F4SimpleRoots); # Simple roots as a vector space basis in GAP
 
+# Sets of roots in G2
 G2ShortRoots := [[-1,-1], [-1,0], [0,-1], [0,1], [1,0], [1,1]];
 G2LongRoots := [[-2,-1], [-1,-2], [-1,1], [1,-1], [1,2], [2,1]];
 G2Roots := Concatenation(G2ShortRoots, G2LongRoots);
+
+# Set of roots in A2
+A2Roots := [[1,-1,0], [1,0,-1], [0,1,-1], [0,-1,1], [-1,0,1], [-1,1,0]];
 
 # root: Root in F4
 # Output: List a of coefficients w.r.t. F4SimpleRoots. Thus root = a*F4SimpleRoots.
@@ -64,14 +72,6 @@ F4RootFromBasisCoeffs := function(coeffs)
 	return coeffs * F4SimpleRoots;
 end;
 
-F4SimpleRootFromIndex := function(i)
-	if i > 0 then
-		return F4SimpleRoots[i];
-	else
-		return F4SimpleRoots[-i];
-	fi;
-end;
-
 F4PosRoots := Filtered(F4Roots, root -> Sum(F4RootBasisCoeffs(root)) > 0);
 F4NegRoots := Difference(F4Roots, F4PosRoots);
 F4PosShortRoots := Intersection(F4PosRoots, F4ShortRoots);
@@ -79,16 +79,20 @@ F4PosLongRoots := Intersection(F4PosRoots, F4LongRoots);
 F4NegShortRoots := Intersection(F4NegRoots, F4ShortRoots);
 F4NegLongRoots := Intersection(F4NegRoots, F4LongRoots);
 
-A2Roots := [[1,-1,0], [1,0,-1], [0,1,-1], [0,-1,1], [-1,0,1], [-1,1,0]];
-
 F4ParityList := fail; # Not yet implemented
 
+# ----- Functions on root systems -----
+
+# a, b: Roots in F4.
+# Output: The Cartan integer of (a, b).
 # Since our representation of F4 is the dual of the Bourbaki representation,
 # the bilinear form on F4 is simply the usual inner product, given by *
 F4CartanInt := function(a, b)
 	return 2 * (a*b) / (b*b);
 end;
 
+# a, b: Roots in G2.
+# Output: a*b where * represents the bilinear form on G2
 G2BilinearForm := function(a, b)
 	local mat;
 	# mat[i][j] = e_i*e_j where e_1 = [1, 0], e_2 =  [0, 1]
@@ -96,15 +100,21 @@ G2BilinearForm := function(a, b)
 	return a*mat*b;
 end;
 
+# a, b: Roots in G2.
+# Output: The Cartan integer of (a, b).
 G2CartanInt := function(a,b)
 	return 2 * G2BilinearForm(a,b) / G2BilinearForm(b,b);
 end;
 
-# Returns argRoot^{\sigma_reflRoot}, the reflection along reflRoot applied to argRoot
+# argRoot, reflRoot: Roots in F4
+# Output: argRoot^{\sigma_reflRoot}, the reflection along reflRoot applied to argRoot
 F4Refl := function(argRoot, reflRoot)
 	return argRoot - F4CartanInt(argRoot, reflRoot)*reflRoot;
 end;
 
+# argRoot: Root in F4
+# reflRootList: List [a_1, ..., a_k] of roots in F4
+# Output: argRoot^{\sigma(a_1) ... \sigma(a_k)}
 F4ReflProd := function(argRoot, reflRootList)
 	local result, reflRoot;
 	result := argRoot;
@@ -114,7 +124,7 @@ F4ReflProd := function(argRoot, reflRootList)
 	return result;
 end;
 
-# rootList1, rootList2: List [a_1,...,a_k], [b_1,...,b_m] of roots
+# rootList1, rootList2: Lists [a_1,...,a_k], [b_1,...,b_m] of roots in F4
 # Output: True if \sigma(a_1...a_k) = \sigma(b_1...b_m), otherwise false
 F4ReflProdEqual := function(rootList1, rootList2)
 	local root;
@@ -126,126 +136,8 @@ F4ReflProdEqual := function(rootList1, rootList2)
 	return true;
 end;
 
-# a: A root in F4.
-# Output: List of all roots in F4 which are orthogonal to a.
-F4OrthoRoots := function(a)
-	local result, b;
-	result := [];
-	for b in F4Roots do
-		if a*b = 0 then
-			Add(result, b);
-		fi;
-	od;
-	return result;
-end;
-
-F4PosOrthoRoots := function(a)
-	return Intersection(F4PosRoots, F4OrthoRoots(a));
-end;
-
 # root: Element of F4Roots or [0,0,0,0]
 # Output: The corresponding root in G2
 F4RootG2Coord := function(root)
-	local sum;
-	if not root in F4RootsZero then
-		Error("Not a root in F4");
-		return fail;
-	fi;
-	# L_2
-	if root = [2, 0, 0, 0] then
-		return [2, 1];
-	# L_{-2}
-	elif root = [-2, 0, 0, 0] then
-		return [-2, -1];
-	# ComRing-parts of the Brown algebra
-	elif root = [-1, -1, -1, -1] then
-		return [-1, -2];
-	elif root = [-1, 1, 1, 1] then
-		return [-1, 1];
-	elif root = [1, -1, -1, -1] then
-		return [1, -1];
-	elif root = [1, 1, 1, 1] then
-		return [1, 2];
-	# L_0
-	elif root[1] = 0 then
-		sum := Sum(root);
-		if sum = 0 then
-			return [0, 0];
-		elif sum > 0 then
-			return [0, 1];
-		else
-			return [0, -1];
-		fi;
-	# Cubic-parts of L_{-1}
-	elif root[1] = -1 then
-		if Sum(root) = 0 then
-			return [-1, 0];
-		else
-			return [-1, -1];
-		fi;
-	# Cubic-parts of L_1
-	else
-		if Sum(root) = 0 then
-			return [1, 0];
-		else
-			return [1, 1];
-		fi;
-	fi;
-end;
-
-# root: in F4
-# Returns list of all pairs [ root1, root2 ] s.t. root1 + root2 = root and
-# root1 appears in F4Roots before root2
-F4SumDecomp := function(root)
-	local result, i, j, root1, root2;
-	result := [];
-	for i in [1..Length(F4Roots)] do
-		root1 := F4Roots[i];
-		for j in [i+1..Length(F4Roots)] do
-			root2 := F4Roots[j];
-			if root1 + root2 = root then
-				Add(result, [root1, root2]);
-			fi;
-		od;
-	od;
-	return result;
-end;
-
-PrintF4SumDecomp := function(root)
-	local entry;
-	for entry in F4SumDecomp(root) do
-		Print(entry[1], " * ", entry[2], "\n");
-	od;
-end;
-
-# rootSystem: A root system (as a set of roots, not as a root system in GAP).
-# rootList: A subset of rootSystem.
-# Output: The root subsystem generated by rootList.
-GeneratedSubsystem := function(rootSystem, rootList)
-	local vecspace, subspace;
-	vecspace := VectorSpace(Rationals, rootSystem);
-	subspace := Subspace(vecspace, rootList);
-	return Intersection(rootSystem, subspace);
-end;
-
-# rootlist: A set of roots in F4RootsLC which forms a root subsystem
-# Output: True if this subsystem is of type A_2
-SubsystemIsA2 := function(rootlist)
-	local vecspace;
-	vecspace := VectorSpace(Rationals, rootlist);
-	return (Dimension(vecspace) = 2 and Length(rootlist) = 6);
-end;
-
-# root: A root in F4
-# Output: A list of all subsystems of F4 of type A2 that contain root.
-AllA2Subsystems := function(root)
-	local result, root2, subsys;
-	result := [];
-	for root2 in F4Roots do
-		subsys := Set(GeneratedSubsystem(F4Roots, [root, root2]));
-		if SubsystemIsA2(subsys) and not subsys in result then
-			Add(result, subsys);
-		fi;
-	od;
-	return result;
+	return [root[1], Sum(root)/2];
 end;

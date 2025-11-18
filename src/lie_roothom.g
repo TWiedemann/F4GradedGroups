@@ -245,8 +245,8 @@ DeclareOperation("LieGensAsLie", [IsInt, IsInt]);
 InstallMethod(LieGensAsLie, [IsInt, IsInt, IsBool],
 	function(comIndetNum, conicIndetNum, var)
 		local a, t, gens, root, coord;
-		t := ComRingBasicIndet(comIndetNum);
-		a := ConicAlgBasicIndet(conicIndetNum);
+		t := ComRingIndet(comIndetNum);
+		a := ConicAlgIndet(conicIndetNum);
 		if var then
 			gens := [LieY];
 			coord := -1;
@@ -276,9 +276,9 @@ end);
 # We use the naive parametrisation.
 LieGensAsModule := function(comIndetNum, conicIndetNum)
 	local t1, a1, a2, gens, root, i, j, gen;
-	t1 := ComRingBasicIndet(comIndetNum);
-	a1 := ConicAlgBasicIndet(conicIndetNum);
-	a2 := ConicAlgBasicIndet(conicIndetNum + 1);
+	t1 := ComRingIndet(comIndetNum);
+	a1 := ConicAlgIndet(conicIndetNum);
+	a2 := ConicAlgIndet(conicIndetNum + 1);
 	gens := [LieXi, LieZeta];
 	# Generators outside DD
 	for root in F4Roots do
@@ -315,8 +315,8 @@ end;
 # As LieGensAsModule, but does not use the formulas from [DMW, 5.20].
 LieGensAsModuleUnsimplified := function(indetNum)
 	local t1, a1, gens, root, cubic1, cubic2, cubicGens1, cubicGens2;
-	t1 := ComRingBasicIndet(2*indetNum + 1);
-	a1 := ConicAlgBasicIndet(2*indetNum + 1);
+	t1 := ComRingIndet(2*indetNum + 1);
+	a1 := ConicAlgIndet(2*indetNum + 1);
 	gens := [LieXi, LieZeta];
 	# Generators outside DD
 	for root in F4Roots do

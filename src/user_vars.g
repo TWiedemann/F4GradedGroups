@@ -1,32 +1,32 @@
 ## Elements of ConicAlg and ConicAlgMag
-a1 := ConicAlgBasicIndet(1);
-a2 := ConicAlgBasicIndet(2);
+a1 := ConicAlgIndet(1);
+a2 := ConicAlgIndet(2);
 aMag1 := ConicAlgMagBasicIndet(1);
 aMag2 := ConicAlgMagBasicIndet(2);
 if ConicAlg_rank > 2 then
-    a3 := ConicAlgBasicIndet(3);
+    a3 := ConicAlgIndet(3);
     aMag3 := ConicAlgMagBasicIndet(3);
 fi;
 if ConicAlg_rank > 3 then
-    a4 := ConicAlgBasicIndet(4);
+    a4 := ConicAlgIndet(4);
     aMag4 := ConicAlgMagBasicIndet(4);
 fi;
 if ConicAlg_rank > 4 then
-    a5 := ConicAlgBasicIndet(5);
+    a5 := ConicAlgIndet(5);
     aMag5 := ConicAlgMagBasicIndet(5);
 fi;
 if ConicAlg_rank > 5 then
-    a6 := ConicAlgBasicIndet(6);
+    a6 := ConicAlgIndet(6);
     aMag6 := ConicAlgMagBasicIndet(6);
 fi;
 
 ## Elements of Comring
-t1 := ComRingBasicIndet(1);
-t2 := ComRingBasicIndet(2);
-t3 := ComRingBasicIndet(3);
-t4 := ComRingBasicIndet(4);
-t5 := ComRingBasicIndet(5);
-t6 := ComRingBasicIndet(6);
+t1 := ComRingIndet(1);
+t2 := ComRingIndet(2);
+t3 := ComRingIndet(3);
+t4 := ComRingIndet(4);
+t5 := ComRingIndet(5);
+t6 := ComRingIndet(6);
 g1 := ComRingGamIndet(1);
 g2 := ComRingGamIndet(2);
 g3 := ComRingGamIndet(3);

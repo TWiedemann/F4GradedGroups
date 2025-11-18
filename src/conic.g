@@ -59,7 +59,7 @@ end);
 
 ## Constructors for indeterminates
 
-ConicAlgBasicIndet := function(i)
+ConicAlgIndet := function(i)
 	return ConicAlgBasicIndets[i];
 end;
 

@@ -1,15 +1,17 @@
-mode := "unix";
+## If you use a Windows system, set isUnixOS to false and change windowsUserPath to the path
+## where your source files are stored
+isUnixOS := true;
+windowsUserPath := "C:/Users/Torben/Documents/Repositories/F4-graded-groups/src/";
 
 myFilePath := function(s)
-	if mode = "windows" then
-		return Concatenation("C:/Users/Torben/Documents/Repositories/F4-graded-groups/src/", s);
-	elif mode = "wsl" then
-		return Concatenation("/mnt/c/Users/Torben/Documents/Repositories/F4-graded-groups/src/", s);
+	if not isUnisOS then
+		return Concatenation(windowsUserPath, s);
 	else
 		return Concatenation("./", s);
 	fi;
 end;
 
+# Fix to make Reread usable
 myUnbind := function(s)
 	if IsBoundGlobal(s) then
 		MakeReadWriteGlobal(s);
@@ -18,6 +20,7 @@ myUnbind := function(s)
 end;
 
 ### ----- Global variables -----
+
 ## ---- Bools ----
 # If _SanitizeImmediately = true, DDSanitizeRep is applied after several transformations which
 # may produce unsanitized (but correct) output
@@ -26,21 +29,32 @@ _SanitizeImmediately := true;
 _SkipTests := false;
 # If true, the values of ConicAlgMagTr are precomputed and cached.
 _CacheTrace := true;
+
 # ---- Ints ----
-# ComRing contains indeterminates t_1, ..., t_{ComRing_rank}, g_1, ..., g_3 and
-# the norms and traces of elements of ConicAlg
+# ComRing contains indeterminates:
+# - t_1, ..., t_{ComRing_rank} representing arbitrary elements,
+# - g_1, ..., g_3 representing the structure constants \gamma_1, ..., \gamma_3,
+# - the norms and traces of indeterminates in ConicAlg
 ComRing_rank := 6;
-# ConicAlg contains indeterminates a_1, ... a_{ConicAlg_rank} (and their conjugations)
+## The values ConicAlg_rank and Trace_MaxLength strongly affect the runtime, so keep
+## them as low as possible. All computations performed in [DMW] work with either
+## ConicAlg_rank := 2 and Trace_MaxLength := 5 or
+## ConicAlg_rank := 4 and Trace_MaxLength := 2.
+# ConicAlg contains indeterminates a_1, ... a_{ConicAlg_rank} (and their conjugates).
 ConicAlg_rank := 2;
 # Let t = Trace_MaxLength. For all k <= t, all i_1, ..., i_k in [ 1..ConicAlg_rank ]
-# and all possible ways to choose brackets,
-# an indeterminate which represents tr(a_{i_1} ... a_{i_t}) will be created.
-# Some of these indeterminates are the same because there are identities such as
-# tr(xy) = tr(yx) or tr((xy)z) = tr(x(yz)).
+# and all possible ways to choose brackets in the product a_{i_1} .. a_{i_t},
+# an indeterminate which represents tr(a_{i_1} ... a_{i_t}) 
+# (with respect to the choice of brackets) will be created.
+# Some of these indeterminates represent the same element of ComRing because there are identities
+# such as tr(xy) = tr(yx) or tr((xy)z) = tr(x(yz)).
 # If longer products are needed during the runtime, then an error message is printed.
 Trace_MaxLength := 5;
+
 # ---- Precomputed information ----
 # Dictionary with precomputed values for all traces. Will be initalised later.
+# _TrDict has as keys the representations of elements of ConicAlgMag and as objects their traces,
+# which are elements of ComRing.
 _TrDict := fail;
 # List with information about the indeterminates of ComRing in the order in which they
 # appear in ComRing. I.e. _ComRingIndetInfo[i] contains information about the i-th indeterminate.
@@ -58,11 +72,13 @@ _ConicAlgTraces := fail;
 # _TrSubValueList[i] is the term by which _TrSubIndetList[i] should be replaced.
 _TrSubIndetList := fail;
 _TrSubValueList := fail;
+
 # ---- Misc ----
 BaseRing := Rationals;
-### ----------
 
+### ----- End of global variables -----
 
+### ----- Load files in correct order -----
 
 # Reread("F4-5Grading.g");
 Reread(myFilePath("F4-roots.g"));

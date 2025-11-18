@@ -5,11 +5,11 @@ TestInF4RootSpace := function(lieEl, root)
 	# Lieddi := function(i, j)
 	# 	local t, a1, a2;
 	# 	if i = j then
-	# 		t := ComRingBasicIndet(1);
+	# 		t := ComRingIndet(1);
 	# 		return Liedd(CubicComEl(i, One(ComRing)), CubicComEl(i, t));
 	# 	else
-	# 		a1 := ConicAlgBasicIndet(1);
-	# 		a2 := ConicAlgBasicIndet(2);
+	# 		a1 := ConicAlgIndet(1);
+	# 		a2 := ConicAlgIndet(2);
 	# 		return Liedd(CubicAlgElMat(i, j, a1), CubicAlgElMat(j, i, a2));
 	# 	fi;
 	# end;
@@ -178,10 +178,10 @@ TestDDRelation := function()
 	i := 1;
 	j := 2;
 	l := 3;
-	a1 := ConicAlgBasicIndet(1);
-	a2 := ConicAlgBasicIndet(2);
-	a3 := ConicAlgBasicIndet(3);
-	t := ComRingBasicIndet(1);
+	a1 := ConicAlgIndet(1);
+	a2 := ConicAlgIndet(2);
+	a3 := ConicAlgIndet(3);
+	t := ComRingIndet(1);
 	f := L0dd(CubicAlgElMat(i, j, a1), CubicAlgElMat(j, l, a2))
 			- L0dd(CubicAlgElMat(i, j, One(ConicAlg)), CubicAlgElMat(j, l, a1*a2));
 	for gen in BrownGensAsModule(4) do
@@ -202,17 +202,17 @@ TestDRelation := function()
 		j := list[2];
 		l := list[3];
 		if i = j then
-			a := ComRingBasicIndet(4);
+			a := ComRingIndet(4);
 			x := CubicComEl(i, a);
 		else
-			a := ConicAlgBasicIndet(4);
+			a := ConicAlgIndet(4);
 			x := CubicAlgElMat(i, j, a);
 		fi;
 		if j = l then
-			b := ComRingBasicIndet(5);
+			b := ComRingIndet(5);
 			y := CubicComEl(j, b);
 		else
-			b := ConicAlgBasicIndet(5);
+			b := ConicAlgIndet(5);
 			y := CubicAlgElMat(j, l, b);
 		fi;
 		cubicGeneric := CubicGenericEl(0);
@@ -229,11 +229,11 @@ end;
 TestGrpRootHom := function(root)
 	local x1, x2, g1, g2, g3;
 	if root in F4ShortRoots then
-		x1 := ConicAlgBasicIndet(1);
-		x2 := ConicAlgBasicIndet(2);
+		x1 := ConicAlgIndet(1);
+		x2 := ConicAlgIndet(2);
 	elif root in F4LongRoots then
-		x1 := ComRingBasicIndet(1);
-		x2 := ComRingBasicIndet(2);
+		x1 := ComRingIndet(1);
+		x2 := ComRingIndet(2);
 	else
 		return fail;
 	fi;
@@ -266,10 +266,10 @@ TestReflection := function(root, refl)
 	local alpha, a, candidates, b, alphaRefl, testEl, isOk;
 	for alpha in F4Roots do
 		if alpha in F4ShortRoots then
-			a := ConicAlgBasicIndet(1);
+			a := ConicAlgIndet(1);
 			candidates := [a, -a, ConicAlgInv(a), -ConicAlgInv(a)];
 		else
-			a := ComRingBasicIndet(1);
+			a := ComRingIndet(1);
 			candidates := [a, -a];
 		fi;
 		alphaRefl := F4Refl(alpha, root);
@@ -314,12 +314,12 @@ _WeylErrorAndParity := function(root, onRootList, w, wInv, naive...)
 	fi;
 	for baseRoot in onRootList do
 		if baseRoot in F4ShortRoots then
-			a := ConicAlgBasicIndet(1);
+			a := ConicAlgIndet(1);
 			x := GrpRootHomF4(baseRoot, a, naive);
 			twistList := [a, -a, ConicAlgInv(a), -ConicAlgInv(a)];
 			parList := [[1,1], [-1,1], [1,-1], [-1,-1]];
 		else
-			t := ComRingBasicIndet(1);
+			t := ComRingIndet(1);
 			x := GrpRootHomF4(baseRoot, t, naive);
 			twistList := [t, -t];
 			parList := [[1,1], [-1,1]];
@@ -372,10 +372,10 @@ TestWeylParity := function(root, w, wInv, parList)
 		baseRoot := F4Roots[i];
 		par := parList[i];
 		if baseRoot in F4ShortRoots then
-			a := ConicAlgBasicIndet(1);
+			a := ConicAlgIndet(1);
 			x := GrpRootHomF4(baseRoot, a);
 		else
-			a := ComRingBasicIndet(1);
+			a := ComRingIndet(1);
 			x := GrpRootHomF4(baseRoot, a);
 		fi;
 		# b is a twisted by par
@@ -465,9 +465,9 @@ TestStandardWeylParity := function(i)
 	for j in [1..Length(F4Roots)] do
 		baseRoot := F4Roots[j];
 		if baseRoot in F4ShortRoots then
-			a := ConicAlgBasicIndet(1);
+			a := ConicAlgIndet(1);
 		else
-			a := ComRingBasicIndet(1);
+			a := ComRingIndet(1);
 		fi;
 		x := GrpRootHomF4(baseRoot, a);
 		b := a;
@@ -510,10 +510,10 @@ TestComRels := function(naive...)
 	else
 		naive := naive[1];
 	fi;
-	t1 := ComRingBasicIndet(1);
-	t2 := ComRingBasicIndet(2);
-	a1 := ConicAlgBasicIndet(1);
-	a2 := ConicAlgBasicIndet(2);
+	t1 := ComRingIndet(1);
+	t2 := ComRingIndet(2);
+	a1 := ConicAlgIndet(1);
+	a2 := ConicAlgIndet(2);
 	d1 := F4SimpleRoots[1];
 	d2 := F4SimpleRoots[2];
 	d3 := F4SimpleRoots[3];
@@ -599,9 +599,9 @@ TestChevHOnRoot := function(root)
 	h := ChevHEl(root);
 	for alpha in F4Roots do
 		if alpha in F4ShortRoots then
-			a := ConicAlgBasicIndet(1);
+			a := ConicAlgIndet(1);
 		else
-			a := ComRingBasicIndet(1);
+			a := ComRingIndet(1);
 		fi;
 		x := LieRootHomF4(alpha, a);
 		coeff := F4CartanInt(alpha, root) * One(ComRing);
@@ -661,8 +661,8 @@ end;
 TestLieComRel := function(root1, root2)
 	local roots, t, a, i, c, param, lie, comm, test, prod, p1, p2, par;
 	roots := [root1, root2, root1+root2];
-	t := [ComRingBasicIndet(1), ComRingBasicIndet(2)];
-	a := [ConicAlgBasicIndet(1), ConicAlgBasicIndet(2)];
+	t := [ComRingIndet(1), ComRingIndet(2)];
+	a := [ConicAlgIndet(1), ConicAlgIndet(2)];
 	# Initialisation: lie contains the two Lie algebra elements whose commutator
 	# is tested. param[i] contains the parameters which are later tested for the
 	# commutator formula.
@@ -722,10 +722,10 @@ end;
 
 TestLieComRels := function()
 	local t1, t2, a1, a2, root1, root2, rootSum, lie1, lie2, test, comm, counter;
-	t1 := ComRingBasicIndet(1);
-	t2 := ComRingBasicIndet(2);
-	a1 := ConicAlgBasicIndet(1);
-	a2 := ConicAlgBasicIndet(2);
+	t1 := ComRingIndet(1);
+	t2 := ComRingIndet(2);
+	a1 := ConicAlgIndet(1);
+	a2 := ConicAlgIndet(2);
 	counter := 0;
 	for root1 in F4Roots do
 		counter := counter+1;
@@ -745,9 +745,9 @@ end;
 TestGrpRootHomExp := function(root)
 	local a;
 	if root in F4ShortRoots then
-		a := ConicAlgBasicIndet(1);
+		a := ConicAlgIndet(1);
 	elif root in F4LongRoots then
-		a := ComRingBasicIndet(1);
+		a := ComRingIndet(1);
 	fi;
 	return TestEqualityOnModuleGens(GrpRootHomF4Div(root, a), GrpRootHomF4NonDiv(root, a));
 end;
@@ -803,7 +803,7 @@ TestGrpRootHomIsAutoLongFromList := function(list)
 	for i in list do
 		root := F4LongRoots[i];
 		Display(root);
-		x := GrpRootHomF4(root, ComRingBasicIndet(3));
+		x := GrpRootHomF4(root, ComRingIndet(3));
 		isAuto := LieEndoIsAuto(x);
 		Display(isAuto);
 		Add(result, [root, isAuto]);
@@ -823,7 +823,7 @@ TestComRingIndetInfo := function()
 		type := info[1];
 		info := info[2];
 		indet := Indeterminate(BaseRing, i);
-		if (type = "t" and indet <> ComRingBasicIndet(info))
+		if (type = "t" and indet <> ComRingIndet(info))
 			or (type = "g" and indet <> ComRingGamIndet(info))
 			or (type = "n" and indet <> ConicAlgMagNorm(info))
 			or (type = "tr" and indet <> ConicAlgMagTr(info)) then
@@ -839,8 +839,8 @@ end;
 testG2WeylFormulas := function()
 	local bCub, bCubInv, bLie, bInvLie, phiMid, phiMidInv, phiR, phiRInv, phibs, phibsInv, t, iota,
 		iotainv, testList, aCub, aLie1, aLie2, list, t1, a1;
-	t1 := ComRingBasicIndet(1);
-	a1 := ConicAlgBasicIndet(1);
+	t1 := ComRingIndet(1);
+	a1 := ConicAlgIndet(1);
 	# Define phibs as w(bLie), a product of exponential automorphisms
 	bCub := t1*CubicComEl(1,t1) + CubicComEl(2, One(ComRing)) + CubicComEl(3, One(ComRing));
 	bCubInv := CubicNorm(bCub)^-1 * CubicAdj(bCub);

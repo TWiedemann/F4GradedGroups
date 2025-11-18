@@ -1,7 +1,7 @@
 ### Define variables
-gap> a1 := ConicAlgBasicIndet(1);
+gap> a1 := ConicAlgIndet(1);
 (1)*a1
-gap> t1 := ComRingBasicIndet(1);
+gap> t1 := ComRingIndet(1);
 t1
 
 ### Conic algebra
@@ -9,7 +9,7 @@ gap> ConicAlgInv(a1);
 (1)*a1'
 gap> last = ConicAlgInvIndet(1);
 true
-gap> a2 := ConicAlgBasicIndet(2);
+gap> a2 := ConicAlgIndet(2);
 (1)*a2
 gap> ConicAlgTr(a1);
 tr(a1)

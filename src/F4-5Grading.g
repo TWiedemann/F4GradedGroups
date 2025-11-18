@@ -2,10 +2,10 @@
 
 K := Rationals; # Ground field
 
-## The root system F_4
-F4Vec := FullRowSpace(K, 4); # Euclidean space containing F_4
+## The root system F4
+F4Vec := FullRowSpace(K, 4); # Euclidean space containing F4
 
-# Simple roots in F_4: 1-2>3-4
+# Simple roots in F4: 1-2>3-4
 F4Sim := [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
 # Shortcuts
 f := F4Sim;
@@ -14,7 +14,7 @@ f2 := f[2];
 f3 := f[3];
 f4 := f[4];
 
-# Returns a list of all positive roots in F_4 in the linear combination format
+# Returns a list of all positive roots in F4 in the linear combination format
 F4ComputePosSysLC := function()
 	local f1, f2, f3, f4;
 	f1 := f[1];
@@ -32,9 +32,9 @@ HeightLC := function(root)
 	return(Sum(root));
 end;
 
-# ----- Functions for inner product and reflections in F_4 ---
+# ----- Functions for inner product and reflections in F4 ---
 
-# alpha, beta: Roots in F_4, given as linear combinations of simple roots
+# alpha, beta: Roots in F4, given as linear combinations of simple roots
 # Output: Their inner product
 F4InnerProduct := function(alpha, beta)
 	local mat;
@@ -47,14 +47,14 @@ F4CartanInt := function(alpha, beta)
 	return 2 * F4InnerProduct(alpha, beta) / F4InnerProduct(beta, beta);
 end;
 
-# alpha, beta: Roots in F_4 in the linear combination format
+# alpha, beta: Roots in F4 in the linear combination format
 # Output: sigma_alpha(beta) in the linear combination format
 F4refl := function(alpha, beta)
 	return beta - (2 * F4InnerProduct(alpha, beta) / F4InnerProduct(alpha, alpha))*alpha;
 end;
 
-# alpha: Root in F_4 in the linear combination format
-# Output: Set of all roots in F_4 which are orthogonal to alpha (in the linear combination format)
+# alpha: Root in F4 in the linear combination format
+# Output: Set of all roots in F4 which are orthogonal to alpha (in the linear combination format)
 F4OrthogonalRoots := function(alpha)
 	local result, beta;
 	result := [];
@@ -67,7 +67,7 @@ F4OrthogonalRoots := function(alpha)
 	return result;
 end;
 
-# root: Root in F_4 in the linear combination format
+# root: Root in F4 in the linear combination format
 # Output: true if root is short, otherwise false
 F4RootIsShort := function(root)
 	if F4InnerProduct(root, root) = 1 then
@@ -81,7 +81,7 @@ F4RootsAreAdjacent := function(alpha, beta)
 	return not (alpha + beta in F4RootsLC);
 end;
 
-# Input: A list of roots in F_4 in the linear combination format
+# Input: A list of roots in F4 in the linear combination format
 # Output: [ shortList, longList ] where shortList contains all the short roots in rootList and longList all the long ones
 F4SplitListByLength := function(rootList)
 	local shortList, longList, alpha;
@@ -180,7 +180,7 @@ F4CheckIs5GradLC := function(grad1, grad2)
 	return true;
 end;
 
-### ----- Folding F_4 -> G_2 -----
+### ----- Folding F4 -> G2 -----
 
 ## The subspaces W1 and W2 of F4Vec
 # List of basis vectors
@@ -360,12 +360,12 @@ testSubspacesOrtho := function()
 end;
 
 # Returns true if:
-# - For all beta in G_2 short with long roots alpha_1, ..., alpha_3 in the preimage,
+# - For all beta in G2 short with long roots alpha_1, ..., alpha_3 in the preimage,
 # we have projW1(gamma^{\sigma(alpha_1 ... alpha_3)}) = projW1(gamma)^{\sigma(beta)}
-# for all gamma in F_4.
-# - For all beta in G_2 long with long root alpha in the preimage,
+# for all gamma in F4.
+# - For all beta in G2 long with long root alpha in the preimage,
 # we have projW1(gamma^{\sigma(alpha)}) = projW1(gamma)^{\sigma(beta)}
-# for all gamma in F_4.
+# for all gamma in F4.
 # If one of these conditions is not satisfied, then returns false.
 testFoldWeylAction := function()
 	local gamma, beta, preimLong, perm, permList, refl1, refl2;

@@ -4,14 +4,14 @@
 ### ----- Basic elements -----
 
 ## Elements of Conic algebra
-gap> a1 := ConicAlgBasicIndet(1);
+gap> a1 := ConicAlgIndet(1);
 (1)*a1
-gap> a2 := ConicAlgBasicIndet(2);; a3 := ConicAlgBasicIndet(3);;
+gap> a2 := ConicAlgIndet(2);; a3 := ConicAlgIndet(3);;
 
 ## Elements of commutative ring
-gap> t1 := ComRingBasicIndet(1);
+gap> t1 := ComRingIndet(1);
 t1
-gap> t2 := ComRingBasicIndet(2);; t3 := ComRingBasicIndet(3);;
+gap> t2 := ComRingIndet(2);; t3 := ComRingIndet(3);;
 gap> g1 := ComRingGamIndet(1);
 g1
 

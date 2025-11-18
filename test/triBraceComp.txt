@@ -1,5 +1,5 @@
-gap> a1 := ConicAlgBasicIndet(1);; a2 := ConicAlgBasicIndet(2);; a3 := ConicAlgBasicIndet(3);;
-gap> s1 := ComRingBasicIndet(1);; s2 := ComRingBasicIndet(2);; s3 := ComRingBasicIndet(3);;
+gap> a1 := ConicAlgIndet(1);; a2 := ConicAlgIndet(2);; a3 := ConicAlgIndet(3);;
+gap> s1 := ComRingIndet(1);; s2 := ComRingIndet(2);; s3 := ComRingIndet(3);;
 
 ## (i)
 # { J_jl, J_li, * }

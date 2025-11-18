@@ -84,7 +84,7 @@ end);
 # Output: A list of the generic basic elements of Brown, using indeterminates a_i and t_i
 BrownGensAsModule := function(i)
 	local t, result, gen;
-	t := ComRingBasicIndet(i);
+	t := ComRingIndet(i);
 	result := [];
 	Add(result, BrownElFromTuple(t, CubicZero, CubicZero, Zero(ComRing)));
 	Add(result, BrownElFromTuple(Zero(ComRing), CubicZero, CubicZero, t));

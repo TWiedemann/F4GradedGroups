@@ -1,4 +1,4 @@
-### ----- Helper functions -----
+### ----- Helper functions of general utility -----
 
 ### Functions on strings
 
@@ -23,23 +23,8 @@ end;
 
 ### Functions on lists
 
-# rep: External representation of an element of a free magma. I.e. either an integer or a list [ rep1, rep2 ] where rep1, rep2 are external representations.
-# Output: The corresponding associative list.
-# Example: 0 -> [ ], i -> [ i ], [ [ 1, 2 ], 3 ] -> [ 1, 2, 3 ]
-# Currently not used
-AssocRepFromNonAssocRep := function(rep)
-	if rep = 0 then
-		return [];
-	elif rep in Integers then
-		return [ rep ];
-	elif IsList(rep) then
-		return Concatenation(AssocRepFromNonAssocRep(rep[1]), AssocRepFromNonAssocRep(rep[2]));
-	else
-		return fail;
-	fi;
-end;
-
-# list: Either a single element (e.g. an integer) or a list with exactly 2 entries, each of which satisfies the same conditions.
+# list: Either a single element (e.g. an integer) or a list with exactly 2 entries,
+# each of which satisfies the same conditions.
 # Output: The reversed list. E.g. [ [ 1, 2 ], 3 ] -> [ 3, [ 2, 1 ] ]
 ReverseNonassocList := function(list)
 	if IsList(list) then
@@ -73,13 +58,18 @@ end;
 
 ### Functions on magmas
 
-# MagmaRing: A free magma ring over a magma. The magma is not assumed to be free. In particular, it can be a monoid.
+# MagmaRing: A free magma ring over a magma. The magma is not assumed to be free.
+# In particular, it can be a monoid.
 # r: An element of another magma ring MagmaRing2.
 # magmaFunc: A function from the underlying magma of MagmaRing2 to the magma of MagmaRing.
-# Output: The element obtained from r by applying magmaFunc to each of its "monomials". I.e. the output lies in MagmaRing.
+# Output: The element obtained from r by applying magmaFunc to each of its "monomials".
+# I.e. the output lies in MagmaRing.
+# I.e. r = \sum \lambda_a a maps to \sum \lambda_a magmaFunc(a)
 ChangeRingElByMagmaTrans := function(MagmaRing, r, magmaFunc)
 	local coeffList, i, magmaEl, coeff, newListOfCoeff, newListOfMagmaEl;
-	coeffList := CoefficientsAndMagmaElements(r); # The decomposition of r into its summands. E.g. if r = x_1 + 2 * x_2 * y_1, then coeffList = [x_1, 1, x_2 * y_1, 2]
+	# The decomposition of r into its summands.
+	# E.g. if r = x_1 + 2 * x_2 * y_1, then coeffList = [x_1, 1, x_2 * y_1, 2]
+	coeffList := CoefficientsAndMagmaElements(r);
 	# Go through all summands of r.
 	newListOfCoeff := [];
 	newListOfMagmaEl := [];
@@ -89,7 +79,9 @@ ChangeRingElByMagmaTrans := function(MagmaRing, r, magmaFunc)
 		Add(newListOfCoeff, coeff);
 		Add(newListOfMagmaEl, magmaFunc(magmaEl));
 	od;
-	return ElementOfMagmaRing(FamilyObj(Zero(MagmaRing)), Zero(Integers), newListOfCoeff, newListOfMagmaEl);
+	return ElementOfMagmaRing(
+		FamilyObj(Zero(MagmaRing)), Zero(Integers), newListOfCoeff, newListOfMagmaEl
+	);
 end;
 
 # ----------

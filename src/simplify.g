@@ -7,7 +7,7 @@
 ## -------- ComRing --------
 
 # a: Element of a.
-# Output: The same element, but all coefficients are multiplied by the lcm of all
+# Returns: The same element, but all coefficients are multiplied by the lcm of all
 # denominators (so that only integers appear) and then divided by the gcd of the
 # remaining coefficients.
 DeclareOperation("ComRingCancel", [IsRationalFunction]);
@@ -71,7 +71,7 @@ end);
 ## -------- ConicAlg --------
 
 # a: Element of ConicAlg.
-# Output: The same element, but with occurences of bc+b'c and cb+cb' replaced by
+# Returns: The same element, but with occurences of bc+b'c and cb+cb' replaced by
 # tr(b)c for b,c \in ConicAlg.
 DeclareOperation("MakeTraces", [IsElementOfFreeMagmaRing]);
 InstallMethod(MakeTraces, [IsElementOfFreeMagmaRing], function(a)
@@ -146,7 +146,7 @@ InstallMethod(MakeTraces, [IsElementOfFreeMagmaRing], function(a)
 end);
 
 # a: Element of ComRing.
-# Output: The element obtained from a by replacing each occurence of tr(a) by a+a'.
+# Returns: The element obtained from a by replacing each occurence of tr(a) by a+a'.
 # In particular, the output lies in ConicAlg.
 DeclareOperation("WithoutTraces", [IsRationalFunction]);
 InstallMethod(WithoutTraces, [IsRationalFunction], function(a)
@@ -156,7 +156,7 @@ InstallMethod(WithoutTraces, [IsRationalFunction], function(a)
 end);
 
 # a: Element of ConicAlg.
-# Output: The element obtained from a by applying WithoutTraces to all ComRing-coefficients.
+# Returns: The element obtained from a by applying WithoutTraces to all ComRing-coefficients.
 # The output lies in ConicAlg.
 DeclareOperation("WithoutTraces", [IsElementOfFreeMagmaRing]);
 InstallMethod(WithoutTraces, [IsElementOfFreeMagmaRing], function(a)
@@ -173,7 +173,7 @@ InstallMethod(WithoutTraces, [IsElementOfFreeMagmaRing], function(a)
 end);
 
 # a: Element of ConicAlg.
-# Output: Mathematically he same element, but simplified: First apply
+# Returns: Mathematically he same element, but simplified: First apply
 # MakeTraces repeatedly until it no longer changes the input, and then
 # apply Simplify to all ComRing-coefficients.
 DeclareOperation("Simplify", [IsElementOfFreeMagmaRing]);
@@ -258,7 +258,7 @@ end);
 # a: Element of ComRing if i1 = j1. Element of ConicAlg otherwise.
 # b: Element of ComRing if i2 = j2. Element of ConicAlg otherwise.
 # Put x1 := a[i1,j1] = CubicElMat(i1, j1, a) and x2 := b[i2,j2].
-# Output: A list [i, j, y] such that
+# Returns: A list [i, j, y] such that
 # dd(x1, x2) = dd(CubicElOneMat(i,i), CubicElMat(i, j, y)).
 # Here i, j \in {1,2,3} and y \in ComRing if i=j and y \in ConicAlg if i<>j.
 _ApplyDistAndPeirceLaw_OnSummands_int1 := function(i1, j1, a, i2, j2, b)
@@ -298,7 +298,7 @@ end;
 # i1, j1, i2, j2: Integers in {1,2,3} such that {i1, j1} = {i2, j2} and i1 <> j1
 # a, b: Elements of ConicAlg.
 # Put x1 := a[i1,j1] = CubicAlgElMat(i1, j1, a) and x2 := b[i2, j2].
-# Output: A list [i, j, c, coeffs, lConic, rConic] where {i, j} = {i1, j1}, i < j,
+# Returns: A list [i, j, c, coeffs, lConic, rConic] where {i, j} = {i1, j1}, i < j,
 # coeffs, lConic, rConic are lists of the same length, c \in ConicAlg,
 # the elements of coeffs are in ComRing and the elements of lConic, rConic are monimals in ConicAlg,
 # and dd(x1, x2) = dd_{1[ij],c[ji]}+\sum_{k=1}^{Length(coeffs)} coeffs[k]*dd((lConic[k])[ij], (rConic[k])[ji]).
@@ -357,7 +357,8 @@ _ApplyDistAndPeirceLaw_OnSummands_int2 := function(i1, j1, a, i2, j2, b)
 end;
 
 # ddEl: Element of DD.
-# Output: An element of DD+ComRing*xi+ComRing*zeta (internally, an element of L0)
+# applyDDRels: Bool.
+# Returns: An element of DD+ComRing*xi+ComRing*zeta (internally, an element of L0)
 # which (mathematically) represents the same element, but simplified:
 # 1. For each i <> j, there is at most one summands from Z_{i \to j}, and it is
 # of the form d_{1[ii], c[ij]} for some c in ConicAlg.
@@ -596,7 +597,7 @@ end);
 ## -------- L0 --------
 
 # L0el: Element of L0.
-# Output: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
+# Returns: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
 # Usually not needed because Simplify also applies ApplyDistAndPeirceLaw to the DD-part.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsL0Element, IsBool]);
 InstallMethod(ApplyDistAndPeirceLaw, [IsL0Element, IsBool], function(L0el, applyDDRels)
@@ -647,7 +648,7 @@ end);
 ## -------- Lie --------
 
 # lieEl: Element of Lie.
-# Output: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
+# Returns: The same element with ApplyDistAndPeirceLaw applied to the DD-part.
 # Usually not needed because Simplify also applies ApplyDistAndPeirceLaw to the DD-part.
 DeclareOperation("ApplyDistAndPeirceLaw", [IsLieElement, IsBool]);
 InstallMethod(ApplyDistAndPeirceLaw, [IsLieElement, IsBool], function(lieEl, applyDDRels)

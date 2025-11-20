@@ -6,13 +6,13 @@
 # Indeterminate names for traces are defined further below because this is more complicated.
 
 # i: Integer.
-# Output: Name of the i-th indeterminate of ComRing which represents an arbitrary element.
+# Returns: Name of the i-th indeterminate of ComRing which represents an arbitrary element.
 ComRingIndetName := function(i)
 	return Concatenation("t", String(i));
 end;
 
 # i: Integer with 1 <= i <= ConicAlg_rank.
-# Output: The name of the indeterminate of ComRing which represents the norm of a_i
+# Returns: The name of the indeterminate of ComRing which represents the norm of a_i
 ComRingNormIndetName := function(i)
 	if i in [1..ConicAlg_rank] then
 		return Concatenation("n(", ConicAlgIndetNames[i], ")");
@@ -22,7 +22,7 @@ ComRingNormIndetName := function(i)
 end;
 
 # i: 1, 2, or 3
-# Output: The name of the indeterminate which represents \gamma_i, the i-th
+# Returns: The name of the indeterminate which represents \gamma_i, the i-th
 # element of the diagonal matrix \Gamma which "twists" the cubic Jordan matrix algebra.
 ComRingGamIndetName := function(i)
 	if i in [1, 2, 3] then
@@ -52,7 +52,7 @@ end;
 # ----- Norm: ConicAlgMag -> ComRing -----
 
 # mRep: ExtRepOfObj of an element of ConicAlgMag
-# Output: Norm of this element (as an element of ComRing)
+# Returns: Norm of this element (as an element of ComRing)
 ConicAlgMagNormOnRep := function(mRep)
 	if mRep = 0 then # n(1_ConicAlg) = 1_ComRing
 		return One(PolynomialRing(BaseRing));
@@ -68,7 +68,7 @@ ConicAlgMagNormOnRep := function(mRep)
 end;
 
 # m: Element of ConicAlgMag
-# Output: norm of m, an element of ComRing
+# Returns: norm of m, an element of ComRing
 ConicAlgMagNorm := function(m)
 	return ConicAlgMagNormOnRep(ExtRepOfObj(m));
 end;
@@ -82,7 +82,7 @@ end;
 ## Helper functions for trace
 
 # a, b, c: External reps of elements of ConicAlgMag.
-# Output: If one of the elements (repr. by) a,b,c is the conjugate of another, the output
+# Returns: If one of the elements (repr. by) a,b,c is the conjugate of another, the output
 # is a list [x, y] where x is the rep of such an element and y is the rep of
 # the remaining (third) element.
 # Otherwise the output is fail.
@@ -106,7 +106,7 @@ _PullNorm := function(a, b, c)
 end;
 
 # a, b, c: External reps of elements of ConicAlgMag
-# Output: List of triples [d, e, f] s.t. tr(abc) = tr(def).
+# Returns: List of triples [d, e, f] s.t. tr(abc) = tr(def).
 # By the relations tr(ab) = tr(ba), tr((ab)c) = tr(a(bc)) and tr(a') = tr(a),
 # we may write tr(abc) without brackets and this term is equal to all cyclic permutations
 # and to all cyclic permutations of tr(c'b'a').
@@ -122,7 +122,7 @@ _ConicAlgMagTrCandidates := function(a, b, c)
 end;
 
 # mRep: External rep of an element of ConicAlgMag
-# Output: An element of ComRing which represents the trace of the corresponding
+# Returns: An element of ComRing which represents the trace of the corresponding
 # element of ConicAlgMag. In most cases, this is an indeterminate in ComRing,
 # but it need not be. E.g. tr(One(ConicAlgMag)) = 2*One(ComRing).
 # We use the relations described in _ConicAlgMagTrCandidates and _PullNorm.
@@ -192,13 +192,13 @@ _ConicAlgMagTrUncachedOnRep := function(mRep)
 end;
 
 # magEl: Element of ConicAlgMag
-# Output: Its trace (an element of ComRing). No caching.
+# Returns: Its trace (an element of ComRing). No caching.
 _ConicAlgMagTrUncached := function(magEl)
 	return _ConicAlgMagTrUncachedOnRep(ExtRepOfObj(magEl));
 end;
 
 # rep: Representation of an element of ConicAlgMag
-# Output: Its precomputed trace (an element of ComRing), which we cache.
+# Returns: Its precomputed trace (an element of ComRing), which we cache.
 ConicAlgMagTrOnRep := function(rep)
 	if _CacheTrace then
 		return LookupDictionary(_TrDict, rep);
@@ -213,7 +213,7 @@ ConicAlgMagTr := function(magEl)
 end;
 
 # a, b: Elements of ConicAlgMag.
-# Output: n(a,b) := n(a+b) - n(a) - n(b).
+# Returns: n(a,b) := n(a+b) - n(a) - n(b).
 # By [GPR24, (16.12.4), (16.5.2)], we have n(a,b) = n(1, a'b) = t(a'b)
 ConicAlgMagNormLin := function(a, b)
 	return ConicAlgMagTr(ConicAlgMagInv(a)*b);
@@ -246,7 +246,7 @@ _InitTrDict := function()
 	od;
 	for i in [1..ConicAlg_rank] do
 		ComRingNormIndet(i); # Initialise indeterminate
-		Add(_ComRingIndetInfo, ["n", ConicAlgMagBasicIndet(i)]);
+		Add(_ComRingIndetInfo, ["n", ConicAlgMagIndet(i)]);
 	od;
 	## Initialise dictionary
 	# maxIndetNum will be increased whenever a new indeterminate is created

@@ -1,6 +1,7 @@
-### Root homomorphisms, Chevalley basis and generators of Lie
+### This file contains the definition of the root homomorphisms,
+### of the Chevalley basis and of the generators of Lie
 
-## -------- Cubic --------
+## -------- Root homomorphisms into Cubic --------
 
 DeclareOperation("CubicRootHomLong", [IsInt, IsRingElement, IsInt, IsBool]);
 DeclareOperation("CubicRootHomLong", [IsInt, IsRingElement, IsInt]);
@@ -8,13 +9,17 @@ DeclareOperation("CubicRootHomLong", [IsInt, IsRingElement, IsInt]);
 # l: Number in {1, 2, 3}
 # a: Element of ComRing
 # sign: 1 or -1
+# noGamma: Bool
 # naive: If true, then no multiplication by gamma occurs
-# Output: If sign=1, the image of the root homomorphism in Cubic with image J_{ll}.
-# If sign=-1, the image of the root homomorphism in Cubic' with image J_{ll}'.
-InstallMethod(CubicRootHomLong, [IsInt, IsRingElement, IsInt, IsBool], function(l, a, sign, naive)
+# Returns: If noGamma = false (which is the default):
+# - If sign=1, the image of the root homomorphism in Cubic with image J_{ll}.
+# - If sign=-1, the image of the root homomorphism in Cubic' with image J_{ll}'.
+# If noGamma = true, then no multiplication by g1, g2, g3 occurs, so that these are
+# simply the "naive" root homomorphisms.
+InstallMethod(CubicRootHomLong, [IsInt, IsRingElement, IsInt, IsBool], function(l, a, sign, noGamma)
 	local i, j, lambda;
 	ReqComRingEl(a);
-	if not naive then
+	if not noGamma then
 		i := CycPerm[l][2];
 		j := CycPerm[l][3];
 		lambda := ComRingGamIndet(j) * ComRingGamIndet(i)^-1;
@@ -27,6 +32,7 @@ InstallMethod(CubicRootHomLong, [IsInt, IsRingElement, IsInt, IsBool], function(
 	return CubicComEl(l, lambda * a);
 end);
 
+# Default value: noGamma = false
 InstallMethod(CubicRootHomLong, [IsInt, IsRingElement, IsInt], function(l, a, sign)
 	return CubicRootHomLong(l, a, sign, false);
 end);
@@ -37,13 +43,13 @@ DeclareOperation("CubicRootHomShort", [IsInt, IsRingElement, IsInt]);
 # l: Number in {1, 2, 3}. Denote by (i,j,l) the corresponding cyclic perm. of (1,2,3).
 # a: Element of ComRing
 # sign: 1 or -1
-# naive: If true, then no multiplication by gamma occurs
-# Output: If sign=1, the image of the root homomorphism in Cubic with image J_{ij}.
+# noGamma: If true, then no multiplication by gamma occurs
+# Returns: If sign=1, the image of the root homomorphism in Cubic with image J_{ij}.
 # If sign=-1, the image of the root homomorphism in Cubic' with image J_{ij}'.
-InstallMethod(CubicRootHomShort, [IsInt, IsRingElement, IsInt, IsBool], function(l, a, sign, naive)
+InstallMethod(CubicRootHomShort, [IsInt, IsRingElement, IsInt, IsBool], function(l, a, sign, noGamma)
 	local i, j, lambda;
 	ReqConicAlgEl(a);
-	if not naive then
+	if not noGamma then
 		i := CycPerm[l][2];
 		j := CycPerm[l][3];
 		if sign = 1 then
@@ -57,23 +63,27 @@ InstallMethod(CubicRootHomShort, [IsInt, IsRingElement, IsInt, IsBool], function
 	return CubicAlgEl(l, lambda * a);
 end);
 
+# Default value: noGamma = false
 InstallMethod(CubicRootHomShort, [IsInt, IsRingElement, IsInt], function(l, a, sign)
 	return CubicRootHomShort(l, a, sign, false);
 end);
 
-## -------- Brown --------
+## -------- Root homomorphisms into Brown algebra --------
 
 DeclareOperation("BrownRootHom", [IsList, IsRingElement, IsBool]);
 DeclareOperation("BrownRootHom", [IsList, IsRingElement]);
 
 # subroot: List [r2, r3, r4] of integers with [1, r2, r3, r4] \in F4
-# (equiv. [-1, r2, r3, r4] \in F4).
+# (equivalently, [-1, r2, r3, r4] \in F4).
 # a: An element of ConicAlg or of Comring
-# naive: If true, then no multiplication by gamma occurs
-# Output: An element b of the Brown algebra such that BrownPosToLieEmb(b) is the a-element
-# of the [1, r2, r3, r4]-space of Lie and such that BrownNegToLieEmb(b) is the a-element
-# of the [-1, r2, r3, r4]-space of Lie.
-InstallMethod(BrownRootHom, [IsList, IsRingElement, IsBool], function(subroot, a, naive)
+# noGamma: Bool.
+# Returns: If noGamma = false (default), the image of the root
+# homomorphism w.r.t. [r2,r3,r4] in Brown.
+# Then CubicPosToLieEmb(image) is the image of the [1,r2,r3,r4]-root homomorphism in Lie,
+# and CubicNegToLieEmb(image) is the image of the [-1,r2,r3,r4]-root homomorphism in Lie.
+# If noGamma = true, then no multiplication by g1, g2, g3 occurs, so that these are
+# simply the "naive" root homomorphisms.
+InstallMethod(BrownRootHom, [IsList, IsRingElement, IsBool], function(subroot, a, noGamma)
 	local cub, l, sign;
 	if not Concatenation([1], subroot) in F4Roots then
 		Error("Invalid argument");
@@ -83,52 +93,55 @@ InstallMethod(BrownRootHom, [IsList, IsRingElement, IsBool], function(subroot, a
 		return BrownElFromTuple(Zero(ComRing), CubicZero, CubicZero, a);
 	elif subroot = [-1, -1, -1] then
 		return BrownElFromTuple(a, CubicZero, CubicZero, Zero(ComRing));
-	elif Sum(subroot) = 1 then
+	elif Sum(subroot) = 1 then # Root space lies in Cubic'
 		l := Position(subroot, -1);
-		if l <> fail then
+		if l <> fail then # Long root
 			ReqComRingEl(a);
-			cub := CubicRootHomLong(l, a, -1, naive);
-		else
+			cub := CubicRootHomLong(l, a, -1, noGamma);
+		else # Short root
 			ReqConicAlgEl(a);
 			l := Position(subroot, 1);
-			cub := CubicRootHomShort(l, a, -1, naive);
+			cub := CubicRootHomShort(l, a, -1, noGamma);
 		fi;
 		return BrownElFromTuple(Zero(ComRing), CubicZero, cub, Zero(ComRing));
-	else
+	else # Root space lies in Cubic
 		l := Position(subroot, 1);
-		if l <> fail then
+		if l <> fail then # Long root
 			ReqComRingEl(a);
-			cub := CubicRootHomLong(l, a, 1, naive);
-		else
+			cub := CubicRootHomLong(l, a, 1, noGamma);
+		else # Short root
 			ReqConicAlgEl(a);
 			l := Position(subroot, -1);
-			cub := CubicRootHomShort(l, a, 1, naive);
+			cub := CubicRootHomShort(l, a, 1, noGamma);
 		fi;
 		return BrownElFromTuple(Zero(ComRing), cub, CubicZero, Zero(ComRing));
 	fi;
 end);
 
+# Default: noGamma = false
 InstallMethod(BrownRootHom, [IsList, IsRingElement], function(subroot, a)
 	return BrownRootHom(subroot, a, false);
 end);
 
-## -------- DD --------
+## -------- Root homomorphisms in DD --------
 
 DeclareOperation("DDRootHomA2", [IsList, IsRingElement, IsBool]);
 DeclareOperation("DDRootHomA2", [IsList, IsRingElement]);
 
 # root: A root in A_2 (e.g. [1, -1, 0]).
 # a: An element of ConicAlg.
-# naive: If true, then no multiplication by gamma occurs
-# Output: The a-element in the root space of DD w.r.t root.
-InstallMethod(DDRootHomA2, [IsList, IsRingElement, IsBool], function(root, a, naive)
+# noGamma: If true, then no multiplication by gamma occurs
+# Returns: If noGamma = false (default), the image of the root homomorphism in DD.
+# If noGamma = true, then no multiplication by g1, g2, g3 occurs, so that these are
+# simply the "naive" root homomorphisms.
+InstallMethod(DDRootHomA2, [IsList, IsRingElement, IsBool], function(root, a, noGamma)
     local i, j, l, lambda;
     ReqConicAlgEl(a);
     # The root space w.r.t. root is Z_{i \to j}
     i := Position(root, 1);
     j := Position(root, -1);
     l := Position(root, 0);
-	if not naive then
+	if not noGamma then
 		if root = [1, -1, 0] then
 			lambda := ComRingGamIndet(1)^-1 * ComRingGamIndet(2)^-1 * ComRingGamIndet(3);
 		elif root = [-1, 1, 0] then
@@ -150,20 +163,22 @@ InstallMethod(DDRootHomA2, [IsList, IsRingElement, IsBool], function(root, a, na
     return dd(CubicComEl(i, One(ComRing)), lambda*CubicAlgElMat(i, j, a));
 end);
 
+# Default: noGamma = false.
 InstallMethod(DDRootHomA2, [IsList, IsRingElement], function(root, a)
 	return DDRootHomA2(root, a, false);
 end);
 
-## -------- Lie --------
+## -------- Root homomorphisms in Lie --------
 
-DeclareOperation("LieRootHomF4", [IsList, IsRingElement, IsBool]);
+DeclareOperation("LieRootHomF4", [IsList, IsRingElement, IsBool, IsBool]);
 DeclareOperation("LieRootHomF4", [IsList, IsRingElement]);
 
-# Add minus signs to ensure that we get a Chevalley basis
+# List of roots whose root homomorphisms get an additional minus sign
 if not IsBoundGlobal("_MinusSignRootsLong") then
-	_MinusSignRootsLong := Difference(F4NegLongRoots, [
-		[-1, -1, -1, 1], [1, 1, -1, 1], [1, -1, 1, 1], [-1, 1, 1, 1],
-	]);
+	_MinusSignRootsLong := Difference(
+		F4NegLongRoots, 
+		[ [-1, -1, -1, 1], [1, 1, -1, 1], [1, -1, 1, 1], [-1, 1, 1, 1] ]
+	);
 	MakeConstantGlobal("_MinusSignRootsLong");
 fi;
 if not IsBoundGlobal("_MinusSignRootsShort") then
@@ -174,10 +189,14 @@ if not IsBoundGlobal("_MinusSignRootsShort") then
 	MakeConstantGlobal("_MinusSignRootsShort");
 fi;
 
+# root: Root in F4.
 # a: Element of ComRing if root is long and element of ConicAlg otherwise
-# naive: If true, then no multiplication by gamma and -1 occurs
-# Output: Root space element corresponding to a
-InstallMethod(LieRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, naive)
+# noGamma, noMinus: Bool.
+# Returns: If noGamma=noMinus=false (default), the image of a
+# under the root homomorphism w.r.t root in Lie.
+# If noGamma = true, no multiplication by g1, g2, g3 occurs.
+# If noMinus = true, no multiplication by -1 occurs.
+InstallMethod(LieRootHomF4, [IsList, IsRingElement, IsBool, IsBool], function(root, a, noGamma, noMinus)
 	local sum, G2Root, cub, sign, l;
 	if root in F4LongRoots then
 		ReqComRingEl(a);
@@ -188,7 +207,7 @@ InstallMethod(LieRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, n
 		return fail;
 	fi;
 
-	if not naive and root in Union(_MinusSignRootsLong, _MinusSignRootsShort) then
+	if not noMinus and root in Union(_MinusSignRootsLong, _MinusSignRootsShort) then
 		a := -a;
 	fi;
 	G2Root := F4RootG2Coord(root);
@@ -197,18 +216,18 @@ InstallMethod(LieRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, n
 		return a * LieX;
 	# L_{-1}
 	elif G2Root[1] = -1 then
-		return BrownNegToLieEmb(BrownRootHom(root{[2..4]}, a, naive));
+		return BrownNegToLieEmb(BrownRootHom(root{[2..4]}, a, noGamma));
 	# L_0
 	elif G2Root in [[0, 1], [0, -1]] then
 		sign := G2Root[2];
 		l := PositionProperty(root{[2..4]}, x -> AbsoluteValue(x) = 2);
 		if l <> fail then
 			ReqComRingEl(a);
-			cub := CubicRootHomLong(l, a, sign, naive);
+			cub := CubicRootHomLong(l, a, sign, noGamma);
 		else
 			ReqConicAlgEl(a);
 			l := Position(root{[2..4]}, 0);
-			cub := CubicRootHomShort(l, a, sign, naive);
+			cub := CubicRootHomShort(l, a, sign, noGamma);
 		fi;
 		if sign = 1 then
 			return CubicPosToLieEmb(cub);
@@ -216,10 +235,10 @@ InstallMethod(LieRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, n
 			return CubicNegToLieEmb(cub);
 		fi;
 	elif G2Root = [0,0] then
-		return DDToLieEmb(DDRootHomA2(root{[2..4]}, a, naive));
+		return DDToLieEmb(DDRootHomA2(root{[2..4]}, a, noGamma));
 	# L_1
 	elif G2Root[1] = 1 then
-		return BrownPosToLieEmb(BrownRootHom(root{[2..4]}, a, naive));
+		return BrownPosToLieEmb(BrownRootHom(root{[2..4]}, a, noGamma));
 	# L_2
 	elif G2Root[1] = 2 then
 		return a * LieY;
@@ -227,18 +246,18 @@ InstallMethod(LieRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, n
 end);
 
 InstallMethod(LieRootHomF4, [IsList, IsRingElement], function(root, a)
-	return LieRootHomF4(root, a, false);
+	return LieRootHomF4(root, a, false, false);
 end);
 
-## -------- Generators of Lie --------
+## -------- Lists of generators of Lie --------
 
 # comIndetNum, conicIndetNum: Numbers of the indeterminates that should be used.
-# Output: A list of generic basic elements of Lie (as a Lie algebra),
+# var: Bool.
+# Returns: A list of generic basic elements of Lie which generate it as a Lie algebra,
 # involving indeterminates t_comIndetNum, a_conicIndetNum
 # If the last (boolean) input variable is true, then the generator list contains
 # LieY and elements from L_{-1}. Otherwise (and by default) it contains LieX
 # and elements from L_1.
-# We use the naive parametrisation.
 DeclareOperation("LieGensAsLie", [IsInt, IsInt, IsBool]);
 DeclareOperation("LieGensAsLie", [IsInt, IsInt]);
 
@@ -254,43 +273,45 @@ InstallMethod(LieGensAsLie, [IsInt, IsInt, IsBool],
 			gens := [LieX];
 			coord := 1;
 		fi;
+		# For all roots in L_1 (or L_{-1}), add the images of the naive root homomorphisms.
 		for root in Filtered(F4Roots, x -> F4RootG2Coord(x)[1] = coord) do
 			if root in F4ShortRoots then
-				Add(gens, LieRootHomF4(root, a, true));
+				Add(gens, LieRootHomF4(root, a, true, true));
 			else
-				Add(gens, LieRootHomF4(root, t, true));
+				Add(gens, LieRootHomF4(root, t, true, true));
 			fi;
 		od;
 		return gens;
 	end);
 
+# Default: var = false.
 InstallMethod(LieGensAsLie, [IsInt, IsInt], function(comIndetNum, conicIndetNum)
 	return LieGensAsLie(comIndetNum, conicIndetNum, false);
 end);
 
 # comIndetNum, conicIndetNum: Numbers of the indeterminates that should be used.
-# Output: A list of generic basic elements of Lie (as a module), involving indeterminates
-# t_comIndetNum, a_conicIndetNum, a_{conicIndetNum+1}.
-# Uses the formulas from [DMW, 5.20] (d_{a[ij],b[jk]} = TwistDiag[j]*d_{1[ii],ab[kk]})
-# to reduce the number of generators.
-# We use the naive parametrisation.
+# Returns: A list of elements of Lie which generate it as a module, provided that
+# g1, g2, g3 are assumed to be invertible.
+# Involves indeterminates t_comIndetNum, a_conicIndetNum, a_{conicIndetNum+1}.
+# Uses the formulas d_{a[ij],b[jk]} = TwistDiag[j]*d_{1[ii],ab[kk]} from [DMW]
+# to reduce the number of generators, which is why we have to assume that g1, g2, g3 are invertible.
 LieGensAsModule := function(comIndetNum, conicIndetNum)
 	local t1, a1, a2, gens, root, i, j, gen;
 	t1 := ComRingIndet(comIndetNum);
 	a1 := ConicAlgIndet(conicIndetNum);
 	a2 := ConicAlgIndet(conicIndetNum + 1);
 	gens := [LieXi, LieZeta];
-	# Generators outside DD
+	## For generators outside DD, we can simply use the naive root homomorphisms
 	for root in F4Roots do
 		if F4RootG2Coord(root) <> [0, 0] then
 			if root in F4ShortRoots then
-				Add(gens, LieRootHomF4(root, a1, true));
+				Add(gens, LieRootHomF4(root, a1, true, true));
 			else
-				Add(gens, LieRootHomF4(root, t1, true));
+				Add(gens, LieRootHomF4(root, t1, true, true));
 			fi;
 		fi;
 	od;
-	# Generators in DD
+	## Generators in DD
 	# Generators of Z_{i \to j} for i <> j and of Z_{ii,ii}
 	for i in [1..3] do
 		for j in [1..3] do
@@ -306,34 +327,6 @@ LieGensAsModule := function(comIndetNum, conicIndetNum)
 	for i in [1..3] do
 		for j in [i+1..3] do
 			Add(gens, Liedd(CubicAlgElMat(i, j, a1), CubicAlgElMat(j, i, a2)));
-		od;
-	od;
-	return gens;
-end;
-
-# (Probably not used)
-# As LieGensAsModule, but does not use the formulas from [DMW, 5.20].
-LieGensAsModuleUnsimplified := function(indetNum)
-	local t1, a1, gens, root, cubic1, cubic2, cubicGens1, cubicGens2;
-	t1 := ComRingIndet(2*indetNum + 1);
-	a1 := ConicAlgIndet(2*indetNum + 1);
-	gens := [LieXi, LieZeta];
-	# Generators outside DD
-	for root in F4Roots do
-		if F4RootG2Coord(root) <> [0, 0] then
-			if root in F4ShortRoots then
-				Add(gens, LieRootHomF4(root, a1, true));
-			else
-				Add(gens, LieRootHomF4(root, t1, true));
-			fi;
-		fi;
-	od;
-	# Generators in DD
-	cubicGens1 := CubicGensAsModule(2*indetNum + 1);
-	cubicGens2 := CubicGensAsModule(2*indetNum + 2);
-	for cubic1 in cubicGens1 do
-		for cubic2 in cubicGens2 do
-			Add(gens, Liedd(cubic1, cubic2));
 		od;
 	od;
 	return gens;

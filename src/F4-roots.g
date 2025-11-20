@@ -63,7 +63,7 @@ G2Roots := Concatenation(G2ShortRoots, G2LongRoots);
 A2Roots := [[1,-1,0], [1,0,-1], [0,1,-1], [0,-1,1], [-1,0,1], [-1,1,0]];
 
 # root: Root in F4
-# Output: List a of coefficients w.r.t. F4SimpleRoots. Thus root = a*F4SimpleRoots.
+# Returns: List a of coefficients w.r.t. F4SimpleRoots. Thus root = a*F4SimpleRoots.
 F4RootBasisCoeffs := function(root)
 	return Coefficients(F4SimpleRootsBas, root);
 end;
@@ -84,7 +84,7 @@ F4ParityList := fail; # Not yet implemented
 # ----- Functions on root systems -----
 
 # a, b: Roots in F4.
-# Output: The Cartan integer of (a, b).
+# Returns: The Cartan integer of (a, b).
 # Since our representation of F4 is the dual of the Bourbaki representation,
 # the bilinear form on F4 is simply the usual inner product, given by *
 F4CartanInt := function(a, b)
@@ -92,7 +92,7 @@ F4CartanInt := function(a, b)
 end;
 
 # a, b: Roots in G2.
-# Output: a*b where * represents the bilinear form on G2
+# Returns: a*b where * represents the bilinear form on G2
 G2BilinearForm := function(a, b)
 	local mat;
 	# mat[i][j] = e_i*e_j where e_1 = [1, 0], e_2 =  [0, 1]
@@ -101,20 +101,20 @@ G2BilinearForm := function(a, b)
 end;
 
 # a, b: Roots in G2.
-# Output: The Cartan integer of (a, b).
+# Returns: The Cartan integer of (a, b).
 G2CartanInt := function(a,b)
 	return 2 * G2BilinearForm(a,b) / G2BilinearForm(b,b);
 end;
 
 # argRoot, reflRoot: Roots in F4
-# Output: argRoot^{\sigma_reflRoot}, the reflection along reflRoot applied to argRoot
+# Returns: argRoot^{\sigma_reflRoot}, the reflection along reflRoot applied to argRoot
 F4Refl := function(argRoot, reflRoot)
 	return argRoot - F4CartanInt(argRoot, reflRoot)*reflRoot;
 end;
 
 # argRoot: Root in F4
 # reflRootList: List [a_1, ..., a_k] of roots in F4
-# Output: argRoot^{\sigma(a_1) ... \sigma(a_k)}
+# Returns: argRoot^{\sigma(a_1) ... \sigma(a_k)}
 F4ReflProd := function(argRoot, reflRootList)
 	local result, reflRoot;
 	result := argRoot;
@@ -125,7 +125,7 @@ F4ReflProd := function(argRoot, reflRootList)
 end;
 
 # rootList1, rootList2: Lists [a_1,...,a_k], [b_1,...,b_m] of roots in F4
-# Output: True if \sigma(a_1...a_k) = \sigma(b_1...b_m), otherwise false
+# Returns: True if \sigma(a_1...a_k) = \sigma(b_1...b_m), otherwise false
 F4ReflProdEqual := function(rootList1, rootList2)
 	local root;
 	for root in F4Roots do
@@ -137,7 +137,7 @@ F4ReflProdEqual := function(rootList1, rootList2)
 end;
 
 # root: Element of F4Roots or [0,0,0,0]
-# Output: The corresponding root in G2
+# Returns: The corresponding root in G2
 F4RootG2Coord := function(root)
 	return [root[1], Sum(root)/2];
 end;

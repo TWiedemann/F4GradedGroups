@@ -102,7 +102,6 @@ Reread(myFilePath("DD.g"));
 Reread(myFilePath("lie0.g"));
 Reread(myFilePath("lie.g"));
 Reread(myFilePath("lie_roothom.g"));
-myUnbind("IsF4GroupElement");
 Reread(myFilePath("group.g"));
 Reread(myFilePath("simplify.g"));
 Reread(myFilePath("chev.g"));

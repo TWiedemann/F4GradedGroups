@@ -46,42 +46,42 @@ d4 := F4SimpleRoots[4];
 
 ## Weyl elements
 w1 := GrpStandardWeylF4(F4SimpleRoots[1]);
-w1Inv := GrpStandardWeylInvF4(F4SimpleRoots[1]);
+w1Inv := GrpStandardWeylF4(F4SimpleRoots[1], -1);
 w2 := GrpStandardWeylF4(F4SimpleRoots[2]);
-w2Inv := GrpStandardWeylInvF4(F4SimpleRoots[2]);
+w2Inv := GrpStandardWeylF4(F4SimpleRoots[2], -1);
 w3 := GrpStandardWeylF4(F4SimpleRoots[3]);
-w3Inv := GrpStandardWeylInvF4(F4SimpleRoots[3]);
+w3Inv := GrpStandardWeylF4(F4SimpleRoots[3], -1);
 w4 := GrpStandardWeylF4(F4SimpleRoots[4]);
-w4Inv := GrpStandardWeylInvF4(F4SimpleRoots[4]);
+w4Inv := GrpStandardWeylF4(F4SimpleRoots[4], -1);
 
-w := GrpWeylF4([1,-1,1,1], g2^-1*g3, -g2*g3^-1)*GrpWeylF4([1,1,-1,1], g3^-1*g1, -g3*g1^-1)
-        *GrpWeylF4([1,1,1,-1], g1^-1*g2, -g1*g2^-1);
-wInv := GrpWeylF4([1,1,1,-1], -g1^-1*g2, g1*g2^-1)*GrpWeylF4([1,1,-1,1], -g3^-1*g1, g3*g1^-1)
-        *GrpWeylF4([1,-1,1,1], -g2^-1*g3, g2*g3^-1);
-func := function(root)
-    local a, l;
-    if root in F4ShortRoots then
-        a := a1;
-    else
-        a := t1;
-    fi;
-    l := LieRootHomF4(root, a);
-    Print(l, "\n");
-    Print(Simplify(w(l)), "\n");
-end;
+# w := GrpWeylF4([1,-1,1,1], g2^-1*g3, -g2*g3^-1)*GrpWeylF4([1,1,-1,1], g3^-1*g1, -g3*g1^-1)
+#         *GrpWeylF4([1,1,1,-1], g1^-1*g2, -g1*g2^-1);
+# wInv := GrpWeylF4([1,1,1,-1], -g1^-1*g2, g1*g2^-1)*GrpWeylF4([1,1,-1,1], -g3^-1*g1, g3*g1^-1)
+#         *GrpWeylF4([1,-1,1,1], -g2^-1*g3, g2*g3^-1);
+# func := function(root)
+#     local a, l;
+#     if root in F4ShortRoots then
+#         a := a1;
+#     else
+#         a := t1;
+#     fi;
+#     l := LieRootHomF4(root, a);
+#     Print(l, "\n");
+#     Print(Simplify(w(l)), "\n");
+# end;
 
-funcG2 := function(G2root)
-    local root;
-    for root in F4Roots do
-        if F4RootG2Coord(root) = G2root then
-            Print(root, ":\n");
-            func(root);
-        fi;
-    od;
-end;
+# funcG2 := function(G2root)
+#     local root;
+#     for root in F4Roots do
+#         if F4RootG2Coord(root) = G2root then
+#             Print(root, ":\n");
+#             func(root);
+#         fi;
+#     od;
+# end;
 # w := GrpStandardWeylF4([1,-1,1,1])*GrpStandardWeylF4([1,1,-1,1])*GrpStandardWeylF4([1,1,1,-1]);
-# wInv := GrpStandardWeylInvF4([1,1,1,-1])*GrpStandardWeylInvF4([1,1,-1,1])
-#         *GrpStandardWeylInvF4([1,-1,1,1]);
+# wInv := GrpStandardWeylF4([1,1,1,-1], -1)*GrpStandardWeylF4([1,1,-1,1], -1)
+#         *GrpStandardWeylF4([1,-1,1,1], -1);
 
 # triple := function(a, b, c)
 #     local p;
@@ -116,14 +116,14 @@ end;
 # end;
 
 root := [1, 0, 0, -1];
-w := GrpWeylF4(root, a1, a2, true);
-wInv := GrpWeylF4(root, -a1, -a2, true);
+# w := GrpWeylF4(root, a1, a2, true);
+# wInv := GrpWeylF4(root, -a1, -a2, true);
 
 # Parity signs for definition of [0,0]-exponentials
 checkParity := function(root, weylIndex)
     local delta, w;
     delta := F4SimpleRoots[weylIndex];
-    w := GrpStandardWeylInvF4(delta);
+    w := GrpStandardWeylF4(delta, -1);
     Display(LieRootHomF4(F4Refl(root, delta), One(ConicAlg)));
     Display(Simplify(w(LieRootHomF4(root, One(ConicAlg)))));
 end;

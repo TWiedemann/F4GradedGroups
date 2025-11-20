@@ -6,13 +6,12 @@
 ### where Cubic' is a copy of Cubic. We do not distuingish between Cubic and Cubic'
 ### in the code, but we sometimes do in the comments and documentation.
 
-TwistDiag := List([1,2,3], i -> ComRingGamIndet(i)); # [g1, g2, g3]
-CycPerm := [ [1,2,3], [2,3,1], [3,1,2] ]; # List of cyclic permutations of [1,2,3]
-
+### Internal representation:
 # An element of Cubic is of the form
 # x1[11]+x2[22]+x3[33] + u1[23]+u2[31]+u3[12]
 # where x1, x2, x3 lie in ComRing and u1, u2, u3 lie in ConicAlg.
 # x[ii] is what is called x*e_i in [DMW].
+# For any cyclic permutation ijl of 123, we also put x[ji] := x'[ij].
 # We internally represent this element as a list [[x1, x2, x3], [u1, u2, u3]].
 # It can be thought to represent the matrix
 # [ [x1, g2*u3, g3*ConicAlgInv(u2)],
@@ -20,11 +19,16 @@ CycPerm := [ [1,2,3], [2,3,1], [3,1,2] ]; # List of cyclic permutations of [1,2,
 #	[g1*u2, g2*ConicAlgInv(u1), x3]]
 # (see [GPR24, 36.6]).
 
+# ----- Definition and internal representation -----
+
+TwistDiag := List([1,2,3], i -> ComRingGamIndet(i)); # [g1, g2, g3]
+CycPerm := [ [1,2,3], [2,3,1], [3,1,2] ]; # List of cyclic permutations of [1,2,3]
+
 # String used to display the zero element of Cubic in the terminal
 _CubicZeroString := "0_J";
 
 # a: Internal rep of an element of Cubic, as described above.
-# Output: A string to display the corresponding element of Cubic.
+# Returns: A string to display the corresponding element of Cubic.
 CubicRepToString := function(a)
 	local stringList, i, s;
 	# Collect all summands in a list, and add "+" later
@@ -52,7 +56,7 @@ CubicSpec := rec(
 	ElementName := "CubicElement",
 	Zero := a -> [[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]],
 	One := a -> [[One(ComRing), One(ComRing), One(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]],
-	# The representation of elements behaves under "+" and "-" exactly as they should
+	# The representations of elements behave under "+" and "-" exactly as they should
 	Addition := function(a, b)
 		return a+b;
 	end,
@@ -66,7 +70,6 @@ CubicSpec := rec(
 );
 
 Cubic := ArithmeticElementCreator(CubicSpec);
-CubicZero := Cubic([[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]]);
 
 InstallMethod(String, [IsCubicElement], x -> CubicRepToString(UnderlyingElement(x)));
 
@@ -86,7 +89,7 @@ end);
 
 # cubicEl: Element of Cubic
 # i: 1, 2, or 3
-# Output: u \in Conic such that u[jl] is the jl-summand of cubicEl where ijl is
+# Returns: u \in Conic such that u[jl] is the jl-summand of cubicEl where ijl is
 # the unique cyclic permutation starting from i
 CubicElAlgCoeff := function(cubicEl, i)
 	if i in [1,2,3] then
@@ -107,32 +110,13 @@ CubicElComCoeff := function(cubicEl, i)
 	fi;
 end;
 
-# Return the matrix entry of cubicEl at position (i,j) "without TwistDiag"
-CubicElCoeffMat := function(cubicEl, i, j)
-	local k;
-	if not (i in [1,2,3] and j in [1,2,3]) then
-		return fail;
-	fi;
-	if i = j then
-		return CubicElComCoeff(cubicEl, i);
-	else
-		k := Difference([1,2,3], [i,j])[1]; # {1, 2, 3} = {i, j, k} as sets
-		if [i, j, k] in CycPerm then
-			return CubicElAlgCoeff(cubicEl, k);
-		else
-			return ConicAlgInv(CubicElAlgCoeff(cubicEl, k));
-		fi;
-	fi;
-end;
+# ----- Constructors for elements of Cubic -----
 
-
-
-## Constructors for elements of Cubic
+CubicZero := Cubic([[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]]);
 
 # i: 1, 2, or 3
 # t: Element of ComRing
-# Output: The element x of Cubic with CubicElComCoeff(x, i) = t and every other coefficient zero.
-# I.e., the element t[ii].
+# Returns: The element t[ii] of Cubic.
 CubicComEl := function(i, t)
 	local comList, conicList;
 	ReqComRingEl(t);
@@ -142,14 +126,15 @@ CubicComEl := function(i, t)
 	return Cubic([comList, conicList]);
 end;
 
+# i: 1, 2, or 3
+# Returns: The element 1[ii] of Cubic.
 CubicComElOne := function(i)
 	return CubicComEl(i, One(ComRing));
 end;
 
 # i: 1, 2, or 3
 # a: Element of ConicAlg
-# Output: The element x of Cubic with CubicElAlgCoeff(x, i) = a and every other coefficient zero.
-# I.e., the element a[jl] if [i, j, l] is the cyclic permutation starting from i.
+# Returns: The element a[jl] of Cubic if [i, j, l] is the cyclic permutation starting from i.
 CubicAlgEl := function(i, a)
 	local comList, conicList;
 	if not ReqConicAlgEl(a) then
@@ -161,7 +146,9 @@ CubicAlgEl := function(i, a)
 	return Cubic([comList, conicList]);
 end;
 
-# Output: a[jl]
+# a: Element of ConicAlg
+# j, l: 1, 2, or 3 such that j <> l
+# Returns: a[jl] \in Cubic
 CubicAlgElMat := function(j, l, a)
 	local i;
 	if not (l in [1,2,3] and j in [1,2,3] and l <> j) then
@@ -186,7 +173,7 @@ end;
 
 # i, j: Indices 1, 2 or 3
 # a: Element of ComRing or ConicAlg
-# Output: The element of Cubic with a at position (i, j).
+# Returns: a[ij] \in Cubic
 CubicElMat := function(i, j, a)
 	if i = j then
 		ReqComRingEl(a);
@@ -200,6 +187,8 @@ CubicElMat := function(i, j, a)
 	fi;
 end;
 
+# i, j: Indices 1, 2 or 3
+# Returns: 1[ij] \in Cubic
 CubicElOneMat := function(i, j)
 	if i = j then
 		return CubicComEl(i, One(ComRing));
@@ -208,12 +197,20 @@ CubicElOneMat := function(i, j)
 	fi;
 end;
 
-CubicElFromTuple := function(t11, t22, t33, a1, a2, a3)
-	return CubicComEl(1, t11) + CubicComEl(2, t22) + CubicComEl(3, t33) + CubicAlgEl(1, a1) + CubicAlgEl(2, a2) + CubicAlgEl(3, a3);
+# t1, t2, t3: Elements of ComRing
+# a1, a2, a3: Elements of ConicAlg
+# Returns: t1[11] + t2[22] + t3[33] + a1[23] + a2[31] + a3[12]
+CubicElFromTuple := function(t1, t2, t3, a1, a2, a3)
+	return Sum([
+		CubicComEl(1, t1), CubicComEl(2, t2), CubicComEl(3, t3),
+		CubicAlgEl(1, a1), CubicAlgEl(2, a2), CubicAlgEl(3, a3)
+	]);
 end;
 
-
-# Returns generic element with indeterminate numbers 3*i+1, 3*i+2, 3*i+3
+# i: Integer
+# Returns: Put p := 3i+1, q := 3i+2, r := 3i+3. Then the output is
+# t_p[11] + t_q[22] + t_r[33] + a_p[23] + a_q[31] + a_r[12]
+# where t_l and a_l are the respective indeterminates.
 CubicGenericEl := function(i)
 	if 3*i+3 > ConicAlg_rank or 3*i+3 > ComRing_rank then
 		return fail;
@@ -226,23 +223,26 @@ CubicGenericEl := function(i)
 end;
 
 # i: Integer.
-# Output: A list of the six generic basic elements of Cubic, using indeterminates a_i and t_i
+# Returns: A list of the six generic basic elements of Cubic,
+# using indeterminates a_i and t_i.
 CubicGensAsModule := function(i)
 	local a, t;
 	t := ComRingIndet(i);
 	a := ConicAlgIndet(i);
-	return [CubicComEl(1, t), CubicComEl(2, t), CubicComEl(3, t),
-				CubicAlgEl(1, a), CubicAlgEl(2, a), CubicAlgEl(3, a)];
+	return [
+		CubicComEl(1, t), CubicComEl(2, t), CubicComEl(3, t),
+		CubicAlgEl(1, a), CubicAlgEl(2, a), CubicAlgEl(3, a)
+	];
 end;
 
-## ---- Summands ---.
+# ----- Summands -----
 
 # DeclareOperation("SummandsWithPos", [IsCubicElement]);
 DeclareOperation("Summands", [IsCubicElement]);
 
 # cubicEl: Element of Cubic.
-# Output: List with (at most 6) entries of the form [i, j, a]. Here a is an
-# element in ComRing or ConicAlg. The sum of all elements CubicElMat(i, j, a) equals cubicEl.
+# Returns: List with (at most 6) entries of the form [i, j, a]. Here a is an
+# element in ComRing or ConicAlg. The sum of all elements a[ij] equals cubicEl.
 InstallMethod(Summands, [IsCubicElement], function(cubicEl)
 	local result, i, a, t;
 	result := [];
@@ -262,27 +262,40 @@ InstallMethod(Summands, [IsCubicElement], function(cubicEl)
 end);
 
 
-## ----- Structural maps of a cubic norm structure ------
+# ----- Structural maps of the cubic norm structure ------
 
 DeclareOperation("CubicNorm", [IsCubicElement]);
 DeclareOperation("CubicAdj", [IsCubicElement]);
 DeclareOperation("CubicCross", [IsCubicElement, IsCubicElement]);
 DeclareOperation("CubicBiTr", [IsCubicElement, IsCubicElement]);
 
+# A: Element of Cubic.
+# Returns: N(A) \in ComRing, the norm of A.
 # [GPR24, (36.4.5)]
 InstallMethod(CubicNorm, [IsCubicElement], function(A)
-	local sum, perm, i, j, l;
-	sum := CubicElComCoeff(A, 1) * CubicElComCoeff(A, 2) * CubicElComCoeff(A, 3)
-		+ TwistDiag[1] * TwistDiag[2] * TwistDiag[3] * ConicAlgTr(CubicElAlgCoeff(A, 1)*CubicElAlgCoeff(A, 2)*CubicElAlgCoeff(A, 3));
+	local sum, perm, i, j, l, prod;
+	sum := Sum([
+		CubicElComCoeff(A, 1) * CubicElComCoeff(A, 2) * CubicElComCoeff(A, 3),
+		Product([
+			TwistDiag[1] * TwistDiag[2] * TwistDiag[3],
+			ConicAlgTr(CubicElAlgCoeff(A, 1)*CubicElAlgCoeff(A, 2)*CubicElAlgCoeff(A, 3))
+		])
+	]);
 	for perm in CycPerm do
 		i := perm[1];
 		j := perm[2];
 		l := perm[3];
-		sum := sum - CubicElComCoeff(A, i) * TwistDiag[j] * TwistDiag[l] * ConicAlgNorm(CubicElAlgCoeff(A, i));
+		prod := Product([
+			CubicElComCoeff(A, i) * TwistDiag[j] * TwistDiag[l],
+			ConicAlgNorm(CubicElAlgCoeff(A, i))
+		]);
+		sum := sum - prod;
 	od;
 	return sum;
 end );
 
+# A: Element of Cubic.
+# Returns: A^#, the adjoint of A.
 # [GPR24, (36.4.4)]
 InstallMethod(CubicAdj, [IsCubicElement], function(A)
 	local result, perm, i, j, l, a_i, a_j, a_l, A_i, A_j, A_l, comEl, algEl;
@@ -305,9 +318,12 @@ InstallMethod(CubicAdj, [IsCubicElement], function(A)
 	return result;
 end );
 
+# A, B: Elements of Cubic.
+# Returns: A \times B \in Cubic'
 # [GPR24, 36.4.6]
 InstallMethod(CubicCross, [IsCubicElement, IsCubicElement], function(A, B)
-	local result, perm, i, j, l, a_i, a_j, a_l, b_i, b_j, b_l, A_i, A_j, A_l, B_i, B_j, B_l, comEl, algEl;
+	local result, perm, i, j, l, a_i, a_j, a_l, b_i, b_j, b_l,
+		A_i, A_j, A_l, B_i, B_j, B_l, comEl, algEl;
 	result := CubicZero;
 	for perm in CycPerm do
 		i := perm[1];
@@ -333,6 +349,8 @@ InstallMethod(CubicCross, [IsCubicElement, IsCubicElement], function(A, B)
 	return result;
 end );
 
+# A, B: Elements of Cubic.
+# Returns: T(A, B) \in Cubic, the bilinear trace.
 # [GRP24, (36.4.7)]
 InstallMethod(CubicBiTr, [IsCubicElement, IsCubicElement], function(A, B)
 	local result, i, j, l, perm;
@@ -341,28 +359,35 @@ InstallMethod(CubicBiTr, [IsCubicElement, IsCubicElement], function(A, B)
 		i := perm[1];
 		j := perm[2];
 		l := perm[3];
-		result := result + CubicElComCoeff(A, i)*CubicElComCoeff(B, i) + TwistDiag[j]*TwistDiag[l] * ConicAlgNormLin(CubicElAlgCoeff(A, i), CubicElAlgCoeff(B, i));
+		result := Sum([
+			result,
+			CubicElComCoeff(A, i)*CubicElComCoeff(B, i),
+			TwistDiag[j]*TwistDiag[l]*ConicAlgNormLin(CubicElAlgCoeff(A, i), CubicElAlgCoeff(B, i))
+		]);
 	od;
 	return result;
 end );
 
-## ------- Structural maps of the corresponding Jordan algebra ----
+# ------- Structural maps of the Jordan algebra Cubic ----
 
 DeclareOperation("JordanU", [IsCubicElement, IsCubicElement]);
 DeclareOperation("JordanULin", [IsCubicElement, IsCubicElement, IsCubicElement]);
 DeclareOperation("JordanD", [IsCubicElement, IsCubicElement, IsCubicElement]);
 
-# Cubic x Cubic' -> Cubic
+# a, b: Elements of Cubic. (More precisely, a \in Cubic, b \in Cubic').
+# Returns: U_a(b)
 InstallMethod(JordanU, [IsCubicElement, IsCubicElement], function(a, b)
 	return CubicBiTr(a,b)*a -CubicCross(CubicAdj(a), b);
 end );
 
-# Cubic x Cubic x Cubic' -> Cubic
+# a, b,c: Elements of Cubic. (More precisely, a, b \in Cubic, c \in Cubic').
+# Returns: U_{a,b}(c), the linearisation of U_d(e) in d.
 InstallMethod(JordanULin, [IsCubicElement, IsCubicElement, IsCubicElement], function(a,b,c)
 	return CubicBiTr(a, c)*b + CubicBiTr(b, c)*a - CubicCross(CubicCross(a,b), c);
 end );
 
-# Cubic x Cubic' x Cubic -> Cubic
+# a, b,c: Elements of Cubic. (More precisely, a, c \in Cubic, b \in Cubic').
+# Returns: D_{a,b}(c) = {a, b, c} = U_{a,c}(b)
 InstallMethod(JordanD, [IsCubicElement, IsCubicElement, IsCubicElement], function(a,b,c)
 	return JordanULin(a,c,b);
 end );

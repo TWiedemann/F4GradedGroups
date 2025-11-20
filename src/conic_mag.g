@@ -5,18 +5,18 @@
 # ----- Indeterminates and their names -----
 
 # i: Integer.
-# Output: Name of the i-th indeterminate in ConicAlg
+# Returns: Name of the i-th indeterminate in ConicAlg
 ConicAlgIndetName := function(i)
 	return Concatenation("a", String(i));
 end;
 
 # i: Integer.
-# Output: Name of the conjugate of the i-th indeterminate in ConicAlg
+# Returns: Name of the conjugate of the i-th indeterminate in ConicAlg
 ConicAlgInvIndetName := function(i)
 	return Concatenation("a", String(i), "'");
 end;
 
-# Output: The list of all strings which appear as indeterminate names in ConicAlg
+# Returns: The list of all strings which appear as indeterminate names in ConicAlg
 _ConicAlgIndetNames := function()
 	local ConicAlgIndetNames, i;
 	ConicAlgIndetNames := [];
@@ -49,13 +49,13 @@ end;
 # ----- Constructing elements from representations and list of all elements -----
 
 # mRep: External representation of an element of ConicAlgMag
-# Output: The corresponding element of ConicAlgMag
+# Returns: The corresponding element of ConicAlgMag
 ConicAlgMagElFromRep := function(mRep)
 	return ObjByExtRep(FamilyObj(One(ConicAlgMag)), mRep);
 end;
 
 # max_length: Integer at least 1
-# Output: A list l of length max_length such that l[k] is a list of all external
+# Returns: A list l of length max_length such that l[k] is a list of all external
 # reps of elements of ConicMagEl of length k
 _AllConicAlgMagReps := function(max_length)
 	local result, i, j, x, y;
@@ -78,7 +78,7 @@ _AllConicAlgMagReps := function(max_length)
 end;
 
 # max_length: Integer at least 1
-# Output: A list l of length max_length such that l[k] is a list of all
+# Returns: A list l of length max_length such that l[k] is a list of all
 # elements of ConicMagEl of length k
 _AllConicAlgMagEls := function(max_length)
 	return List(_AllConicAlgMagReps(max_length), x -> List(x, ConicAlgMagElFromRep));
@@ -87,7 +87,7 @@ end;
 # ----- Involution (i.e. conjugation) of ConicAlgMag -----
 
 # mRep: External rep of an element of ConicAlgMag.
-# Output: The external rep of the conjugate of this element.
+# Returns: The external rep of the conjugate of this element.
 ConicAlgMagInvOnRep := function(mRep)
 	local replaceByList, replaceList;
 	mRep := ReverseNonassocList(mRep);
@@ -97,7 +97,9 @@ ConicAlgMagInvOnRep := function(mRep)
 end;
 
 # m: Element of ConicAlgMag.
-# Output: Conjugate of m.
+# Returns: Conjugate of m.
 ConicAlgMagInv := function(m)
 	return ConicAlgMagElFromRep(ConicAlgMagInvOnRep(ExtRepOfObj(m)));
 end;
+
+## Norm and trace on ConicAlgMag is defined in comring.g

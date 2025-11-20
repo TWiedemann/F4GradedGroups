@@ -1,10 +1,20 @@
-CubicInL0SymStringPos := "ad^+"; # c in Cubic is printed as ad^+_c
-CubicInL0SymStringNeg := "ad^-"; # c in Cubic' is printed as ad^-_c
+### This file contains the definition of L0, the 0-part of the Lie algebra.
 
-L0ZeroString := "0_{L_0}";
+### Internal representation:
+# Formally, L0 is the direct sum Cubic+(DD+ComRing*xi+ComRing*zeta)+Cubic'
+# where the sum DD+ComRing*xi+ComRing*zeta need not be direct and where xi and zeta
+# are formal elements. An element of L0 is represented as a record with entries
+# "dd" (in DD), "xiCoeff" (in ComRing), "zetaCoeff" (in ComRing),
+# "cubicPos" (in Cubic) and "cubicNeg" (in Cubic')
+
+# ----- Definition and internal representation -----
+
+_CubicInL0SymStringPos := "ad^+"; # c in Cubic is printed as ad^+_c
+_CubicInL0SymStringNeg := "ad^-"; # c in Cubic' is printed as ad^-_c
+_L0ZeroString := "0_{L_0}";
 
 # rep: Internal representation of an element of L0
-# Output: A string representing this element
+# Returns: A string representing this element
 L0RepToString := function(rep)
 	local stringList, s, list, name, sym;
 	stringList := [];
@@ -13,10 +23,10 @@ L0RepToString := function(rep)
 			if s = "dd" then
 				Add(stringList, String(rep.(s)));
 			elif s = "cubicPos" then
-				Add(stringList, Concatenation(CubicInL0SymStringPos,
+				Add(stringList, Concatenation(_CubicInL0SymStringPos,
 						"_{", String(rep.(s)), "}"));
 			elif s = "cubicNeg" then
-				Add(stringList, Concatenation(CubicInL0SymStringNeg,
+				Add(stringList, Concatenation(_CubicInL0SymStringNeg,
 						"_{", String(rep.(s)), "}"));
 			fi;
 		fi;
@@ -32,11 +42,9 @@ L0RepToString := function(rep)
 			fi;
 		fi;
 	od;
-	return StringSum(stringList, "+", L0ZeroString);
+	return StringSum(stringList, "+", _L0ZeroString);
 end;
 
-# Elements of L0 are represented by records with entries "dd" (in DD), "xiCoeff" (in ComRing),
-# "zetaCoeff" (in ComRing), "cubicPos" (in Cubic) and "cubicNeg" (in Cubic')
 L0Spec := rec(
 	ElementName := "L0Element",
 	Addition := function(a, b)
@@ -67,7 +75,8 @@ L0Spec := rec(
 	Print := function(a)
 		Print(L0RepToString(a));
 	end,
-	# Lie bracket
+	# a, b: Representations of elements of L0
+	# Returns: The Lie bracket of the corresponding elements
 	Multiplication := function(a, b)
 		local dd, xiCoeff, zetaCoeff, cubicPos, cubicNeg, summand, coeff, cubic1, cubic2;
 		# Init components of [a,b]
@@ -77,11 +86,11 @@ L0Spec := rec(
 		cubicPos := CubicZero;
 		cubicNeg := CubicZero;
 		# [a.dd, b.dd] + [a.cubicPos, b.cubicNeg] + [a.cubicNeg, b.cubicPos]
-		# ([ad_{a'}, ad_a] = dd(a, a') by [DMW, 3.5])
+		# ([ad_{a'}, ad_a] = dd(a, a'))
 		dd := a.dd*b.dd + 
 			DD([[-One(ComRing), a.cubicPos, b.cubicNeg], [One(ComRing), b.cubicPos, a.cubicNeg]]);
 		# [a.zeta, b.cubicPos + b.cubicNeg] + [a.cubicPos + a.cubicNeg, b.zeta]
-		# ([zeta, ad_a] = ad_a and [zeta, ad_{a'}] = -ad_{a'} by [DMW, 3.7])
+		# ([zeta, ad_a] = ad_a and [zeta, ad_{a'}] = -ad_{a'})
 		cubicPos := a.zetaCoeff * b.cubicPos - b.zetaCoeff * a.cubicPos;
 		cubicNeg := -a.zetaCoeff * b.cubicNeg + b.zetaCoeff * a.cubicNeg;
 		# [a.dd, b.cubicPos + b.cubicNeg]
@@ -101,7 +110,7 @@ L0Spec := rec(
 			cubicNeg := cubicNeg + coeff*JordanD(cubic2, cubic1, a.cubicNeg);
 		od;
 		# Every other pair of summands has zero bracket: xi and zeta centralise DD+xi+zeta
-		# and xi centralises L0 ([DMW, 3.7]).
+		# and xi centralises L0.
 		return rec(
 			dd := dd,
 			xiCoeff := xiCoeff,
@@ -113,11 +122,12 @@ L0Spec := rec(
 );
 
 L0 := ArithmeticElementCreator(L0Spec);
-L0Zero := L0(L0Spec.Zero(fail));
 
 InstallMethod(String, [IsL0Element], x -> L0RepToString(UnderlyingElement(x)));
 
-## Constructors for elements of L0
+# ----- Constructors for elements of L0 -----
+
+L0Zero := L0(L0Spec.Zero(fail));
 
 L0Xi := L0(rec(
 	dd := DDZero,
@@ -139,6 +149,8 @@ DeclareOperation("CubicPosToL0Emb", [IsCubicElement]);
 DeclareOperation("CubicNegToL0Emb", [IsCubicElement]);
 DeclareOperation("DDToL0Emb", [IsDDElement]);
 
+# a: Element of Cubic.
+# Returns: ad_a^+ \in L0.
 InstallMethod(CubicPosToL0Emb, [IsCubicElement], function(a)
 	return L0(rec(
 		dd := DDZero,
@@ -149,6 +161,8 @@ InstallMethod(CubicPosToL0Emb, [IsCubicElement], function(a)
 	));
 end);
 
+# a: Element of Cubic.
+# Returns: ad_a^- \in L0.
 InstallMethod(CubicNegToL0Emb, [IsCubicElement], function(a)
 	return L0(rec(
 		dd := DDZero,
@@ -159,6 +173,8 @@ InstallMethod(CubicNegToL0Emb, [IsCubicElement], function(a)
 	));
 end);
 
+# ddEl: Element of DD.
+# Returns: The corresponding element of L0.
 InstallMethod(DDToL0Emb, [IsDDElement], function(ddEl)
 	return L0(rec(
 		dd := ddEl,
@@ -169,12 +185,14 @@ InstallMethod(DDToL0Emb, [IsDDElement], function(ddEl)
 	));
 end);
 
+# cubicEl1, cubicEl2: Elements of Cubic.
+# Returns: dd_{cubicEl1, cubicEl2} \in L0.
 DeclareOperation("L0dd", [IsCubicElement, IsCubicElement]);
 InstallMethod(L0dd, [IsCubicElement, IsCubicElement], function(cubicEl1, cubicEl2)
 	return DDToL0Emb(dd(cubicEl1, cubicEl2));
 end);
 
-## Getters for parts of elements of L0
+# ---- Getter functions for parts of elements of L0 ----
 
 DeclareOperation("L0XiCoeff", [IsL0Element]);
 DeclareOperation("L0ZetaCoeff", [IsL0Element]);
@@ -203,7 +221,7 @@ InstallOtherMethod(IsZero, [IsL0Element], function(L0el)
 		and IsZero(L0CubicPosCoeff(L0el)) and IsZero(L0CubicNegCoeff(L0el));
 end);
 
-## Scalar multiplication ComRing x L0 -> L0
+# ----- Scalar multiplication ComRing x L0 -> L0 -----
 InstallOtherMethod(\*, "for ComRingElement and L0Element", [IsRingElement, IsL0Element], 2, function(comEl, L0El)
 	return L0(rec(
 		dd := comEl * L0DDCoeff(L0El),
@@ -214,15 +232,17 @@ InstallOtherMethod(\*, "for ComRingElement and L0Element", [IsRingElement, IsL0E
 	));
 end);
 
-## ---- Action of L0 on Lie ----
+# ----- Action of L0 on Lie -----
 
 # a: Element of ComRing or of Brown
-# Output: The result of the action of xi on a (regarded as an element of L_1 or L_2)
-XiPosEndo := function(a)
+# Returns: The result of the action of xi on...
+# - ...a*LieY (\in L_2) if a in Comring
+# - ...a_+ if a in Brown
+XiEndo := function(a, sign)
 	if a in ComRing then
-		return 2*a;
+		return sign*2*a;
 	elif IsBrownElement(a) then
-		return a;
+		return sign*a;
 	else
 		Error("xi not defined on this element");
 		return fail;
@@ -230,46 +250,33 @@ XiPosEndo := function(a)
 end;
 
 # a: Element of ComRing or of Brown
-# Output: The result of the action of xi on a (regarded as an element of L_{-1} or L_{-2})
-XiNegEndo := function(a)
-	if a in ComRing then
-		return -2*a;
-	elif IsBrownElement(a) then
-		return -a;
-	else
-		Error("xi not defined on this element");
+# Returns: The result of the action of zeta on...
+# - ...a*LieY (\in L_2) if a in Comring
+# - ...a_+ if a in Brown
+ZetaEndo := function(a, sign)
+	if not sign in [1, -1] then
+		Error("Argument must be a sign");
 		return fail;
 	fi;
-end;
-
-# a: Element of ComRing or of Brown
-# Output: The result of the action of zeta on a (regarded as an element of L_1 or L_2)
-ZetaPosEndo := function(a)
 	if a in ComRing then
-		return a;
+		return sign*a;
 	elif IsBrownElement(a) then
-		return Brown([-BrownElPart(a, 1), CubicZero, BrownElPart(a, 3), 2*BrownElPart(a, 4)]);
+		if sign = 1 then
+			return Brown([-BrownElPart(a, 1), CubicZero, BrownElPart(a, 3), 2*BrownElPart(a, 4)]);
+		else
+			return Brown([-2*BrownElPart(a, 1), -BrownElPart(a, 2), CubicZero, BrownElPart(a, 4)]);
+		fi;
 	else
 		Error("zeta not defined on this element");
 		return fail;
 	fi;
 end;
 
-# a: Element of ComRing or of Brown
-# Output: The result of the action of zeta on a (regarded as an element of L_{-1} or L_{-2})
-ZetaNegEndo := function(a)
-	if a in ComRing then
-		return -a;
-	elif IsBrownElement(a) then
-		return Brown([-2*BrownElPart(a, 1), -BrownElPart(a, 2), CubicZero, BrownElPart(a, 4)]);
-	else
-		Error("zeta not defined on this element");
-		return fail;
-	fi;
-end;
-
-DeclareOperation("L0AsEndo", [IsL0Element, IsInt]);
-InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
+# L0El: Element of L0.
+# i: -2, -1, 1, or 2.
+# Returns: The function L_i -> L_i, a -> L0El*a. Here L_{-2} and L_2 are identified with ComRing.
+DeclareOperation("L0ElAsEndo", [IsL0Element, IsInt]);
+InstallMethod(L0ElAsEndo, [IsL0Element, IsInt], function(L0El, i)
 	local xi, zeta, a, a2, ddList;
 	# Components of L0El
 	xi := L0XiCoeff(L0El);
@@ -280,12 +287,10 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 	if i = -2 then
 		return function(comEl)
 			# Cubic, Cubic' and DD act trivially
-			if not comEl in ComRing then
-				Error("Invalid input for L0 acting on L_{-2}");
-			fi;
+			ReqComRingEl(comEl);
 			return -(2*L0XiCoeff(L0El) + L0ZetaCoeff(L0El)) * comEl;
 		end;
-	elif i = 1 or i = -1 then
+	elif i = 1 or i = -1 then # The actions on L_1 and on L_{-1} are nearly identical
 		return function(brownEl)
 			local lam, b, b2, mu, newLam, newB, newB2, newMu, coeff, c, c2, result, summand;
 			## Components of brownEl
@@ -299,7 +304,7 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 			newB := lam*a - CubicCross(a2, b2);
 			newB2 := CubicCross(a, b) - mu*a2;
 			newMu := CubicBiTr(a, b2);
-			# Action of DD [DMW, 3.8]
+			# Action of DD
 			for summand in ddList do
 				coeff := summand[1]; # in ComRing
 				c := summand[2]; # in Cubic
@@ -311,19 +316,13 @@ InstallMethod(L0AsEndo, [IsL0Element, IsInt], function(L0El, i)
 			od;
 			result := BrownElFromTuple(newLam, newB, newB2, newMu);
 			# Action of xi and zeta. This is the only part where i is relevant.
-			if i = 1 then
-				result := result + xi*XiPosEndo(brownEl) + zeta*ZetaPosEndo(brownEl);
-			else
-				result := result + xi*XiNegEndo(brownEl) + zeta*ZetaNegEndo(brownEl);
-			fi;
+			result := result + xi*XiEndo(brownEl, i) + zeta*ZetaEndo(brownEl, i);
 			return result;
 		end;
 	elif i = 2 then
 		return function(comEl)
 			# Cubic, Cubic' and DD act trivially
-			if not comEl in ComRing then
-				Error("Invalid input for L0 acting on L_2");
-			fi;
+			ReqComRingEl(comEl);
 			return (2*L0XiCoeff(L0El) + L0ZetaCoeff(L0El)) * comEl;
 		end;
 	else

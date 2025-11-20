@@ -1,9 +1,15 @@
-# DD is the ComRing-span of all dd_{a,b} for a, b \in Cubic.
+### This file contains the definition of the [0,0]-part of the Lie algebra,
+### also called Z in [DMW]. We refer to it as DD.
+### It is the ComRing-span of all dd_{a,b} for a, b \in Cubic.
+
+### Internal representation:
 # An element t1 * dd_{a1, b1} + t2 * dd_{a2, b2} + ... is represented by
 # the list [[t1, a1, b2], [t2, a2, b2], ...].
 
+# ----- Definition and internal representation -----
+
 # rep: Representation of an element of DD.
-# Output: A representation of the same element, but the following sanitization steps are applied:
+# Returns: Nothing, but the following sanitization steps are applied to rep:
 # - Summands c*dd_{a,b} with one of a, b, c equal to zero are removed
 # - If two summands c1*dd_{a,b}, c2*dd_{a,b} appear, they are replaced by (c1+c2)*dd_{a,b}
 DDSanitizeRep := function(rep)
@@ -15,10 +21,11 @@ DDSanitizeRep := function(rep)
 		fi;
 		x := rep[i];
 		# Remove zero summands
-		if x[1] = Zero(ComRing) or IsZero(x[2]) or IsZero(x[3]) then
+		if IsZero(x[1]) or IsZero(x[2]) or IsZero(x[3]) then
 			Remove(rep, i);
 			continue;
 		fi;
+		# Merge summands
 		for j in [1..i-1] do
 			if rep[j][2] = x[2] and rep[j][3] = x[3] then
 				rep[j][1] := rep[j][1] + x[1];
@@ -32,20 +39,23 @@ DDSanitizeRep := function(rep)
 	od;
 end;
 
-DDZeroString := "0_{DD}";
-DDSymString := "\dd";
+# Display strings
+_DDZeroString := "0_{DD}";
+_DDSymString := "\dd";
 
+# a: Internal representation of an element of DD.
+# Returns: A string representation of a.
 DDRepToString := function(a)
 	local stringList, summand, s;
 	stringList := [];
 	for summand in a do
-		s := Concatenation(DDSymString, "_{", String(summand[2]), ",", String(summand[3]), "}");
+		s := Concatenation(_DDSymString, "_{", String(summand[2]), ",", String(summand[3]), "}");
 		if summand[1] <> One(ComRing) then
 			s := Concatenation("(", String(summand[1]), ")", "*", s); 
 		fi;
 		Add(stringList, s);
 	od;
-	return StringSum(stringList, "+", DDZeroString);
+	return StringSum(stringList, "+", _DDZeroString);
 end;
 
 DDSpec := rec(
@@ -110,18 +120,32 @@ DDSpec := rec(
 DD := ArithmeticElementCreator(DDSpec);
 InstallMethod(String, [IsDDElement], x -> DDRepToString(UnderlyingElement(x)));
 
-## ---- Getters ----
+# Scalar multiplication ComRing x DD -> DD
+InstallOtherMethod(\*, "for ComRingElement and DDElement", [IsRingElement, IsDDElement], 2, function(comEl, ddEl)
+	local resultRep, summand;
+    ReqComRingEl(comEl);
+    resultRep := [];
+    for summand in UnderlyingElement(ddEl) do
+        Add(resultRep, [comEl*summand[1], summand[2], summand[3]]);
+    od; 
+	return DD(resultRep);
+end);
+
+# ----- Getter functions for internal representation of DD -----
 DeclareOperation("DDCoeffList", [IsDDElement]);
 
-# ddEl: c1*dd_{a1,b1} + c2*dd_{a2,b2} + ...
-# Output: [[c1, a1, b1], [c2, a2, b2], ...]
+# ddEl: c1*dd_{a1,b1} + c2*dd_{a2,b2} + ... \in DD
+# Returns: [[c1, a1, b1], [c2, a2, b2], ...]
 InstallMethod(DDCoeffList, [IsDDElement], function(ddEl)
 	return UnderlyingElement(ddEl);
 end);
 
-## ---- Constructors ----
+# ----- Constructors for elements of DD -----
+
 DDZero := DD([]);
 
+# cubicEl1, cubicEl2: Elements of Cubic.
+# Returns: dd_{cubicEl1, cubicEl2} \in DD.
 DeclareOperation("dd", [IsCubicElement, IsCubicElement]);
 InstallMethod(dd, [IsCubicElement, IsCubicElement], function(cubicEl1, cubicEl2)
 	if IsZero(cubicEl1) or IsZero(cubicEl2) then
@@ -134,15 +158,4 @@ end);
 DeclareOperation("DDElFromCoeffList", [IsList]);
 InstallMethod(DDElFromCoeffList, [IsList], function(coeffList)
 	return DD(coeffList);
-end);
-
-# Scalar multiplication ComRing x DD -> DD
-InstallOtherMethod(\*, "for ComRingElement and DDElement", [IsRingElement, IsDDElement], 2, function(comEl, ddEl)
-	local resultRep, summand;
-    ReqComRingEl(comEl);
-    resultRep := [];
-    for summand in UnderlyingElement(ddEl) do
-        Add(resultRep, [comEl*summand[1], summand[2], summand[3]]);
-    od; 
-	return DD(resultRep);
 end);

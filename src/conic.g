@@ -77,17 +77,17 @@ ConicAlgInvIndet := function(i)
 	return ConicAlgInvIndets[i];
 end;
 
-## Functions on the rings
+# ----- Conjugation, trace, norm on ConicAlg -----
 
 # a: Element of ConicAlg.
-# Output: The conjugate a' of a.
+# Returns: The conjugate a' of a.
 ConicAlgInv := function(a)
 	ReqConicAlgEl(a);
 	return ChangeRingElByMagmaTrans(ConicAlg, a, ConicAlgMagInv);
 end;
 
 # magFunc: A function ConicAlgMag -> ComRing.
-# Output: The linear extension ConicAlg -> Comring of magFunc.
+# Returns: The linear extension ConicAlg -> Comring of magFunc.
 ConicAlgFunctionalFromMagFunctional := function(magFunc)
 	return function(a)
 		local coeffList, result, i, magmaEl, coeff;
@@ -105,7 +105,7 @@ end;
 ConicAlgTr := ConicAlgFunctionalFromMagFunctional(ConicAlgMagTr);
 
 # a, b: Elements of ConicAlg.
-# Output: n(a,b) := n(a+b) - n(a) - n(b).
+# Returns: n(a,b) := n(a+b) - n(a) - n(b).
 # By [GPR24, (16.12.4), (16.5.2)], we have n(a,b) = n(1, a'b) = t(a'b)
 ConicAlgNormLin := function(a, b)
 	ReqConicAlgEl([a,b]);
@@ -113,7 +113,7 @@ ConicAlgNormLin := function(a, b)
 end;
 
 # a: Element of ConicAlg.
-# Output: Its norm n(a), an element of ComRing.
+# Returns: Its norm n(a), an element of ComRing.
 # Use that n(\sum_i c_i m_i) = \sum_i c_i^2 n(m_i) + sum_{i<j} c_i c_j n(m_i, m_j)
 ConicAlgNorm := function(a)
 	local coeffList, result, i, j, magmaEl, magmaEl2, coeff, coeff2;
@@ -135,8 +135,60 @@ ConicAlgNorm := function(a)
 	return result;
 end;
 
+# ----- Shortcuts for conjugation, trace, norm on ConicAlg OR ConicAlgMag -----
+
+# a: Element of ConicAlgMag or of ConicAlg
+# Returns: a'
+ConicInv := function(a)
+	if a in ConicAlg then
+		return ConicAlgInv(a);
+	elif a in ConicAlgMag then
+		return ConicAlgMagInv(a);
+	else
+		return fail;
+	fi;
+end;
+
+# a: Element of ConicAlgMag or of ConicAlg
+# Returns: tr(a) \in ComRing
+ConicTr := function(a)
+	if a in ConicAlg then
+		return ConicAlgTr(a);
+	elif a in ConicAlgMag then
+		return ConicAlgMagTr(a);
+	else
+		return fail;
+	fi;
+end;
+
+# a: Element of ConicAlgMag or of ConicAlg
+# Returns: n(a) \in ComRing
+ConicNorm := function(a)
+	if a in ConicAlg then
+		return ConicAlgNorm(a);
+	elif a in ConicAlgMag then
+		return ConicAlgMagNorm(a);
+	else
+		return fail;
+	fi;
+end;
+
+# a,b: Element of ConicAlgMag or of ConicAlg (both in the same)
+# Returns: n(a,b) \in ComRing
+ConicNormLin := function(a,b)
+	if a in ConicAlg and b in ConicAlg then
+		return ConicAlgNormLin(a,b);
+	elif a in ConicAlgMag and b in ConicAlgMag then
+		return ConicAlgMagNormLin(a,b);
+	else
+		return fail;
+	fi;
+end;
+
+# ----- Misc functions -----
+
 # a: Element of ConicAlg.
-# Output: [t, b] with t \in ComRing, b \in ConicAlg such that a = t*One(ConicAlg)+b
+# Returns: [t, b] with t \in ComRing, b \in ConicAlg such that a = t*One(ConicAlg)+b
 # and such that b has no summand of the form s*One(ConicAlg) for s \in ComRing
 ConicAlgSplitOne := function(a)
 	local coeffList, i, magEl, t;

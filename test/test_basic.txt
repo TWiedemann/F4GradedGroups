@@ -144,16 +144,14 @@ gap> dd(cubicGen1, cubicGen2);
 dd_{(t1)[11]+(t2)[22]+(t3)[33]+((1)*a1)[23]+((1)*a2)[31]+((1)*a3)[12],(t4)[11]+(t5)[22]+(t6)[33]+((1)*a4)[23]+((1)*a5)[31]+((1)*a6)[12]}
 
 ## ApplyDistAndPeirceLaw
-gap> ApplyDistAndPeirceLaw(last);
-dd_{(1)[11],(t1*t4)[11]}+dd_{(1)[11],((t5)*a3+(t1)*a6+(g3)*(a2'*a4'))[12]}+dd_{(1)[11],((t6)*a2+(t1)*a5+(g2)*(a4'*a3'))[31]}+dd_{(1)[22],((t4)*a3+(t2)*a6+(g3)*(a5'*a1'))[12]}+dd_{(1)[22],(t2*t5)[22]}+dd_{(1)[22],((t6)*a1+(t2)*a4+(g1)*(a3'*a5'))[23]}+dd_{(1)[33],((t4)*a2+(t3)*a5+(g2)*(a1'*a6'))[31]}+dd_{(1)[33],((t5)*a1+(t3)*a4+(g1)*(a6'*a2'))[23]}+dd_{(1)[33],(t3*t6)[33]}+dd_{((1)*a1)[23],((1)*a4)[23]}+dd_{((1)*a2)[31],((1)*a5)[31]}+dd_{((1)*a3)[12],((1)*a6)[12]}
-gap> ApplyDistAndPeirceLaw(dd(CubicAlgEl(2, a1), CubicComEl(3, t1)));
+gap> ApplyDistAndPeirceLaw(dd(CubicAlgEl(2, a1), CubicComEl(3, t1)), true);
 dd_{(1)[11],((t1)*a1)[31]}
-gap> ApplyDistAndPeirceLaw(dd(CubicAlgElMat(1,2, a1), CubicAlgElMat(2,3, a2)));
+gap> ApplyDistAndPeirceLaw(dd(CubicAlgElMat(1,2, a1), CubicAlgElMat(2,3, a2)), true);
 dd_{(1)[11],((g2)*(a2'*a1'))[31]}
-gap> ApplyDistAndPeirceLaw(dd(CubicAlgElMat(1,2, a1), CubicAlgElMat(1,3, a2)));
+gap> ApplyDistAndPeirceLaw(dd(CubicAlgElMat(1,2, a1), CubicAlgElMat(1,3, a2)), true);
 dd_{(1)[22],((g1)*(a1'*a2))[23]}
-gap> ApplyDistAndPeirceLaw(dd(CubicAlgElMat(1,2, a1), CubicComEl(3, t1)));
-0_{DD}
+gap> ApplyDistAndPeirceLaw(dd(CubicAlgElMat(1,2, a1), CubicComEl(3, t1)), true);
+0_{L_0}
 
 ## Embeddings
 gap> L0dd(cubicGen1, cubicGen2) = DDToL0Emb(dd(cubicGen1, cubicGen2));
@@ -178,9 +176,7 @@ gap> t1*LieX + 5*LieY + LieZeta - LieY;
 (t1)*x + zeta + (4)*y
 gap> Display(last);
 -2 part: t1
--1 part: [ 0, 0_J, 0_J, 0 ]
  0 part: zeta
- 1 part: [ 0, 0_J, 0_J, 0 ]
  2 part: 4
 gap> LieZeta = L0Zeta;
 false
@@ -202,5 +198,3 @@ gap> Liedd(cubicGen1, cubicGen2);
 dd_{(t1)[11]+(t2)[22]+(t3)[33]+((1)*a1)[23]+((1)*a2)[31]+((1)*a3)[12],(t4)[11]+(t5)[22]+(t6)[33]+((1)*a4)[23]+((1)*a5)[31]+((1)*a6)[12]}
 gap> last = L0dd(cubicGen1, cubicGen2);
 false
-gap> ApplyDistAndPeirceLaw(Liedd(cubicGen1, cubicGen2));
-dd_{(1)[11],(t1*t4)[11]}+dd_{(1)[11],((t5)*a3+(t1)*a6+(g3)*(a2'*a4'))[12]}+dd_{(1)[11],((t6)*a2+(t1)*a5+(g2)*(a4'*a3'))[31]}+dd_{(1)[22],((t4)*a3+(t2)*a6+(g3)*(a5'*a1'))[12]}+dd_{(1)[22],(t2*t5)[22]}+dd_{(1)[22],((t6)*a1+(t2)*a4+(g1)*(a3'*a5'))[23]}+dd_{(1)[33],((t4)*a2+(t3)*a5+(g2)*(a1'*a6'))[31]}+dd_{(1)[33],((t5)*a1+(t3)*a4+(g1)*(a6'*a2'))[23]}+dd_{(1)[33],(t3*t6)[33]}+dd_{((1)*a1)[23],((1)*a4)[23]}+dd_{((1)*a2)[31],((1)*a5)[31]}+dd_{((1)*a3)[12],((1)*a6)[12]}

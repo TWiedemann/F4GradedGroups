@@ -1,7 +1,7 @@
 ## -------- Chevalley basis of Lie --------
 
 # root: Root in F4
-# Output: The corresponding element of a "Chevalley basis" of Lie
+# Returns: The corresponding element of a "Chevalley basis" of Lie
 ChevBasEl := function(root)
 	local one;
 	if root in F4ShortRoots then
@@ -15,7 +15,7 @@ ChevBasEl := function(root)
 end;
 
 # root: Root in G2.
-# Output: The corresponding element of a "Chevalley basis" of type G2 of Lie.
+# Returns: The corresponding element of a "Chevalley basis" of type G2 of Lie.
 ChevG2BasEl := function(root)
 	local F4root, result, sign;
 	if root in G2LongRoots then
@@ -27,7 +27,7 @@ ChevG2BasEl := function(root)
 		fi;
 		for F4root in F4LongRoots do
 			if F4RootG2Coord(F4root) = root then
-				return sign*LieRootHomF4(F4root, One(ComRing), true);
+				return sign*LieRootHomF4(F4root, One(ComRing), true, true);
 			fi;
 		od;
 	else
@@ -35,7 +35,7 @@ ChevG2BasEl := function(root)
 		result := LieZero;
 		for F4root in F4LongRoots do
 			if F4RootG2Coord(F4root) = root then
-				result := result + LieRootHomF4(F4root, One(ComRing), true);
+				result := result + LieRootHomF4(F4root, One(ComRing), true, true);
 			fi;
 		od;
 		if root in [[-1,0], [0,-1]] then
@@ -48,19 +48,19 @@ ChevG2BasEl := function(root)
 end;
 
 # root: Root in F4.
-# Output: The element h_root of the Chevalley basis.
+# Returns: The element h_root of the Chevalley basis.
 ChevHEl := function(root)
 	return ChevBasEl(root) * ChevBasEl(-root);
 end;
 
 # root: Root in G2.
-# Output: The element h_root of the Chevalley basis.
+# Returns: The element h_root of the Chevalley basis.
 ChevG2HEl := function(root)
 	return ChevG2BasEl(root) * ChevG2BasEl(-root);
 end;
 
 # root1, root2: Roots in F4
-# Output: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
+# Returns: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
 # Here x_a = ChevBasEl(a) and the output is 0 if root1+root2 is not a root.
 ChevStrucConst := function(root1, root2)
 	local sum, candidates, comm, chevSum, c, diff;
@@ -84,7 +84,7 @@ ChevStrucConst := function(root1, root2)
 end;
 
 # root1, root2: Roots in G2
-# Output: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
+# Returns: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
 # Here x_a = ChevBasEl(a) and the output is 0 if root1+root2 is not a root.
 ChevG2StrucConst := function(root1, root2)
 	local sum, candidates, comm, chevSum, c, diff;

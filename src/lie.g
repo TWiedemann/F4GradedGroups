@@ -254,6 +254,24 @@ end);
 LieZeta := L0ToLieEmb(L0Zeta);
 LieXi := L0ToLieEmb(L0Xi);
 
+# comRingIndetNum, conicAlgIndetNum: Integers.
+# Returns: A list of "generic generators" of L_0000 using the indeterminates
+# t_{comIndetNum}, a_{conicIndetNum}, a_{conicIndetNum+1}.
+Lie0000Gens := function(comIndetNum, conicIndetNum)
+	local t1, a1, a2, result, i, j;
+	t1 := ComRingIndet(comIndetNum);
+	a1 := ConicAlgIndet(conicIndetNum);
+	a2 := ConicAlgIndet(conicIndetNum+1);
+	result := [t1*LieXi, t1*LieZeta];
+	for i in [1,2,3] do
+		Add(result, Liedd(CubicComEl(i, One(ComRing)), CubicComEl(i, t1)));
+		for j in [i+1..3] do
+			Add(result, Liedd(CubicAlgElMat(i, j, a1), CubicAlgElMat(j, i, a2)));
+		od;
+	od;
+	return result;
+end;
+
 # ----- Getter functions for components of elements of Lie -----
 
 DeclareOperation("LiePart", [IsLieElement, IsInt]);
@@ -279,6 +297,60 @@ InstallOtherMethod(IsZero, [IsLieElement], function(lieEl)
 	for i in [-2..2] do
 		if not IsZero(LiePart(lieEl, i)) then
 			return false;
+		fi;
+	od;
+	return true;
+end);
+
+# lieEl: Element of Lie.
+# Returns: true if lieEl "obviously" lies in
+# L_0000 = \sum_i DD_{i \to i} + ComRing*LieXi + ComRing*LieZeta,
+# and otherwise false. Here "obviously" means that we only check that all coefficients
+# of the parts outside of L_0000 are internally represented by 0. Hence this function should
+# should only be called on elements that have been simplified beforehand, and may of course
+# return false negatives. However, it does not return false positives.
+DeclareOperation("IsInLie0000", [IsLieElement]);
+InstallMethod(IsInLie0000, [IsLieElement], function(lieEl)
+	local i, lie0, coeff, a, b, c, sumA, sumB, func, int;
+	# Check positive and negative parts L_i
+	for i in [-2, -1, 1, 2] do
+		if not IsZero(LiePart(lieEl, i)) then
+			return false;
+		fi;
+	od;
+	lie0 := LiePart(lieEl, 0);
+	# Check L_{01} and L_{0,-1}
+	for func in [L0CubicPosCoeff, L0CubicNegCoeff] do
+		if not IsZero(func(lie0)) then
+			return false;
+		fi;
+	od;
+	# Check L_00
+	for coeff in DDCoeffList(L0DDCoeff(lie0)) do
+		# coeff = c*dd_{a,b} represented as [c, a, b]
+		c := coeff[1]; # \in ComRing
+		a := coeff[2]; # \in Cubic
+		b := coeff[3]; # \in Cubic'
+		if not IsZero(c) then
+			for sumA in Summands(a) do
+				for sumB in Summands(b) do
+					# summand = x[ij] is represented as [i, j, x]
+					if not IsZero(sumA[3]) and not IsZero(sumB[3]) then
+						int := Intersection([sumA[1], sumA[2]], [sumB[1], sumB[2]]);
+						if Size(int) = 0 then # dd_{a,b} = 0 by Peirce law
+							continue;
+						elif Size(int) = 2 then
+							continue; # dd_{a,b} in DD_{i \to i} for i = sumA[1]
+						else
+							if Size(Set([sumA[1], sumA[2], sumB[1], sumB[2]])) = 1 then
+								continue; # dd_{a,b} in DD_{i \to i} for i = sumA[1]
+							else
+								return false;
+							fi;
+						fi;
+					fi;
+				od;
+			od;
 		fi;
 	od;
 	return true;

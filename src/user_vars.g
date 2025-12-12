@@ -1,4 +1,5 @@
 ## Elements of ConicAlg and ConicAlgMag
+# TODO: Make indeterminates constants that the user cannot change.
 a1 := ConicAlgIndet(1);
 a2 := ConicAlgIndet(2);
 aMag1 := ConicAlgMagIndet(1);

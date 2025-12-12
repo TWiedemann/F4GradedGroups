@@ -396,6 +396,90 @@ InstallMethod(LieEndoIsAuto, [IsLieEndo], function(f)
 	return isAuto;
 end);
 
+# Documentation: See TestWeyl, but with onRootList
+TestWeylOn := function(root, onRootList, w, wInv)
+	return _WeylErrorAndParity(root, onRootList, w, wInv)[2];
+end;
+
+# w, wInv: Elements of LieEndo. It is assumed that wInv = w^-1.
+# Returns: true if w can be proven to be a root-Weyl element.
+# Otherwise the output is a list consisting of lists [baseRoot, errorList] where
+# baseRoot is a root and errorList is the list of Lie algebra elements which have to
+# be proven to be zero.
+# Uses indeterminates a_1, t_1, a_{ConicAlg_rank}, t_{ComRing_rank}
+TestWeyl := function(root, w, wInv)
+	return TestWeylOn(root, F4Roots, w, wInv);
+end;
+
+
+# root: Root in F4.
+# Returns true if GrpStandardWeylF4(root) can be proven to be a Weyl element,
+# otherwise returns a list of error terms.
+# Uses indeterminates a_1, t_1, a_{ConicAlg_rank}, t_{ComRing_rank}
+TestWeylStandard := function(root)
+	local w, wInv;
+	w := GrpStandardWeylF4(root);
+	wInv := GrpStandardWeylF4(root, -1);
+	return TestWeyl(root, w, wInv);
+end;
+
+TestLongWeyl := function()
+	local root, testResult, i;
+	testResult := [];
+	for i in [1..Length(F4PosLongRoots)] do
+		root := F4PosLongRoots[i];
+		Print(i, "/", Length(F4PosLongRoots), "\n");
+		Add(testResult, [root, TestWeylStandard(root)]);
+	od;
+	return testResult;
+end;
+
+TestShortWeyl := function()
+	local root, testResult, i;
+	testResult := [];
+	for i in [1..Length(F4PosShortRoots)] do
+		root := F4PosShortRoots[i];
+		Print(i, "/", Length(F4PosShortRoots), "\n");
+		Add(testResult, [root, TestWeylStandard(root)]);
+	od;
+	return testResult;
+end;
+
+# Returns a list of relations which have to be verified by hand to prove that
+# the parities of GrpStandardWeylF4(F4SimpleRoots[i]) adhere to F4ParityList
+# This is essentially a duplicate.
+TestStandardWeylParity := function(i)
+	local d, w, wInv, errorList, error, j, baseRoot, a, x, b, y;
+	d := F4SimpleRoots[i];
+	w := GrpStandardWeylF4(d);
+	wInv := GrpStandardWeylF4(d, -1);
+	errorList := [];
+	for j in [1..Length(F4Roots)] do
+		baseRoot := F4Roots[j];
+		if baseRoot in F4ShortRoots then
+			a := ConicAlgIndet(1);
+		else
+			a := ComRingIndet(1);
+		fi;
+		x := GrpRootHomF4(baseRoot, a);
+		b := a;
+		if F4ParityList[j][i][1] = -1 then
+			b := -b;
+		fi;
+		if F4ParityList[j][i][2] = -1 then
+			b := ConicAlgInv(b);
+		fi;
+		y := GrpRootHomF4(F4Refl(baseRoot, d), b);
+		error := TestRelations([[wInv*x*w, y]]);
+		if not IsEmpty(error) then
+			Print(baseRoot, " -> ", F4Refl(baseRoot, d), ":\n");
+			Display(error);
+			errorList := Concatenation(errorList, error);
+		fi;
+	od;
+	return errorList;
+end;
+
 ## Tests for abstract parametrisation strategy
 
 # relations: A list of lists [l1, l2] where l1 and l2 are lists containing elements

@@ -124,9 +124,9 @@ InstallMethod(GrpRootHomF4NonDiv, [IsList, IsRingElement, IsBool], function(root
 		lieXCoeff := LiePart(lieEl, -2);
 		lieNeg1 := LiePart(lieEl, -1);
 		lie0 := LiePart(lieEl, 0);
-		lieDDCoeffList := DDCoeffList(L0DDCoeff(lie0));
-		lieXiCoeff := L0XiCoeff(lie0);
-		lieZetaCoeff := L0ZetaCoeff(lie0);
+		lieDDCoeffList := DDCoeffList(L0DDPart(lie0));
+		lieXiCoeff := L0XiPart(lie0);
+		lieZetaCoeff := L0ZetaPart(lie0);
 		lieCubicPos := L0CubicPosPart(lie0);
 		lieCubicNeg := L0CubicNegPart(lie0);
 		liePos1 := LiePart(lieEl, 1);

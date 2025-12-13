@@ -194,16 +194,16 @@ end);
 
 # ---- Getter functions for parts of elements of L0 ----
 
-DeclareOperation("L0XiCoeff", [IsL0Element]);
-DeclareOperation("L0ZetaCoeff", [IsL0Element]);
+DeclareOperation("L0XiPart", [IsL0Element]);
+DeclareOperation("L0ZetaPart", [IsL0Element]);
 DeclareOperation("L0CubicPosPart", [IsL0Element]);
 DeclareOperation("L0CubicNegPart", [IsL0Element]);
-DeclareOperation("L0DDCoeff", [IsL0Element]);
+DeclareOperation("L0DDPart", [IsL0Element]);
 
-InstallMethod(L0XiCoeff, [IsL0Element], function(L0El)
+InstallMethod(L0XiPart, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).xiCoeff;
 end);
-InstallMethod(L0ZetaCoeff, [IsL0Element], function(L0El)
+InstallMethod(L0ZetaPart, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).zetaCoeff;
 end);
 InstallMethod(L0CubicPosPart, [IsL0Element], function(L0El)
@@ -212,21 +212,21 @@ end);
 InstallMethod(L0CubicNegPart, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).cubicNeg;
 end);
-InstallMethod(L0DDCoeff, [IsL0Element], function(L0El)
+InstallMethod(L0DDPart, [IsL0Element], function(L0El)
 	return UnderlyingElement(L0El).dd;
 end);
 
 InstallOtherMethod(IsZero, [IsL0Element], function(L0el)
-	return IsZero(L0XiCoeff(L0el)) and IsZero(L0ZetaCoeff(L0el)) and IsZero(L0DDCoeff(L0el))
+	return IsZero(L0XiPart(L0el)) and IsZero(L0ZetaPart(L0el)) and IsZero(L0DDPart(L0el))
 		and IsZero(L0CubicPosPart(L0el)) and IsZero(L0CubicNegPart(L0el));
 end);
 
 # ----- Scalar multiplication ComRing x L0 -> L0 -----
 InstallOtherMethod(\*, "for ComRingElement and L0Element", [IsRingElement, IsL0Element], 2, function(comEl, L0El)
 	return L0(rec(
-		dd := comEl * L0DDCoeff(L0El),
-		xiCoeff := comEl * L0XiCoeff(L0El),
-		zetaCoeff := comEl * L0ZetaCoeff(L0El),
+		dd := comEl * L0DDPart(L0El),
+		xiCoeff := comEl * L0XiPart(L0El),
+		zetaCoeff := comEl * L0ZetaPart(L0El),
 		cubicPos := comEl * L0CubicPosPart(L0El),
 		cubicNeg := comEl * L0CubicNegPart(L0El)
 	));
@@ -279,16 +279,16 @@ DeclareOperation("L0ElAsEndo", [IsL0Element, IsInt]);
 InstallMethod(L0ElAsEndo, [IsL0Element, IsInt], function(L0El, i)
 	local xi, zeta, a, a2, ddList;
 	# Components of L0El
-	xi := L0XiCoeff(L0El);
-	zeta := L0ZetaCoeff(L0El);
+	xi := L0XiPart(L0El);
+	zeta := L0ZetaPart(L0El);
 	a := L0CubicPosPart(L0El);
 	a2 := L0CubicNegPart(L0El);
-	ddList := DDCoeffList(L0DDCoeff(L0El));
+	ddList := DDCoeffList(L0DDPart(L0El));
 	if i = -2 then
 		return function(comEl)
 			# Cubic, Cubic' and DD act trivially
 			ReqComRingEl(comEl);
-			return -(2*L0XiCoeff(L0El) + L0ZetaCoeff(L0El)) * comEl;
+			return -(2*L0XiPart(L0El) + L0ZetaPart(L0El)) * comEl;
 		end;
 	elif i = 1 or i = -1 then # The actions on L_1 and on L_{-1} are nearly identical
 		return function(brownEl)
@@ -323,7 +323,7 @@ InstallMethod(L0ElAsEndo, [IsL0Element, IsInt], function(L0El, i)
 		return function(comEl)
 			# Cubic, Cubic' and DD act trivially
 			ReqComRingEl(comEl);
-			return (2*L0XiCoeff(L0El) + L0ZetaCoeff(L0El)) * comEl;
+			return (2*L0XiPart(L0El) + L0ZetaPart(L0El)) * comEl;
 		end;
 	else
 		return fail;

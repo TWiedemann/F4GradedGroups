@@ -337,7 +337,7 @@ InstallMethod(IsInLie0000, [IsLieElement], function(lieEl)
 		fi;
 	od;
 	# Check L_00
-	for coeff in DDCoeffList(L0DDCoeff(lie0)) do
+	for coeff in DDCoeffList(L0DDPart(lie0)) do
 		# coeff = c*dd_{a,b} represented as [c, a, b]
 		c := coeff[1]; # \in ComRing
 		a := coeff[2]; # \in Cubic

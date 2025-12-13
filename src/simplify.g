@@ -634,9 +634,9 @@ InstallMethod(WithoutTraces, [IsL0Element], function(l0El)
 	return Sum([
 		CubicPosToL0Emb(WithoutTraces(L0CubicPosPart(l0El))),
 		CubicNegToL0Emb(WithoutTraces(L0CubicNegPart(l0El))),
-		L0XiCoeff(l0El)*L0Xi,
-		L0ZetaCoeff(l0El)*L0Zeta,
-		DDToL0Emb(WithoutTraces(L0DDCoeff(l0El)))
+		L0XiPart(l0El)*L0Xi,
+		L0ZetaPart(l0El)*L0Zeta,
+		DDToL0Emb(WithoutTraces(L0DDPart(l0El)))
 	]);
 end);
 
@@ -646,23 +646,23 @@ InstallMethod(Simplify, [IsL0Element], function(L0El)
 	local pos, neg, zeta, xi, dd, l0;
 	pos := L0CubicPosPart(L0El);
 	neg := L0CubicNegPart(L0El);
-	zeta := L0ZetaCoeff(L0El);
-	xi := L0XiCoeff(L0El);
+	zeta := L0ZetaPart(L0El);
+	xi := L0XiPart(L0El);
 	# To the DD-part, we apply Simplify, then ApplyDDLaws, then
 	# Simplify, then ApplyDDLaws and then Simplify.
 	# We have to apply Simplify to the DD-part before applying
 	# ApplyDDLaws because Simplify may produce summands in
 	# ComRing*One(ConicAlg) which were not visible beforehand (e.g. a1+a1').
-	l0 := ApplyDDLaws(Simplify(L0DDCoeff(L0El)), true);
-	zeta := zeta + L0ZetaCoeff(l0);
-	xi := xi + L0XiCoeff(l0);
-	l0 := ApplyDDLaws(Simplify(L0DDCoeff(l0)), true);
+	l0 := ApplyDDLaws(Simplify(L0DDPart(L0El)), true);
+	zeta := zeta + L0ZetaPart(l0);
+	xi := xi + L0XiPart(l0);
+	l0 := ApplyDDLaws(Simplify(L0DDPart(l0)), true);
 	return Sum([
 		CubicPosToL0Emb(Simplify(pos)),
 		CubicNegToL0Emb(Simplify(neg)),
-		Simplify(zeta + L0ZetaCoeff(l0)) * L0Zeta,
-		Simplify(xi + L0XiCoeff(l0)) * L0Xi,
-		DDToL0Emb(Simplify(L0DDCoeff(l0)))
+		Simplify(zeta + L0ZetaPart(l0)) * L0Zeta,
+		Simplify(xi + L0XiPart(l0)) * L0Xi,
+		DDToL0Emb(Simplify(L0DDPart(l0)))
 	]);
 end);
 

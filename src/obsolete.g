@@ -212,13 +212,13 @@ CubicElCoeffMat := function(cubicEl, i, j)
 		return fail;
 	fi;
 	if i = j then
-		return CubicElComCoeff(cubicEl, i);
+		return CubicComPart(cubicEl, i);
 	else
 		k := Difference([1,2,3], [i,j])[1]; # {1, 2, 3} = {i, j, k} as sets
 		if [i, j, k] in CycPerm then
-			return CubicElAlgCoeff(cubicEl, k);
+			return CubicConicPart(cubicEl, k);
 		else
-			return ConicAlgInv(CubicElAlgCoeff(cubicEl, k));
+			return ConicAlgInv(CubicConicPart(cubicEl, k));
 		fi;
 	fi;
 end;

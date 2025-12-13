@@ -226,10 +226,10 @@ end);
 DeclareOperation("WithoutTraces", [IsCubicElement]);
 InstallMethod(WithoutTraces, [IsCubicElement], function(cubEl)
 	return CubicElFromTuple(
-		CubicElComCoeff(cubEl, 1), CubicElComCoeff(cubEl, 2), CubicElComCoeff(cubEl, 3),
-		WithoutTraces(CubicElAlgCoeff(cubEl, 1)),
-		WithoutTraces(CubicElAlgCoeff(cubEl, 2)),
-		WithoutTraces(CubicElAlgCoeff(cubEl, 3))
+		CubicComPart(cubEl, 1), CubicComPart(cubEl, 2), CubicComPart(cubEl, 3),
+		WithoutTraces(CubicConicPart(cubEl, 1)),
+		WithoutTraces(CubicConicPart(cubEl, 2)),
+		WithoutTraces(CubicConicPart(cubEl, 3))
 	);
 end);
 
@@ -240,8 +240,8 @@ InstallMethod(Simplify, [IsCubicElement], function(cubEl)
 	t := [];
 	a := [];
 	for i in [1..3] do
-		t[i] := Simplify(CubicElComCoeff(cubEl, i));
-		a[i] := Simplify(CubicElAlgCoeff(cubEl, i));
+		t[i] := Simplify(CubicComPart(cubEl, i));
+		a[i] := Simplify(CubicConicPart(cubEl, i));
 	od;
 	return CubicElFromTuple(t[1], t[2], t[3], a[1], a[2], a[3]);
 end);

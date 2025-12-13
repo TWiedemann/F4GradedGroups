@@ -91,7 +91,7 @@ end);
 # i: 1, 2, or 3
 # Returns: u \in Conic such that u[jl] is the jl-summand of cubicEl where ijl is
 # the unique cyclic permutation starting from i
-CubicElAlgCoeff := function(cubicEl, i)
+CubicConicPart := function(cubicEl, i)
 	if i in [1,2,3] then
 		return UnderlyingElement(cubicEl)[2][i];
 	else
@@ -101,7 +101,7 @@ CubicElAlgCoeff := function(cubicEl, i)
 end;
 
 # Return x_i as above
-CubicElComCoeff := function(cubicEl, i)
+CubicComPart := function(cubicEl, i)
 	if i in [1,2,3] then
 		return UnderlyingElement(cubicEl)[1][i];
 	else
@@ -247,13 +247,13 @@ InstallMethod(Summands, [IsCubicElement], function(cubicEl)
 	local result, i, a, t;
 	result := [];
 	for i in [1..3] do
-		t := CubicElComCoeff(cubicEl, i);
+		t := CubicComPart(cubicEl, i);
 		if not IsZero(t) then
 			Add(result, [i, i, t]);
 		fi;
 	od;
 	for i in [1..3] do
-		a := CubicElAlgCoeff(cubicEl, i);
+		a := CubicConicPart(cubicEl, i);
 		if not IsZero(a) then
 			Add(result, [CycPerm[i][2], CycPerm[i][3], a]);
 		fi;
@@ -275,10 +275,10 @@ DeclareOperation("CubicBiTr", [IsCubicElement, IsCubicElement]);
 InstallMethod(CubicNorm, [IsCubicElement], function(A)
 	local sum, perm, i, j, l, prod;
 	sum := Sum([
-		CubicElComCoeff(A, 1) * CubicElComCoeff(A, 2) * CubicElComCoeff(A, 3),
+		CubicComPart(A, 1) * CubicComPart(A, 2) * CubicComPart(A, 3),
 		Product([
 			TwistDiag[1] * TwistDiag[2] * TwistDiag[3],
-			ConicAlgTr(CubicElAlgCoeff(A, 1)*CubicElAlgCoeff(A, 2)*CubicElAlgCoeff(A, 3))
+			ConicAlgTr(CubicConicPart(A, 1)*CubicConicPart(A, 2)*CubicConicPart(A, 3))
 		])
 	]);
 	for perm in CycPerm do
@@ -286,8 +286,8 @@ InstallMethod(CubicNorm, [IsCubicElement], function(A)
 		j := perm[2];
 		l := perm[3];
 		prod := Product([
-			CubicElComCoeff(A, i) * TwistDiag[j] * TwistDiag[l],
-			ConicAlgNorm(CubicElAlgCoeff(A, i))
+			CubicComPart(A, i) * TwistDiag[j] * TwistDiag[l],
+			ConicAlgNorm(CubicConicPart(A, i))
 		]);
 		sum := sum - prod;
 	od;
@@ -304,12 +304,12 @@ InstallMethod(CubicAdj, [IsCubicElement], function(A)
 		i := perm[1];
 		j := perm[2];
 		l := perm[3];
-		a_i := CubicElAlgCoeff(A, i);
-		a_j := CubicElAlgCoeff(A, j);
-		a_l := CubicElAlgCoeff(A, l);
-		A_i := CubicElComCoeff(A, i);
-		A_j := CubicElComCoeff(A, j);
-		A_l := CubicElComCoeff(A, l);
+		a_i := CubicConicPart(A, i);
+		a_j := CubicConicPart(A, j);
+		a_l := CubicConicPart(A, l);
+		A_i := CubicComPart(A, i);
+		A_j := CubicComPart(A, j);
+		A_l := CubicComPart(A, l);
 		comEl := A_j*A_l - TwistDiag[j]*TwistDiag[l]*ConicAlgNorm(a_i);
 		result := result + CubicComEl(i, comEl);
 		algEl := -A_i*a_i + TwistDiag[i] * ConicAlgInv(a_j*a_l);
@@ -329,18 +329,18 @@ InstallMethod(CubicCross, [IsCubicElement, IsCubicElement], function(A, B)
 		i := perm[1];
 		j := perm[2];
 		l := perm[3];
-		a_i := CubicElAlgCoeff(A, i);
-		a_j := CubicElAlgCoeff(A, j);
-		a_l := CubicElAlgCoeff(A, l);
-		b_i := CubicElAlgCoeff(B, i);
-		b_j := CubicElAlgCoeff(B, j);
-		b_l := CubicElAlgCoeff(B, l);
-		A_i := CubicElComCoeff(A, i);
-		A_j := CubicElComCoeff(A, j);
-		A_l := CubicElComCoeff(A, l);
-		B_i := CubicElComCoeff(B, i);
-		B_j := CubicElComCoeff(B, j);
-		B_l := CubicElComCoeff(B, l);
+		a_i := CubicConicPart(A, i);
+		a_j := CubicConicPart(A, j);
+		a_l := CubicConicPart(A, l);
+		b_i := CubicConicPart(B, i);
+		b_j := CubicConicPart(B, j);
+		b_l := CubicConicPart(B, l);
+		A_i := CubicComPart(A, i);
+		A_j := CubicComPart(A, j);
+		A_l := CubicComPart(A, l);
+		B_i := CubicComPart(B, i);
+		B_j := CubicComPart(B, j);
+		B_l := CubicComPart(B, l);
 		comEl := A_j*B_l + B_j*A_l - TwistDiag[j]*TwistDiag[l]*ConicAlgNormLin(a_i, b_i);
 		result := result + CubicComEl(i, comEl);
 		algEl := -A_i*b_i - B_i*a_i + TwistDiag[i]*ConicAlgInv(a_j*b_l + b_j*a_l);
@@ -361,8 +361,8 @@ InstallMethod(CubicBiTr, [IsCubicElement, IsCubicElement], function(A, B)
 		l := perm[3];
 		result := Sum([
 			result,
-			CubicElComCoeff(A, i)*CubicElComCoeff(B, i),
-			TwistDiag[j]*TwistDiag[l]*ConicAlgNormLin(CubicElAlgCoeff(A, i), CubicElAlgCoeff(B, i))
+			CubicComPart(A, i)*CubicComPart(B, i),
+			TwistDiag[j]*TwistDiag[l]*ConicAlgNormLin(CubicConicPart(A, i), CubicConicPart(B, i))
 		]);
 	od;
 	return result;

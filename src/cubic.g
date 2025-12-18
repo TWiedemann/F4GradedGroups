@@ -100,13 +100,24 @@ CubicConicPart := function(cubicEl, i)
 	fi;
 end;
 
-# Return x_i as above
+# Returns: t \in ComRing such that t[ii] is the ii-summand of cubicEl.
 CubicComPart := function(cubicEl, i)
 	if i in [1,2,3] then
 		return UnderlyingElement(cubicEl)[1][i];
 	else
 		Error("Cubic element: Invalid position.");
 		return fail;
+	fi;
+end;
+
+# Returns: a \in ComRing or a \in ConicAlg such that a[ij] is the ij-summand of cubicEl.
+CubicPartMat := function(cubicEl, i, j)
+	if i=j then
+		return CubicComPart(cubicEl, i);
+	elif CycPerm[i][2] = j then
+		return CubicConicPart(cubicEl, CycPerm[i][3]);
+	else
+		return ConicAlgInv(CubicPartMat(cubicEl, j, i));
 	fi;
 end;
 

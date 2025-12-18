@@ -389,10 +389,9 @@ TestChevStrucConstSigns := function()
 			roots := G2Roots;
 			c := ChevStrucConst;
 		fi;
-		for i in [1..Length(F4Roots)] do
-			for j in [1..Length(F4Roots)] do
-				# (It would be sufficient to test only the cases with i<j, but the
-				# whole test runs in less than a minute anyway.)
+		for i in [1..Length(roots)] do
+			# We only need to test for i<j because c(a,b) = -c(b,a)
+			for j in [i+1..Length(roots)] do
 				root1 := roots[i];
 				root2 := roots[j];
 				if c(root1, root2) <> -c(-root1, -root2) then
@@ -454,9 +453,11 @@ end;
 # is satisfied. In any other case, returns true if the commutator formula
 # LieRootHomF4(root1, a) * LieRootHomF4(root2, b) = LieRootHomF4(root1+root2, p)
 # is satisfied for some p, which may be one of the following:
-# - ChevStrucConst(root1, root2)/2 * tr(c*d) if root1+root2 is long and one of root1, root2 is short
-# - ChevStrucConst(root1, root2) * c*d otherwise
-# where c in [a,a'], d in [b,b'].
+# - ChevStrucConst(root1, root2)/2 * tr(c*d) if root1+root2 is long and
+# one of root1, root2 is short. (In this case, by TestF4RootLengthSum(),
+# both root1, root2 are short.)
+# - ChevStrucConst(root1, root2) * e otherwise
+# where c in [a,a'], d in [b,b'], e in [c*d, d*c].
 # Uses indeterminates t_1, t_2, a_1, a_2.
 TestLieComRel := function(root1, root2)
 	local roots, t, a, i, c, param, lie, comm, test, prod, p1, p2, par;
@@ -509,7 +510,7 @@ TestLieComRel := function(root1, root2)
 					return true;
 				fi;
 			else
-				# Not commutator relation to test for [L_alpha, L_{-alpha}]
+				# No commutator relation to test for [L_alpha, L_{-alpha}]
 				return true;
 			fi;
 		od;
@@ -519,11 +520,7 @@ end;
 
 # Returns: true if TestLieComRel succeeds for all pairs of roots in F4, and false otherwise.
 TestLieComRels := function()
-	local t1, t2, a1, a2, root1, root2, rootSum, lie1, lie2, test, comm;
-	t1 := ComRingIndet(1);
-	t2 := ComRingIndet(2);
-	a1 := ConicAlgIndet(1);
-	a2 := ConicAlgIndet(2);
+	local root1, root2;
 	for root1 in F4Roots do
 		for root2 in F4Roots do
 			if not TestLieComRel(root1, root2) then
@@ -551,6 +548,28 @@ TestComRingIndetInfo := function()
 			or (type = "tr" and indet <> ConicAlgMagTr(info)) then
 			return i;
 		fi;
+	od;
+	return true;
+end;
+
+# Returns: true if for all roots a, b in F4 with a+b \in F4, the following hold:
+# - If b and a+b are long, then a is long.
+# - If b is long and a+b is short, then a is short.
+# Otherwise returns false.
+# (Returns true.)
+TestF4RootLengthSum := function()
+	local a,b;
+	for a in F4Roots do
+		for b in F4Roots do
+			if not a+b in F4Roots then
+				continue;
+			fi;
+			if b in F4LongRoots and a+b in F4LongRoots and a in F4ShortRoots then
+				return false;
+			elif b in F4LongRoots and a+b in F4ShortRoots and a in F4LongRoots then
+				return false;
+			fi;
+		od;
 	od;
 	return true;
 end;

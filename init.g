@@ -1,19 +1,22 @@
-# InitF4Graded(a,b,c) initialises the setup of the package with
-# ComRing_rank := a, ConicAlg_rank := b, Trace_MaxLength := c.
-# InitF4Graded() uses (6,4,4) as the default values for (a,b,c).
+# InitF4Graded(a,b,c,d) initialises the setup of the package with
+# ComRing_rank := a, ConicAlg_rank := b, Trace_MaxLength := c and defines
+# the variables in user_vargs.g if d = true.
+# InitF4Graded() uses (6,4,4,true) as the default values for (a,b,c,d).
 DeclareGlobalFunction("InitF4Graded");
 # DeclareOperation("InitF4Graded", [IsInt, IsInt, IsInt]);
-InstallGlobalFunction(InitF4Graded, function(ranks...)
-	local comrank, conicrank, tracelength, s;
+InstallGlobalFunction(InitF4Graded, function(args...)
+	local comrank, conicrank, tracelength, s, userVars;
 	# Set default values for ComRing_rank, ConicAlg_rank, Trace_MaxLength
-	if Length(ranks) > 0 then
-		comrank := ranks[1];
-		conicrank := ranks[2];
-		tracelength := ranks[3];
+	if Length(args) > 0 then
+		comrank := args[1];
+		conicrank := args[2];
+		tracelength := args[3];
+		userVars := args[4];
 	else
 		comrank := 6;
 		conicrank := 4;
 		tracelength := 4;
+		userVars := true;
 	fi;
 	# If InitF4Graded is called a second time in the same GAP session (not recommended, but
 	# "usually" works), then the variables have to be unbound first
@@ -47,5 +50,7 @@ InstallGlobalFunction(InitF4Graded, function(ranks...)
 	RereadPackage("F4GradedGroups", "gap/test_equal.g");
 	RereadPackage("F4GradedGroups", "gap/test_paper.g");
 	RereadPackage("F4GradedGroups", "gap/test_additional.g");
-	RereadPackage("F4GradedGroups", "gap/user_vars.g");
+	if userVars = true then
+		RereadPackage("F4GradedGroups", "gap/user_vars.g");
+	fi;
 end);

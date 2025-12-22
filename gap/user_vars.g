@@ -54,9 +54,9 @@ BindGlobal("dd", Liedd);
 
 # Simple roots
 BindGlobal("d1", F4SimpleRoots[1]);
-BindGlobal("d2", F4SimpleRoots[2];
-BindGlobal("d3", F4SimpleRoots[3];
-BindGlobal("d4", F4SimpleRoots[4];
+BindGlobal("d2", F4SimpleRoots[2]);
+BindGlobal("d3", F4SimpleRoots[3]);
+BindGlobal("d4", F4SimpleRoots[4]);
 
 # Weyl elements
 BindGlobal("w1", GrpStandardWeylF4(F4SimpleRoots[1]));

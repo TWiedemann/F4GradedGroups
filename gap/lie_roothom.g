@@ -29,7 +29,7 @@ InstallMethod(CubicRootHomLong, [IsInt, IsRingElement, IsInt, IsBool], function(
 	else
 		lambda := One(ComRing);
 	fi;
-	return CubicComEl(l, lambda * a);
+	return CubicComEl(lambda * a, l);
 end);
 
 # Default value: noGamma = false
@@ -60,7 +60,7 @@ InstallMethod(CubicRootHomShort, [IsInt, IsRingElement, IsInt, IsBool], function
 	else
 		lambda := One(ComRing);
 	fi;
-	return CubicConicEl(l, lambda * a);
+	return CubicConicEl(lambda * a, l);
 end);
 
 # Default value: noGamma = false
@@ -160,7 +160,7 @@ InstallMethod(DDRootHomA2, [IsList, IsRingElement, IsBool], function(root, a, no
 	else
 		lambda := One(ComRing);
 	fi;
-    return DDdd(CubicComEl(i, One(ComRing)), lambda*CubicConicElMat(i, j, a));
+    return DDdd(CubicComEl(One(ComRing), i), lambda*CubicConicElMat(i, j, a));
 end);
 
 # Default: noGamma = false.
@@ -311,9 +311,9 @@ BindGlobal("LieGensAsModule", function(comIndetNum, conicIndetNum)
 	for i in [1..3] do
 		for j in [1..3] do
 			if i = j then
-				gen := Liedd(CubicComEl(i, One(ComRing)), CubicComEl(i, t1));
+				gen := Liedd(CubicComEl(One(ComRing), i), CubicComEl(t1, i));
 			else
-				gen := Liedd(CubicComEl(i, One(ComRing)), CubicConicElMat(i, j, a1));
+				gen := Liedd(CubicComEl(One(ComRing), i), CubicConicElMat(i, j, a1));
 			fi;
 			Add(gens, gen);
 		od;

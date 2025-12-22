@@ -264,7 +264,7 @@ BindGlobal("Lie0000Gens", function(comIndetNum, conicIndetNum)
 	a2 := ConicAlgIndet(conicIndetNum+1);
 	result := [t1*LieXi, t1*LieZeta];
 	for i in [1,2,3] do
-		Add(result, Liedd(CubicComEl(i, One(ComRing)), CubicComEl(i, t1)));
+		Add(result, Liedd(CubicComEl(One(ComRing), i), CubicComEl(t1, i)));
 		for j in [i+1..3] do
 			Add(result, Liedd(CubicConicElMat(i, j, a1), CubicConicElMat(j, i, a2)));
 		od;

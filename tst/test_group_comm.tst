@@ -6,7 +6,7 @@
 
 ### Init
 gap> InitF4Graded(6, 3, 4, false);;
-gap> RereadPackage("F4GradedGroups", "gap/test_paper.g");;
+gap> RereadPackage("F4GradedGroups", "gap/test_DMW.g");;
 
 # Element is trivial because
 # n(a2)*a1 = a1*n(a2) = a1*(a2*a2') = (a1*a2)*a2',

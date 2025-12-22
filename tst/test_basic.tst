@@ -71,17 +71,17 @@ tr(a1a2')
 ### ----- Cubic norm (pair) structure ---
 
 ## Elements
-gap> CubicComEl(1, t1);
+gap> CubicComEl(t1, 1);
 (t1)[11]
-gap> CubicComEl(2, t1);
+gap> CubicComEl(t1, 2);
 (t1)[22]
-gap> CubicComEl(3, t1);
+gap> CubicComEl(t1, 3);
 (t1)[33]
-gap> CubicConicEl(1, a1);
+gap> CubicConicEl(a1, 1);
 ((1)*a1)[23]
-gap> CubicConicEl(2, a1);
+gap> CubicConicEl(a1, 2);
 ((1)*a1)[31]
-gap> CubicConicEl(3, a1);
+gap> CubicConicEl(a1, 3);
 ((1)*a1)[12]
 gap> CubicConicElMat(1, 2, a1);
 ((1)*a1)[12]
@@ -115,9 +115,9 @@ g1*g2*tr(a3a6')+g1*g3*tr(a2a5')+g2*g3*tr(a1a4')+t1*t4+t2*t5+t3*t6
 ## Jordan maps 
 gap> JordanU(cubicGen1, cubicGen2);
 (g1*g2*g3*tr(a2a3a4)+g1*g2*t1*tr(a3a6')+g1*g2*t5*n(a3)+g1*g3*t1*tr(a2a5')+g1*g3*t6*n(a2)+t1^2*t4)[11]+(g1*g2*g3*tr(a1a5a3)+g1*g2*t2*tr(a3a6')+g1*g2*t4*n(a3)+g2*g3*t2*tr(a1a4')+g2*g3*t6*n(a1)+t2^2*t5)[22]+(g1*g2*g3*tr(a1a2a6)+g1*g3*t3*tr(a2a5')+g1*g3*t4*n(a2)+g2*g3*t3*tr(a1a4')+g2*g3*t5*n(a1)+t3^2*t6)[33]+((g1*g2*tr(a3a6')+g1*g3*tr(a2a5')+g2*g3*tr(a1a4')+t2*t5+t3*t6)*a1+(-g2*g3*n(a1)+t2*t3)*a4+(g1*t4)*(a3'*a2')+(g1*t3)*(a3'*a5')+(g1*t2)*(a6'*a2')+(-g1*g2)*(a6'*(a3*a1))+(-g1*g3)*((a1*a2)*a5'))[23]+((g1*g2*tr(a3a6')+g1*g3*tr(a2a5')+g2*g3*tr(a1a4')+t1*t4+t3*t6)*a2+(-g1*g3*n(a2)+t1*t3)*a5+(g2*t5)*(a1'*a3')+(g2*t1)*(a1'*a6')+(g2*t3)*(a4'*a3')+(-g2*g3)*(a4'*(a1*a2))+(-g1*g2)*((a2*a3)*a6'))[31]+((g1*g2*tr(a3a6')+g1*g3*tr(a2a5')+g2*g3*tr(a1a4')+t1*t4+t2*t5)*a3+(-g1*g2*n(a3)+t1*t2)*a6+(g3*t6)*(a2'*a1')+(g3*t2)*(a2'*a4')+(g3*t1)*(a5'*a1')+(-g1*g3)*(a5'*(a2*a3))+(-g2*g3)*((a3*a1)*a4'))[12]
-gap> JordanU(CubicConicEl(1, a1), CubicConicEl(2, a2));
+gap> JordanU(CubicConicEl(a1, 1), CubicConicEl(a2, 2));
 0_J
-gap> JordanU(CubicConicEl(1, a1), CubicComEl(2, t2));
+gap> JordanU(CubicConicEl(a1, 1), CubicComEl(t2, 2));
 (g2*g3*t2*n(a1))[33]
 gap> JordanULin(cubicGen1, cubicGen2, cubicGen1);
 (g1*g2*g3*tr(a1a2a6)+g1*g2*g3*tr(a1a5a3)+g1*g2*t1*tr(a3a6')+g1*g2*t2*tr(a3a6')+2*g1*g2*t4*n(a3)+g1*g3*t1*tr(a2a5')+g1*g3*t3*tr(a2a5')+2*g1*g3*t4*n(a2)+2*t1^2*t4)[11]+(g1*g2*g3*tr(a1a2a6)+g1*g2*g3*tr(a2a3a4)+g1*g2*t1*tr(a3a6')+g1*g2*t2*tr(a3a6')+2*g1*g2*t5*n(a3)+g2*g3*t2*tr(a1a4')+g2*g3*t3*tr(a1a4')+2*g2*g3*t5*n(a1)+2*t2^2*t5)[22]+(g1*g2*g3*tr(a1a5a3)+g1*g2*g3*tr(a2a3a4)+g1*g3*t1*tr(a2a5')+g1*g3*t3*tr(a2a5')+2*g1*g3*t6*n(a2)+g2*g3*t2*tr(a1a4')+g2*g3*t3*tr(a1a4')+2*g2*g3*t6*n(a1)+2*t3^2*t6)[33]+((g1*g2*tr(a3a6')+g1*g3*tr(a2a5')+t2*t5+t2*t6+t3*t5+t3*t6)*a1+(2*g1*g2*n(a3)+2*g1*g3*n(a2)+2*g2*g3*n(a1)+t2^2+t3^2)*a4+(g1*t5+g1*t6)*(a3'*a2')+(g1*t1+g1*t2)*(a3'*a5')+(-g1*g2)*(a3'*(a3*a4))+(-g1*g2)*(a3'*(a6*a1))+(g1*t1+g1*t3)*(a6'*a2')+(-g1*g3)*((a1*a5)*a2')+(-g1*g3)*((a4*a2)*a2'))[23]+((g1*g2*tr(a3a6')+g2*g3*tr(a1a4')+t1*t4+t1*t6+t3*t4+t3*t6)*a2+(2*g1*g2*n(a3)+2*g1*g3*n(a2)+2*g2*g3*n(a1)+t1^2+t3^2)*a5+(g2*t4+g2*t6)*(a1'*a3')+(g2*t2+g2*t3)*(a1'*a6')+(-g2*g3)*(a1'*(a1*a5))+(-g2*g3)*(a1'*(a4*a2))+(g2*t1+g2*t2)*(a4'*a3')+(-g1*g2)*((a2*a6)*a3')+(-g1*g2)*((a5*a3)*a3'))[31]+((g1*g3*tr(a2a5')+g2*g3*tr(a1a4')+t1*t4+t1*t5+t2*t4+t2*t5)*a3+(2*g1*g2*n(a3)+2*g1*g3*n(a2)+2*g2*g3*n(a1)+t1^2+t2^2)*a6+(g3*t4+g3*t5)*(a2'*a1')+(g3*t1+g3*t3)*(a2'*a4')+(-g1*g3)*(a2'*(a2*a6))+(-g1*g3)*(a2'*(a5*a3))+(g3*t2+g3*t3)*(a5'*a1')+(-g2*g3)*((a3*a4)*a1')+(-g2*g3)*((a6*a1)*a1'))[12]
@@ -129,7 +129,7 @@ gap> brown1 := BrownElFromTuple(t1, cubicGen1, cubicGen2, t2);
 [ t1, (t1)[11]+(t2)[22]+(t3)[33]+((1)*a1)[23]+((1)*a2)[31]+((1)*a3)[12], (t4)[11]+(t5)[22]+(t6)[33]+((1)*a4)[23]+((1)*a5)[31]+((1)*a6)[12], t2 ]
 gap> t1*brown1;
 [ t1^2, (t1^2)[11]+(t1*t2)[22]+(t1*t3)[33]+((t1)*a1)[23]+((t1)*a2)[31]+((t1)*a3)[12], (t1*t4)[11]+(t1*t5)[22]+(t1*t6)[33]+((t1)*a4)[23]+((t1)*a5)[31]+((t1)*a6)[12], t1*t2 ]
-gap> brown1 + BrownElFromTuple(t2, CubicZero, CubicConicEl(1, a1), t3);
+gap> brown1 + BrownElFromTuple(t2, CubicZero, CubicConicEl(a1, 1), t3);
 [ t1+t2, (t1)[11]+(t2)[22]+(t3)[33]+((1)*a1)[23]+((1)*a2)[31]+((1)*a3)[12], (t4)[11]+(t5)[22]+(t6)[33]+((1)*a1+(1)*a4)[23]+((1)*a5)[31]+((1)*a6)[12], t2+t3 ]
 
 ### ----- L_0 -----
@@ -149,13 +149,13 @@ gap> DDdd(cubicGen1, cubicGen2);
 dd_{(t1)[11]+(t2)[22]+(t3)[33]+((1)*a1)[23]+((1)*a2)[31]+((1)*a3)[12],(t4)[11]+(t5)[22]+(t6)[33]+((1)*a4)[23]+((1)*a5)[31]+((1)*a6)[12]}
 
 ## ApplyDDLaws
-gap> ApplyDDLaws(DDdd(CubicConicEl(2, a1), CubicComEl(3, t1)), true);
+gap> ApplyDDLaws(DDdd(CubicConicEl(a1, 2), CubicComEl(t1, 3)), true);
 dd_{(1)[11],((t1)*a1)[31]}
 gap> ApplyDDLaws(DDdd(CubicConicElMat(1,2, a1), CubicConicElMat(2,3, a2)), true);
 dd_{(1)[11],((g2)*(a2'*a1'))[31]}
 gap> ApplyDDLaws(DDdd(CubicConicElMat(1,2, a1), CubicConicElMat(1,3, a2)), true);
 dd_{(1)[22],((g1)*(a1'*a2))[23]}
-gap> ApplyDDLaws(DDdd(CubicConicElMat(1,2, a1), CubicComEl(3, t1)), true);
+gap> ApplyDDLaws(DDdd(CubicConicElMat(1,2, a1), CubicComEl(t1, 3)), true);
 0_{L_0}
 
 ## Embeddings
@@ -185,7 +185,7 @@ gap> Display(last);
  2 part: 4
 gap> LieZeta = L0Zeta;
 false
-gap> LiePart(Liedd(CubicConicEl(1, a1), CubicConicEl(2, a2)) + LieX, 0);
+gap> LiePart(Liedd(CubicConicEl(a1, 1), CubicConicEl(a2, 2)) + LieX, 0);
 dd_{((1)*a1)[23],((1)*a2)[31]}
 
 ## Embeddings

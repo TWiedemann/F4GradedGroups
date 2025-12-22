@@ -78,7 +78,7 @@ TestG2WeylFormulas := function()
 	t1 := ComRingIndet(1);
 	a1 := ConicAlgIndet(1);
 	# Define phibs as w(bLie), a product of exponential automorphisms
-	bCub := t1*CubicComEl(1,t1) + CubicComEl(2, One(ComRing)) + CubicComEl(3, One(ComRing));
+	bCub := t1*CubicComEl(t1, 1) + CubicComEl(One(ComRing), 2) + CubicComEl(One(ComRing), 3);
 	bCubInv := CubicNorm(bCub)^-1 * CubicAdj(bCub);
 	bLie := LieBrownNegElFromTuple(Zero(ComRing), bCub, CubicZero, Zero(ComRing));
 	bInvLie := LieBrownPosElFromTuple(Zero(ComRing), CubicZero, -bCubInv, Zero(ComRing));
@@ -95,7 +95,7 @@ TestG2WeylFormulas := function()
 	# testList will contain lists [e1, e2] for which we test that phibsInv*e1*phibs=e2
 	testList := [];
 	# e_{(0,a,0,0)_+}^\phibs = e_{-a^\iota}
-	aCub := CubicConicEl(1, a1);
+	aCub := CubicConicEl(a1, 1);
 	aLie1 := LieBrownPosElFromTuple(Zero(ComRing), aCub, CubicZero, Zero(ComRing));
 	aLie2 := CubicNegToLieEmb(-iota(aCub));
 	Add(testList, [F4Exp(aLie1), F4Exp(aLie2)]);

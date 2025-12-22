@@ -1,9 +1,11 @@
-### Test executed with ConicAlg_rank >= 3, ComRing_rank >= 2, Trace_MaxLength >= 4
-
+### Test with Test(filepath)
 ### Runtime: Negligible.
 
 ### This file tests that the root homomorphisms in the automorphism group satisfy
 ### the desired F4-commutator relations.
+
+### Init
+gap> InitF4Graded(6, 3, 4, false);;
 
 # Element is trivial because
 # n(a2)*a1 = a1*n(a2) = a1*(a2*a2') = (a1*a2)*a2',

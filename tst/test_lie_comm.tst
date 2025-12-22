@@ -1,9 +1,11 @@
-### Test executed with ConicAlg_rank, ComRing_rank >= 2, Trace_MaxLength >= 4
-
+### Test with Test(filepath)
 ### This file tests everything related to (commutator relations in) the Lie algebra:
 ### - That the F4-commutator relations in the Lie algebra have the desired form.
 ### - That the claimed Chevalley-type bases (for F4 and G2) are indeed Chevalley-type bases.
 ### Runtime: ~4 minutes.
+
+# Init
+gap> InitF4Graded(6, 2, 4, false);;
 
 # Test claim about length of roots for pairs a, b for which a+b is a root
 gap> TestF4RootLengthSum();

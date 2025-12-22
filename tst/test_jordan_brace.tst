@@ -1,8 +1,9 @@
-### Test executed with ConicAlg_rank, ComRing_rank >= 3, Trace_MaxLength >= 4
-
+### Test with Test(filepath)
 ### This file tests that the trilinear brace on the Jordan algebra adheres to the desired formulas.
 ### Runtime: Negligible.
 
+### ----- Init -----
+gap> InitF4Graded(6, 3, 4, false);;
 gap> a1 := ConicAlgIndet(1);; a2 := ConicAlgIndet(2);; a3 := ConicAlgIndet(3);;
 gap> s1 := ComRingIndet(1);; s2 := ComRingIndet(2);; s3 := ComRingIndet(3);;
 

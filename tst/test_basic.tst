@@ -1,8 +1,10 @@
-### Test executed with ConicAlg_rank = ComRing_rank = 6, Trace_MaxLength = 3
 ### Test with Test(filepath, rec( width := 500000 ))
 
 ### This file tests the main functions in the user interface.
 ### Runtime: Negligible.
+
+### ----- Init -----
+gap> InitF4Graded(6, 6, 3, false);;
 
 ### ----- Basic elements -----
 

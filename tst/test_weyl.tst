@@ -1,6 +1,8 @@
-### Test executed with ConicAlg_rank, ComRing_rank >= 2, Trace_MaxLength >= 4
-
+### Test with Test(filepath)
 ### Runtime: ~7 minutes.
+
+### ----- Init -----
+gap> InitF4Graded(6, 2, 4, false);;
 
 ### Test that all elements w_a for a in F4 are indeed reflections. Takes 4 minutes.
 gap> TestAllReflections();

@@ -2,8 +2,8 @@
 
 This collection of GAP files allows basic symbolic computation in free multiplicative conic alternative algebras (over free commutative rings, that is, polynomial rings).
 In other words, it provides a framework to prove that certain identities hold in any multiplicative conic alternative algebra over any commutative ring by deriving these identities from a set of known identities in such objects.
-It also supports similar computations in the Lie algebra and the group of automorphisms that are constructed in the preprint \[DMW25\] *Cubic norm pairs and $G_2$- and $F_4$-graded groups and Lie algebras* (TODO: arXiv link) from an arbitrary multiplicative conic alternative algebra.
-It cannot prove any such identity (which seems to be a hopeless task), but it is powerful enough to prove all identities that are needed in \[DMW25\].
+It also supports similar computations in the Lie algebra and the group of automorphisms that are constructed in the preprint \[DMW\] *Cubic norm pairs and $G_2$- and $F_4$-graded groups and Lie algebras* (TODO: arXiv link) from an arbitrary multiplicative conic alternative algebra.
+It cannot prove any such identity (which seems to be a hopeless task), but it is powerful enough to prove all identities that are needed in \[DMW\].
 
 # Installation
 
@@ -16,7 +16,7 @@ Blabla download and read `read.g`. Modify `ComRing_rank`, `ConicAlg_rank` and `T
 
 ## Unix
 
-# Verification of the claims in \[DMW25\]
+# Verification of the claims in \[DMW\]
 
 # User interface
 
@@ -56,7 +56,7 @@ For example, both `ConicTr(a1*ConicInv(a2))` and `ConicTr(ConicInv(a1)*a2)` are 
 ### Elements of the cubic Jordan matrix algebra
 
 Let `a` be an element of $C$, let `t` be an element of $k$, let `i` be `1`, `2` or `3` and let `i, j, l` denote the unique cyclic permutation of `1, 2, 3` starting with `i`.
-Then the elements of the cubic Jordan matrix algebra $J = J' = Her_3(k, C, \Gamma)$ that are denoted in \[DMW25\] by $a[ij]$ and $te_i$ can be constructed as `CubicConicEl(a, i)` and `CubicComEl(t, i)` and are printed as `a[ij]` and `t[ii]`, respectively.
+Then the elements of the cubic Jordan matrix algebra $J = J' = Her_3(k, C, \Gamma)$ that are denoted in \[DMW\] by $a[ij]$ and $te_i$ can be constructed as `CubicConicEl(a, i)` and `CubicComEl(t, i)` and are printed as `a[ij]` and `t[ii]`, respectively.
 Recall that `a[ji]` is defined to be `a'[ij]`, so `a[pq]` is defined for all distinct `p, q` in `[1, 2, 3]`.
 For arbitrary distinct `i, j` in `[1, 2, 3]` and `b` from $C$ or $k$, the expression `CubicElMat(b, i, j)` evaluates to the element `b[ij]` if it exists, and throws an error otherwise.
 
@@ -74,7 +74,7 @@ Let `a, b, c` be elements of $J$. The Jordan algebra operators of $J$ can be com
 ## The Brown algebra
 
 We refer to the $k$-module $B = (k, J, J', k)$ as the *Brown algebra* because if $2$ is invertible in $k$, then it has the structure of a structurable algebra that is known under this name.
-It parametrises the $1$- and $(-1)$-parts of the Lie algebra that we construct in \[DMW25\].
+It parametrises the $1$- and $(-1)$-parts of the Lie algebra that we construct in \[DMW\].
 The element `[ t, cub1, cub2, s ]` of $B$ may be constructed as `BrownElFromTuple(t, cub1, cub2, s)`.
 
 Let `brown` be an element of $B$. While `brown` is internally represented as a list, it is itself not a list in GAP, so `brown[1]` throws an error. The underlying 4-element list which describes `brown` may be accessed as `BrownElTuple(brown)`. Further, `BrownElPart(brown, i) = BrownElTuple(brown)[i]` for `i` in `[1, 2, 3, 4]`. We also define `BrownElComPart(brown, 1) = BrownElPart(brown, 1)`, `BrownElComPart(brown, 2) = BrownElPart(brown, 4)`, `BrownElConicPart(brown, 1) = BrownElPart(brown, 2)` and `BrownElConicPart(brown, 2) = BrownElPart(brown, 3)`.
@@ -85,7 +85,7 @@ The Lie algebra $L$ that we construct from $J$ is, as a $k$-module, the direct s
 
 ### $L_{-2}$ and $L_2$
 
-The $k$-submodules $L_{-2}$ and $L_2$ are isomorphic to $k$. Their generators are denoted by $x$ and $y$ in \[DMW25\]. They are printed as `x` and `y`, and may be accessed as the constants `LieX` and `LieY`.
+The $k$-submodules $L_{-2}$ and $L_2$ are isomorphic to $k$. Their generators are denoted by $x$ and $y$ in \[DMW\]. They are printed as `x` and `y`, and may be accessed as the constants `LieX` and `LieY`.
 
 For an arbitrary element `lie` of $L$, the elements `t` and `s` of $k$ for which `t*LieX` and `s*LieY` are the components of `lie` in $L_{-2}$ and $L_{-1}$ may be accessed as `LiePart(lie, -2)` and `LiePart(lie, 2)`, respectively.
 
@@ -111,7 +111,7 @@ For an arbitrary element `lie` of $L$, the elements `brownNeg` and `brownPos` of
 
 #### $Z$ and `DD`
 
-We refer to the $k$-module $\langle \mathbf{d}_{a,b} \mid a \in J, b \in J' \rangle$ (which is unnamed in \[DMW25\]) as `DD` in (the documentation of) this GAP package. The $k$-module $L_0$, denoted by `L0` in the code, is the (not necessarily direct) sum of `DD` with $k \xi + k\zeta$.
+We refer to the $k$-module $\langle \mathbf{d}_{a,b} \mid a \in J, b \in J' \rangle$ (which is unnamed in \[DMW\]) as `DD` in (the documentation of) this GAP package. The $k$-module $L_0$, denoted by `L0` in the code, is the (not necessarily direct) sum of `DD` with $k \xi + k\zeta$.
 
 The elements $\xi$ and $\zeta$ are printed as `xi` and `zeta`, and they may be accessed by the constants `LieXi` and `LieZeta`, respectively.
 An element $\mathbf{d}_{a,b}$ is printed as `dd_{a,b}`, and it may be constructed as `dd(a, b)`.
@@ -122,13 +122,13 @@ Since the sum of `DD` and $k \xi + k \zeta$ is not necessarily direct, there are
 
 #### Root homomorphisms
 
-We represent a root in $G_2$ (respectively, $F_4$) as a list with two (respectively, four) elements, each of which is in `[-2, -1, 0, 1, 2]`. This representation corresponds precisely to Figure ??? in \[DMW25\]. For a root `a` in $F_4$, `F4RootG2Coord(a)` is its image in $G_2 \cup \{0\}$. The sets of all roots in $F_4$ and $G_2$ are stored in the lists `F4Roots` and `G2Roots`, respectively.
+We represent a root in $G_2$ (respectively, $F_4$) as a list with two (respectively, four) elements, each of which is in `[-2, -1, 0, 1, 2]`. This representation corresponds precisely to Figure ??? in \[DMW\]. For a root `a` in $F_4$, `F4RootG2Coord(a)` is its image in $G_2 \cup \{0\}$. The sets of all roots in $F_4$ and $G_2$ are stored in the lists `F4Roots` and `G2Roots`, respectively.
 
-For a root `alpha` in $F_4$ and an element `a` of $k$ or $C$, `LieRootHomF4(alpha, a)` is the element $\vartheta_\alpha(a)$ of $L$ (see \[DMW25\]). It is required that either `alpha` is short and $a \in C$, or `alpha` is long and $a \in k$.
+For a root `alpha` in $F_4$ and an element `a` of $k$ or $C$, `LieRootHomF4(alpha, a)` is the element $\vartheta_\alpha(a)$ of $L$ (see \[DMW\]). It is required that either `alpha` is short and $a \in C$, or `alpha` is long and $a \in k$.
 
 ## The automorphism group
 
-For a root `alpha` in $F_4$ and an element `a` of $k$ or $C$, `GrpRootHomF4(alpha, a)` is the automorphism $\theta_\alpha(a)$ of $L$ (see \[DMW25\]). It is required that either `alpha` is short and $a \in C$, or `alpha` is long and $a \in k$. Further, `GrpStandardWeylF4(alpha)` is the Weyl element $w_\alpha$.
+For a root `alpha` in $F_4$ and an element `a` of $k$ or $C$, `GrpRootHomF4(alpha, a)` is the automorphism $\theta_\alpha(a)$ of $L$ (see \[DMW\]). It is required that either `alpha` is short and $a \in C$, or `alpha` is long and $a \in k$. Further, `GrpStandardWeylF4(alpha)` is the Weyl element $w_\alpha$.
 
 The automorphisms defined above lie in the internal structure `LieEndo`. For an element `f` of `LieEndo` and `lie` in $L$, `f` may be evaluated on `lie` in the usual way, by writing `f(lie)`. For two elements `f` and `g` of `LieEndo`, `f+g` and `f*g` are the elements of `LieEndo` that map `lie` to `f(lie) + g(lie)` and `f(g(lie))`, respectively.
 
@@ -140,7 +140,7 @@ The zero elements in $k$, $C$, $B$, `DD`, $L_0$, $L$, `LieEndo` may be accessed 
 
 Let `a` be an element of $C$. Then `Simplify(a)` represents the same element of (the free multiplicative conic alternative algebra `C`), but its internal representation is (hopefully) simplified. In many situations, if `a` represents the zero element in $C$, then the internal representation of `Simplify(a)` is trivial. Thus in order to check whether `a = b`, one should always check whether `Simplify(a-b) = Zero(ConicAlg)`: If this is true, then `a` and `b` are proven to represent the same element of $C$. However, if it is `false`, this does not prove that they represent distinct elements.
 
-The function `Simplify` is also defined on $k$, $B$, `DD`, $L_0$ and $L$, and works on these structures in a similar way. For more details, we refer to Section 9.3 (TODO: number still correct?) in \[DMW25\].
+The function `Simplify` is also defined on $k$, $B$, `DD`, $L_0$ and $L$, and works on these structures in a similar way. For more details, we refer to Section 9.3 (TODO: number still correct?) in \[DMW\].
 
 ## Testing equality of automorphism of $L$
 

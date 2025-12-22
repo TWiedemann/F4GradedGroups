@@ -15,7 +15,7 @@ gap> s1 := ComRingIndet(1);; s2 := ComRingIndet(2);; s3 := ComRingIndet(3);;
 gap> CubicPartMat(JordanD(CubicConicElMat(2, 3, a1), CubicConicElMat(3, 1, a2), CubicConicElMat(1, 2, a3)), 2, 2);
 g1*g2*g3*tr(a1a2a3)
 
-# This term can be simplified, see the proof in [DMW25].
+# This term can be simplified, see the proof in [DMW].
 gap> CubicPartMat(JordanD(CubicConicElMat(2, 3, a1), CubicConicElMat(3, 1, a2), CubicConicElMat(1, 3, a3)), 2, 3);
 (g1*g3*tr(a2a3))*a1+(-g1*g3)*((a1*a3')*a2')
 gap> CubicPartMat(JordanD(CubicConicElMat(2, 3, a1), CubicConicElMat(3, 1, a2), CubicComEl(1, s3)), 2, 1);

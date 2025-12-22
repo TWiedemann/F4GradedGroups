@@ -6,7 +6,7 @@
 
 # root: Root in F4
 # Returns: The corresponding element of a "Chevalley basis" of Lie
-ChevBasEl := function(root)
+BindGlobal("ChevBasEl", function(root)
 	local one;
 	if root in F4ShortRoots then
 		one := One(ConicAlg);
@@ -16,11 +16,11 @@ ChevBasEl := function(root)
 		return fail;
 	fi;
 	return LieRootHomF4(root, one);
-end;
+end);
 
 # root: Root in G2.
 # Returns: The corresponding element of a "Chevalley basis" of type G2 of Lie.
-ChevG2BasEl := function(root)
+BindGlobal("ChevG2BasEl", function(root)
 	local F4root, result, sign;
 	if root in G2LongRoots then
 		# Additional minus sign
@@ -50,24 +50,24 @@ ChevG2BasEl := function(root)
 		fi;
 		return sign*result;
 	fi;
-end;
+end);
 
 # root: Root in F4.
 # Returns: The element h_root of the Chevalley basis.
-ChevHEl := function(root)
+BindGlobal("ChevHEl", function(root)
 	return ChevBasEl(root) * ChevBasEl(-root);
-end;
+end);
 
 # root: Root in G2.
 # Returns: The element h_root of the Chevalley basis.
-ChevG2HEl := function(root)
+BindGlobal("ChevG2HEl", function(root)
 	return ChevG2BasEl(root) * ChevG2BasEl(-root);
-end;
+end);
 
 # root1, root2: Roots in F4
 # Returns: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
 # Here x_a = ChevBasEl(a) and the output is 0 if root1+root2 is not a root.
-ChevStrucConst := function(root1, root2)
+BindGlobal("ChevStrucConst", function(root1, root2)
 	local sum, candidates, comm, chevSum, c, diff;
 	sum := root1+root2;
 	if not sum in F4Roots then
@@ -86,12 +86,12 @@ ChevStrucConst := function(root1, root2)
 		fi;
 	od;
 	return fail;
-end;
+end);
 
 # root1, root2: Roots in G2
 # Returns: Integer c s.t. [ x_root1, x_root2 ] = c x_{root1+root2}.
 # Here x_a = ChevBasEl(a) and the output is 0 if root1+root2 is not a root.
-ChevG2StrucConst := function(root1, root2)
+BindGlobal("ChevG2StrucConst", function(root1, root2)
 	local sum, candidates, comm, chevSum, c, diff;
 	sum := root1+root2;
 	if not sum in G2Roots then
@@ -106,4 +106,4 @@ ChevG2StrucConst := function(root1, root2)
 		fi;
 	od;
 	return fail;
-end;
+end);

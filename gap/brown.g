@@ -9,9 +9,9 @@
 
 # rep: Representation of an element of Brown.
 # Returns: Its string representation.
-BrownRepToString := rep -> String(rep);
+BindGlobal("_BrownRepToString", rep -> String(rep));
 
-BrownSpec := rec(
+BindGlobal("BrownSpec",  rec(
 	ElementName := "BrownElement",
 	Zero := a -> [Zero(ComRing), CubicZero, CubicZero, Zero(ComRing)],
 	# + and - on representations behave just like they should
@@ -20,17 +20,17 @@ BrownSpec := rec(
 	end,
 	AdditiveInverse := a -> -a,
 	Print := function(a)
-		Print(BrownRepToString(a));
+		Print(_BrownRepToString(a));
 	end,
 	MathInfo := IsAdditivelyCommutativeElement
-);
-Brown := ArithmeticElementCreator(BrownSpec);
+));
+BindGlobal("Brown", ArithmeticElementCreator(BrownSpec));
 
-InstallMethod(String, [IsBrownElement], x -> BrownRepToString(UnderlyingElement(x)));
+InstallMethod(String, [IsBrownElement], x -> _BrownRepToString(UnderlyingElement(x)));
 
 # ----- Constructors for elements of Brown -----
 
-BrownZero := Brown(BrownSpec.Zero(fail));
+BindGlobal("BrownZero", Brown(BrownSpec.Zero(fail)));
 
 DeclareOperation("BrownElFromTuple", [IsRingElement, IsCubicElement, IsCubicElement, IsRingElement]);
 InstallMethod(BrownElFromTuple, [IsRingElement, IsCubicElement, IsCubicElement, IsRingElement],
@@ -45,7 +45,7 @@ InstallMethod(BrownElFromTuple, [IsRingElement, IsCubicElement, IsCubicElement, 
 
 # i: Integer.
 # Returns: A list of the generic basic elements of Brown, using indeterminates a_i and t_i.
-BrownGensAsModule := function(i)
+BindGlobal("BrownGensAsModule", function(i)
 	local t, result, gen;
 	t := ComRingIndet(i);
 	result := [];
@@ -56,7 +56,7 @@ BrownGensAsModule := function(i)
 		Add(result, BrownElFromTuple(Zero(ComRing), CubicZero, gen, Zero(ComRing)));
 	od;
 	return result;
-end;
+end);
 
 # ----- Getter functions for coefficients of elements of Brown -----
 

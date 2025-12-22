@@ -9,13 +9,13 @@
 
 # ----- Definition and internal representation -----
 
-_CubicInL0SymStringPos := "ad^+"; # c in Cubic is printed as ad^+_c
-_CubicInL0SymStringNeg := "ad^-"; # c in Cubic' is printed as ad^-_c
-_L0ZeroString := "0_{L_0}";
+BindGlobal("_CubicInL0SymStringPos", "ad^+"); # c in Cubic is printed as ad^+_c
+BindGlobal("_CubicInL0SymStringNeg", "ad^-"); # c in Cubic' is printed as ad^-_c
+BindGlobal("_L0ZeroString", "0_{L_0}");
 
 # rep: Internal representation of an element of L0
 # Returns: A string representing this element
-L0RepToString := function(rep)
+BindGlobal("L0RepToString", function(rep)
 	local stringList, s, list, name, sym;
 	stringList := [];
 	for s in ["dd", "cubicPos", "cubicNeg"] do
@@ -43,9 +43,9 @@ L0RepToString := function(rep)
 		fi;
 	od;
 	return StringSum(stringList, "+", _L0ZeroString);
-end;
+end);
 
-L0Spec := rec(
+BindGlobal("L0Spec", rec(
 	ElementName := "L0Element",
 	Addition := function(a, b)
 		return rec(
@@ -119,31 +119,31 @@ L0Spec := rec(
 			cubicNeg := cubicNeg
 		);
 	end
-);
+));
 
-L0 := ArithmeticElementCreator(L0Spec);
+BindGlobal("L0", ArithmeticElementCreator(L0Spec));
 
 InstallMethod(String, [IsL0Element], x -> L0RepToString(UnderlyingElement(x)));
 
 # ----- Constructors for elements of L0 -----
 
-L0Zero := L0(L0Spec.Zero(fail));
+BindGlobal("L0Zero", L0(L0Spec.Zero(fail)));
 
-L0Xi := L0(rec(
+BindGlobal("L0Xi", L0(rec(
 	dd := DDZero,
 	xiCoeff := One(ComRing),
 	zetaCoeff := Zero(ComRing),
 	cubicPos := CubicZero,
 	cubicNeg := CubicZero
-));
+)));
 
-L0Zeta := L0(rec(
+BindGlobal("L0Zeta", L0(rec(
 	dd := DDZero,
 	xiCoeff := Zero(ComRing),
 	zetaCoeff := One(ComRing),
 	cubicPos := CubicZero,
 	cubicNeg := CubicZero
-));
+)));
 
 DeclareOperation("CubicPosToL0Emb", [IsCubicElement]);
 DeclareOperation("CubicNegToL0Emb", [IsCubicElement]);
@@ -238,7 +238,7 @@ end);
 # Returns: The result of the action of xi on...
 # - ...a*LieY (\in L_2) if a in Comring
 # - ...a_+ if a in Brown
-XiEndo := function(a, sign)
+BindGlobal("XiEndo", function(a, sign)
 	if a in ComRing then
 		return sign*2*a;
 	elif IsBrownElement(a) then
@@ -247,13 +247,13 @@ XiEndo := function(a, sign)
 		Error("xi not defined on this element");
 		return fail;
 	fi;
-end;
+end);
 
 # a: Element of ComRing or of Brown
 # Returns: The result of the action of zeta on...
 # - ...a*LieY (\in L_2) if a in Comring
 # - ...a_+ if a in Brown
-ZetaEndo := function(a, sign)
+BindGlobal("ZetaEndo", function(a, sign)
 	if not sign in [1, -1] then
 		Error("Argument must be a sign");
 		return fail;
@@ -270,7 +270,7 @@ ZetaEndo := function(a, sign)
 		Error("zeta not defined on this element");
 		return fail;
 	fi;
-end;
+end);
 
 # L0El: Element of L0.
 # i: -2, -1, 1, or 2.

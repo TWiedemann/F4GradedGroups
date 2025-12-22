@@ -115,7 +115,7 @@ InstallMethod(TestEqualityOnModuleGens, [IsLieEndo, IsLieEndo],
 # Returns: A list of all elements of ComRing, ConicAlg and L0 which have to be proven
 # by hand to be zero to verify that g1 = g2 for all [g1, g2] \in relations.
 # Uses indeterminates t_{ComRing_rank}, a_{ConicAlg_rank}.
-TestEqualityPiecesOnList := function(relations)
+BindGlobal("TestEqualityPiecesOnList", function(relations)
 	local rel, test, error, part, i, j, result, part2, summands, summand, a;
 	result := [];
 	for rel in relations do
@@ -161,9 +161,9 @@ TestEqualityPiecesOnList := function(relations)
 		fi;
 	od;
 	return result;
-end;
+end);
 
 # Like TestEqualityPiecesOnList, but only one relation "term1=term2" is tested.
-TestEqualityPieces := function(term1, term2)
+BindGlobal("TestEqualityPieces", function(term1, term2)
 	return TestEqualityPiecesOnList([[term1, term2]]);
-end;
+end);

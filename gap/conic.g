@@ -6,13 +6,10 @@
 
 # ----- Definition of ConicAlg -----
 
-ConicAlg := FreeMagmaRing(ComRing, ConicAlgMag);
+BindGlobal("ConicAlg", FreeMagmaRing(ComRing, ConicAlgMag));
 
-ConicAlgMagEmb := x -> ImageElm(Embedding(ConicAlgMag, ConicAlg), x);
-ConicAlgIndets := List(ConicAlgMagIndets, ConicAlgMagEmb);
+BindGlobal("ConicAlgMagEmb", x -> ImageElm(Embedding(ConicAlgMag, ConicAlg), x));
 
-ConicAlgBasicIndets := ConicAlgIndets{[1..ConicAlg_rank]};
-ConicAlgInvIndets := ConicAlgIndets{[ConicAlg_rank+1..2*ConicAlg_rank]};
 
 # ----- Functions which test requirements and throw errors ---
 
@@ -69,26 +66,26 @@ end);
 
 # ----- Constructors for indeterminates -----
 
-ConicAlgIndet := function(i)
-	return ConicAlgBasicIndets[i];
-end;
+BindGlobal("ConicAlgIndet", function(i)
+	return ConicAlgMagEmb(ConicAlgMagIndet(i));
+end);
 
-ConicAlgInvIndet := function(i)
-	return ConicAlgInvIndets[i];
-end;
+BindGlobal("ConicAlgInvIndet", function(i)
+	return ConicAlgMagEmb(ConicAlgMagInvIndet(i));
+end);
 
 # ----- Conjugation, trace, norm on ConicAlg -----
 
 # a: Element of ConicAlg.
 # Returns: The conjugate a' of a.
-ConicAlgInv := function(a)
+BindGlobal("ConicAlgInv", function(a)
 	ReqConicAlgEl(a);
 	return ChangeRingElByMagmaTrans(ConicAlg, a, ConicAlgMagInv);
-end;
+end);
 
 # magFunc: A function ConicAlgMag -> ComRing.
 # Returns: The linear extension ConicAlg -> Comring of magFunc.
-ConicAlgFunctionalFromMagFunctional := function(magFunc)
+BindGlobal("ConicAlgFunctionalFromMagFunctional", function(magFunc)
 	return function(a)
 		local coeffList, result, i, magmaEl, coeff;
 		coeffList := CoefficientsAndMagmaElements(a);
@@ -100,22 +97,22 @@ ConicAlgFunctionalFromMagFunctional := function(magFunc)
 		od;
 		return result;
 	end;
-end;
+end);
 
-ConicAlgTr := ConicAlgFunctionalFromMagFunctional(ConicAlgMagTr);
+BindGlobal("ConicAlgTr", ConicAlgFunctionalFromMagFunctional(ConicAlgMagTr));
 
 # a, b: Elements of ConicAlg.
 # Returns: n(a,b) := n(a+b) - n(a) - n(b).
 # By [GPR24, (16.12.4), (16.5.2)], we have n(a,b) = n(1, a'b) = t(a'b)
-ConicAlgNormLin := function(a, b)
+BindGlobal("ConicAlgNormLin", function(a, b)
 	ReqConicAlgEl([a,b]);
 	return ConicAlgTr(ConicAlgInv(a)*b);
-end;
+end);
 
 # a: Element of ConicAlg.
 # Returns: Its norm n(a), an element of ComRing.
 # Use that n(\sum_i c_i m_i) = \sum_i c_i^2 n(m_i) + sum_{i<j} c_i c_j n(m_i, m_j)
-ConicAlgNorm := function(a)
+BindGlobal("ConicAlgNorm", function(a)
 	local coeffList, result, i, j, magmaEl, magmaEl2, coeff, coeff2;
 	ReqConicAlgEl(a);
 	coeffList := CoefficientsAndMagmaElements(a);
@@ -133,13 +130,13 @@ ConicAlgNorm := function(a)
 		od;
 	od;
 	return result;
-end;
+end);
 
 # ----- Shortcuts for conjugation, trace, norm on ConicAlg OR ConicAlgMag -----
 
 # a: Element of ConicAlgMag or of ConicAlg
 # Returns: a'
-ConicInv := function(a)
+BindGlobal("ConicInv", function(a)
 	if a in ConicAlg then
 		return ConicAlgInv(a);
 	elif a in ConicAlgMag then
@@ -147,11 +144,11 @@ ConicInv := function(a)
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # a: Element of ConicAlgMag or of ConicAlg
 # Returns: tr(a) \in ComRing
-ConicTr := function(a)
+BindGlobal("ConicTr", function(a)
 	if a in ConicAlg then
 		return ConicAlgTr(a);
 	elif a in ConicAlgMag then
@@ -159,11 +156,11 @@ ConicTr := function(a)
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # a: Element of ConicAlgMag or of ConicAlg
 # Returns: n(a) \in ComRing
-ConicNorm := function(a)
+BindGlobal("ConicNorm", function(a)
 	if a in ConicAlg then
 		return ConicAlgNorm(a);
 	elif a in ConicAlgMag then
@@ -171,11 +168,11 @@ ConicNorm := function(a)
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # a,b: Element of ConicAlgMag or of ConicAlg (both in the same)
 # Returns: n(a,b) \in ComRing
-ConicNormLin := function(a,b)
+BindGlobal("ConicNormLin", function(a,b)
 	if a in ConicAlg and b in ConicAlg then
 		return ConicAlgNormLin(a,b);
 	elif a in ConicAlgMag and b in ConicAlgMag then
@@ -183,14 +180,14 @@ ConicNormLin := function(a,b)
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # ----- Misc functions -----
 
 # a: Element of ConicAlg.
 # Returns: [t, b] with t \in ComRing, b \in ConicAlg such that a = t*One(ConicAlg)+b
 # and such that b has no summand of the form s*One(ConicAlg) for s \in ComRing
-ConicAlgSplitOne := function(a)
+BindGlobal("ConicAlgSplitOne", function(a)
 	local coeffList, i, magEl, t;
 	coeffList := CoefficientsAndMagmaElements(a);
 	# Look for summand t*One(ConicAlg)
@@ -204,4 +201,4 @@ ConicAlgSplitOne := function(a)
 	od;
 	# No summand t*One(ConicAlg) found
 	return [Zero(ComRing), a];
-end;
+end);

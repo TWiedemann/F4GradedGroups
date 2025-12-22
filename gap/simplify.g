@@ -285,7 +285,7 @@ end);
 # Returns: A list [i, j, y] such that
 # dd(x1, x2) = dd(1[ii], y[ij]).
 # Here i, j \in {1,2,3} and y \in ComRing if i=j and y \in ConicAlg if i<>j.
-_ApplyDDLaws_OnSummands_int1 := function(i1, j1, a, i2, j2, b)
+BindGlobal("_ApplyDDLaws_OnSummands_int1", function(i1, j1, a, i2, j2, b)
 	local p, q, l;
 	# Define p, q, l such that dd(x1, y2) lies in Z_{pq,ql}
 	q := Intersection([i1, j1], [i2, j2])[1];
@@ -320,7 +320,7 @@ _ApplyDDLaws_OnSummands_int1 := function(i1, j1, a, i2, j2, b)
 		# dd_{a[pq],b[ql]} = dd_{1[pp],\gamma_q*a*b[pl]}
 		return [p, l, TwistDiag[q]*a*b];
 	fi;
-end;
+end);
 
 # i1, j1, i2, j2: Integers in {1,2,3} such that {i1, j1} = {i2, j2} and i1 <> j1
 # a, b: Elements of ConicAlg.
@@ -336,7 +336,7 @@ end;
 # non-zero coefficient from ConicAlg, we apply relations to ensure that the
 # non-zero coefficient appears on the right-hand side and that the coefficient
 # from ComRing is pulled into the coefficient from ConicAlg (via c*dd_{1,a} = dd_{1,c*a}).
-_ApplyDDLaws_OnSummands_int2 := function(i1, j1, a, i2, j2, b)
+BindGlobal("_ApplyDDLaws_OnSummands_int2", function(i1, j1, a, i2, j2, b)
 	local i, j, coeffs, lConic, rConic, aCoeffList, aCoeff, bCoeff, bCoeffList,
 		aMag, bMag, aTwist, p, q, c;
 	# Define i < j s.t. {i,j} = {i1,j1} and ensure that x1 = a[ij], x2 = b[ji].
@@ -383,7 +383,7 @@ _ApplyDDLaws_OnSummands_int2 := function(i1, j1, a, i2, j2, b)
 		od;
 	od;
 	return [i, j, c, coeffs, lConic, rConic];
-end;
+end);
 
 # ddEl: Element of DD.
 # applyDDRels: Bool.

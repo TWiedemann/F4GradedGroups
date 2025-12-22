@@ -7,55 +7,56 @@
 
 # i: Integer.
 # Returns: Name of the i-th indeterminate of ComRing which represents an arbitrary element.
-ComRingIndetName := function(i)
+BindGlobal("_ComRingIndetName", function(i)
 	return Concatenation("t", String(i));
-end;
+end);
 
 # i: Integer with 1 <= i <= ConicAlg_rank.
 # Returns: The name of the indeterminate of ComRing which represents the norm of a_i
-ComRingNormIndetName := function(i)
+BindGlobal("_ComRingNormIndetName", function(i)
 	if i in [1..ConicAlg_rank] then
-		return Concatenation("n(", ConicAlgIndetNames[i], ")");
+		return Concatenation("n(", _ConicAlgIndetName(i), ")");
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # i: 1, 2, or 3
 # Returns: The name of the indeterminate which represents \gamma_i, the i-th
 # element of the diagonal matrix \Gamma which "twists" the cubic Jordan matrix algebra.
-ComRingGamIndetName := function(i)
+BindGlobal("ComRingGamIndetName", function(i)
 	if i in [1, 2, 3] then
 		return Concatenation("g", String(i));
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # ----- Indeterminates
 
 # t_i \in ComRing, represents arbitrary element of ComRing
-ComRingIndet := function(i)
-	return Indeterminate(BaseRing, ComRingIndetName(i));
-end;
+BindGlobal("ComRingIndet", function(i)
+	return Indeterminate(ComRingBaseRing, _ComRingIndetName(i));
+end);
 
 # n(a_i) \in ComRing, represents norm of conic algebra element a_i
-ComRingNormIndet := function(i)
-	return Indeterminate(BaseRing, ComRingNormIndetName(i));
-end;
+BindGlobal("ComRingNormIndet", function(i)
+	return Indeterminate(ComRingBaseRing, _ComRingNormIndetName(i));
+end);
 
 # g_i \in ComRing, represents \gamma_i
-ComRingGamIndet := function(i)
-	return Indeterminate(BaseRing, ComRingGamIndetName(i));
-end;
+BindGlobal("ComRingGamIndet", function(i)
+	return Indeterminate(ComRingBaseRing, ComRingGamIndetName(i));
+end);
 
 # ----- Norm: ConicAlgMag -> ComRing -----
 
 # mRep: ExtRepOfObj of an element of ConicAlgMag
 # Returns: Norm of this element (as an element of ComRing)
-ConicAlgMagNormOnRep := function(mRep)
+DeclareGlobalName("ConicAlgMagNormOnRep");
+BindGlobal("ConicAlgMagNormOnRep", function(mRep)
 	if mRep = 0 then # n(1_ConicAlg) = 1_ComRing
-		return One(PolynomialRing(BaseRing));
+		return One(PolynomialRing(ComRingBaseRing));
 	elif mRep in [1..ConicAlg_rank] then
 		return ComRingNormIndet(mRep);
 	elif mRep in [ConicAlg_rank+1..2*ConicAlg_rank] then
@@ -65,13 +66,13 @@ ConicAlgMagNormOnRep := function(mRep)
 	else
 		return fail;
 	fi;
-end;
+end);
 
 # m: Element of ConicAlgMag
 # Returns: norm of m, an element of ComRing
-ConicAlgMagNorm := function(m)
+BindGlobal("ConicAlgMagNorm", function(m)
 	return ConicAlgMagNormOnRep(ExtRepOfObj(m));
-end;
+end);
 
 # ----- Trace: ConicAlgMag -> ComRing -----
 
@@ -91,7 +92,7 @@ end;
 # The point of this is that the elements tr(aa'b), tr(a'ba), tr(baa') all equal
 # n(a)tr(b), i.e., we can "pull norms out of traces".
 # This is a helper function to detect this and bring the input in a usable format.
-_PullNorm := function(a, b, c)
+BindGlobal("_PullNorm", function(a, b, c)
     local list, i, j, k;
 	list := [a,b,c];
 	for i in [1..3] do
@@ -103,14 +104,14 @@ _PullNorm := function(a, b, c)
 		od;
 	od;
 	return fail;
-end;
+end);
 
 # a, b, c: External reps of elements of ConicAlgMag
 # Returns: List of triples [d, e, f] s.t. tr(abc) = tr(def).
 # By the relations tr(ab) = tr(ba), tr((ab)c) = tr(a(bc)) and tr(a') = tr(a),
 # we may write tr(abc) without brackets and this term is equal to all cyclic permutations
 # and to all cyclic permutations of tr(c'b'a').
-_ConicAlgMagTrCandidates := function(a, b, c)
+BindGlobal("_ConicAlgMagTrCandidates", function(a, b, c)
 	local aInv, bInv, cInv;
 	aInv := ConicAlgMagInvOnRep(a);
 	bInv := ConicAlgMagInvOnRep(b);
@@ -119,20 +120,21 @@ _ConicAlgMagTrCandidates := function(a, b, c)
 		[a, b, c], [b, c, a], [c, a, b],
 		[cInv, bInv, aInv], [aInv, cInv, bInv], [bInv, aInv, cInv]
 	];
-end;
+end);
 
 # mRep: External rep of an element of ConicAlgMag
 # Returns: An element of ComRing which represents the trace of the corresponding
 # element of ConicAlgMag. In most cases, this is an indeterminate in ComRing,
 # but it need not be. E.g. tr(One(ConicAlgMag)) = 2*One(ComRing).
 # We use the relations described in _ConicAlgMagTrCandidates and _PullNorm.
-_ConicAlgMagTrUncachedOnRep := function(mRep)
+DeclareGlobalName("_ConicAlgMagTrUncachedOnRep");
+BindGlobal("_ConicAlgMagTrUncachedOnRep", function(mRep)
 	local indetName, varName, inv, left, right, candidates, list, min, StringFromRep;
 	indetName := "tr(";
 	inv := ConicAlgMagInvOnRep;
 	if not IsList(mRep) then
 		if mRep = 0 then
-			return 2*One(PolynomialRing(BaseRing)); # tr(1) = 2
+			return 2*One(PolynomialRing(ComRingBaseRing)); # tr(1) = 2
 		else
 			mRep := Minimum(mRep, ConicAlgMagInvOnRep(mRep)); # Replace a' by a if necessary
 			indetName := Concatenation(indetName, String(ConicAlgMagElFromRep(mRep)));
@@ -188,38 +190,38 @@ _ConicAlgMagTrUncachedOnRep := function(mRep)
         indetName := Concatenation(indetName, varName);
 	fi;
 	indetName := Concatenation(indetName, ")");
-	return Indeterminate(BaseRing, indetName);
-end;
+	return Indeterminate(ComRingBaseRing, indetName);
+end);
 
 # magEl: Element of ConicAlgMag
 # Returns: Its trace (an element of ComRing). No caching.
-_ConicAlgMagTrUncached := function(magEl)
+BindGlobal("_ConicAlgMagTrUncached", function(magEl)
 	return _ConicAlgMagTrUncachedOnRep(ExtRepOfObj(magEl));
-end;
+end);
 
 # rep: Representation of an element of ConicAlgMag
 # Returns: Its precomputed trace (an element of ComRing), which we cache.
-ConicAlgMagTrOnRep := function(rep)
+BindGlobal("ConicAlgMagTrOnRep", function(rep)
 	if _CacheTrace then
 		return LookupDictionary(_TrDict, rep);
 	else
 		return _ConicAlgMagTrUncachedOnRep(rep);
 	fi;
-end;
+end);
 
 # Same as _ConicAlgMagTrUncached, but returns the precomputed, cached result.
-ConicAlgMagTr := function(magEl)
+BindGlobal("ConicAlgMagTr", function(magEl)
 	return ConicAlgMagTrOnRep(ExtRepOfObj(magEl));
-end;
+end);
 
 # a, b: Elements of ConicAlgMag.
 # Returns: n(a,b) := n(a+b) - n(a) - n(b).
 # By [GPR24, (16.12.4), (16.5.2)], we have n(a,b) = n(1, a'b) = t(a'b)
-ConicAlgMagNormLin := function(a, b)
+BindGlobal("ConicAlgMagNormLin", function(a, b)
 	return ConicAlgMagTr(ConicAlgMagInv(a)*b);
-end;
+end);
 
-_ComRingGamIndetNum := []; # Contains the indeterminate number of gamma_i at position i
+# _ComRingGamIndetNum := []; # Contains the indeterminate number of gamma_i at position i (not used)
 
 # Initialises:
 # - the dictionary _TrDict with precomputed trace values.
@@ -231,13 +233,13 @@ _ComRingGamIndetNum := []; # Contains the indeterminate number of gamma_i at pos
 # internal number. This guarantees that they are always printed in the same order. Hence it
 # is necessary to call this function even if _CacheTrace = false.
 # For a documentation of _TrDict and _ComRingIndetInfo, see read.g.
-_InitTrDict := function()
+BindGlobal("_InitTrDict", function()
 	local maxIndetNum, magEl, magEls, magElsReps, magElRep, trace, polyRep, monomial, i, j;
-	_ComRingIndetInfo := [];
+	BindGlobal("_ComRingIndetInfo", []);
 	# Initialise all the other indeterminates of ComRing in the desired order
 	for i in [1..3] do
 		ComRingGamIndet(i); # Initialise indeterminate
-		_ComRingGamIndetNum[i] := i;
+		# _ComRingGamIndetNum[i] := i;
 		Add(_ComRingIndetInfo, ["g", i]);
 	od;
 	for i in [1..ComRing_rank] do
@@ -257,7 +259,7 @@ _InitTrDict := function()
 	magElsReps := List(magEls, x -> ExtRepOfObj(x));
 	# New lookup dictionary for keys such as magElsReps[1]. All keys
 	# have to lie in magElsReps.
-	_TrDict := NewDictionary(magElsReps[1], true, magElsReps);
+	BindGlobal("_TrDict", NewDictionary(magElsReps[1], true, magElsReps));
 	for i in [1..Length(magEls)] do
 		magEl := magEls[i];
 		magElRep := magElsReps[i];
@@ -279,7 +281,7 @@ _InitTrDict := function()
 		od;
 	od;
 	return maxIndetNum;
-end;
+end);
 
-_ComRingNumIndets := _InitTrDict();
-ComRing := FunctionField(BaseRing, _ComRingNumIndets);
+BindGlobal("_ComRingNumIndets", _InitTrDict());
+BindGlobal("ComRing", FunctionField(ComRingBaseRing, _ComRingNumIndets));

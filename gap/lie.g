@@ -9,13 +9,13 @@
 
 # ----- Display of elements -----
 
-_LieZeroString := "0_L";
-_LieNeg2String := "x";
-_LiePos2String := "y";
+BindGlobal("_LieZeroString", "0_L");
+BindGlobal("_LieNeg2String", "x");
+BindGlobal("_LiePos2String", "y");
 
 # rep: Internal representation of an element of L.
 # Returns: A string representing this element.
-LieRepToString := function(rep)
+BindGlobal("LieRepToString", function(rep)
 	local stringList, name, s;
 	stringList := [];
 	for name in ["neg2", "neg1", "zero", "pos1", "pos2"] do
@@ -34,7 +34,7 @@ LieRepToString := function(rep)
 		fi;
 	od;
 	return StringSum(stringList, " + ", _LieZeroString); # Extra space around "+"
-end;
+end);
 
 # ----- Helper functions for the Lie bracket -----
 
@@ -82,7 +82,7 @@ end);
 
 # ----- Definition of Lie -----
 
-LieSpec := rec(
+BindGlobal("LieSpec", rec(
 	ElementName := "LieElement",
 	Addition := function(a, b)
 		return rec(
@@ -153,13 +153,13 @@ LieSpec := rec(
 		);
 	end,
 	MathInfo := IsAdditivelyCommutativeElement
-);
+));
 
-Lie := ArithmeticElementCreator(LieSpec);
+BindGlobal("Lie", ArithmeticElementCreator(LieSpec));
 
 # ----- Constructors and embeddings for elements of Lie -----
 
-LieZero := Lie(LieSpec.Zero(fail));
+BindGlobal("LieZero", Lie(LieSpec.Zero(fail)));
 
 DeclareOperation(
 	"LieElFromTuple",
@@ -180,8 +180,8 @@ InstallMethod(
 	end
 );
 
-LieX := LieElFromTuple(One(ComRing), BrownZero, L0Zero, BrownZero, Zero(ComRing));
-LieY := LieElFromTuple(Zero(ComRing), BrownZero, L0Zero, BrownZero, One(ComRing));
+BindGlobal("LieX", LieElFromTuple(One(ComRing), BrownZero, L0Zero, BrownZero, Zero(ComRing)));
+BindGlobal("LieY", LieElFromTuple(Zero(ComRing), BrownZero, L0Zero, BrownZero, One(ComRing)));
 
 DeclareOperation("DDToLieEmb", [IsDDElement]);
 DeclareOperation("L0ToLieEmb", [IsL0Element]);
@@ -251,13 +251,13 @@ InstallMethod(Liedd, [IsCubicElement, IsCubicElement], function(cubicEl1, cubicE
 	return L0ToLieEmb(L0dd(cubicEl1, cubicEl2));
 end);
 
-LieZeta := L0ToLieEmb(L0Zeta);
-LieXi := L0ToLieEmb(L0Xi);
+BindGlobal("LieZeta", L0ToLieEmb(L0Zeta));
+BindGlobal("LieXi", L0ToLieEmb(L0Xi));
 
 # comRingIndetNum, conicAlgIndetNum: Integers.
 # Returns: A list of "generic generators" of L_0000 using the indeterminates
 # t_{comIndetNum}, a_{conicIndetNum}, a_{conicIndetNum+1}.
-Lie0000Gens := function(comIndetNum, conicIndetNum)
+BindGlobal("Lie0000Gens", function(comIndetNum, conicIndetNum)
 	local t1, a1, a2, result, i, j;
 	t1 := ComRingIndet(comIndetNum);
 	a1 := ConicAlgIndet(conicIndetNum);
@@ -270,7 +270,7 @@ Lie0000Gens := function(comIndetNum, conicIndetNum)
 		od;
 	od;
 	return result;
-end;
+end);
 
 # ----- Getter functions for components of elements of Lie -----
 

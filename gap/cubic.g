@@ -21,15 +21,15 @@
 
 # ----- Definition and internal representation -----
 
-TwistDiag := List([1,2,3], i -> ComRingGamIndet(i)); # [g1, g2, g3]
-CycPerm := [ [1,2,3], [2,3,1], [3,1,2] ]; # List of cyclic permutations of [1,2,3]
+BindGlobal("TwistDiag", List([1,2,3], i -> ComRingGamIndet(i))); # [g1, g2, g3]
+BindGlobal("CycPerm", [ [1,2,3], [2,3,1], [3,1,2] ]); # List of cyclic permutations of [1,2,3]
 
 # String used to display the zero element of Cubic in the terminal
-_CubicZeroString := "0_J";
+BindGlobal("_CubicZeroString", "0_J");
 
 # a: Internal rep of an element of Cubic, as described above.
 # Returns: A string to display the corresponding element of Cubic.
-CubicRepToString := function(a)
+BindGlobal("CubicRepToString", function(a)
 	local stringList, i, s;
 	# Collect all summands in a list, and add "+" later
 	stringList := [];
@@ -48,11 +48,11 @@ CubicRepToString := function(a)
 		fi;
 	od;
 	return StringSum(stringList, "+", _CubicZeroString);
-end;
+end);
 
 # We define Cubic using the GAP function ArithmeticElementCreator
 
-CubicSpec := rec(
+BindGlobal("CubicSpec", rec(
 	ElementName := "CubicElement",
 	Zero := a -> [[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]],
 	One := a -> [[One(ComRing), One(ComRing), One(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]],
@@ -67,9 +67,9 @@ CubicSpec := rec(
 		Print(CubicRepToString(a));
 	end,
 	MathInfo := IsAdditivelyCommutativeElement
-);
+));
 
-Cubic := ArithmeticElementCreator(CubicSpec);
+BindGlobal("Cubic", ArithmeticElementCreator(CubicSpec));
 
 InstallMethod(String, [IsCubicElement], x -> CubicRepToString(UnderlyingElement(x)));
 
@@ -91,27 +91,28 @@ end);
 # i: 1, 2, or 3
 # Returns: u \in Conic such that u[jl] is the jl-summand of cubicEl where ijl is
 # the unique cyclic permutation starting from i
-CubicConicPart := function(cubicEl, i)
+BindGlobal("CubicConicPart", function(cubicEl, i)
 	if i in [1,2,3] then
 		return UnderlyingElement(cubicEl)[2][i];
 	else
 		Error("Cubic element: Invalid position.");
 		return fail;
 	fi;
-end;
+end);
 
 # Returns: t \in ComRing such that t[ii] is the ii-summand of cubicEl.
-CubicComPart := function(cubicEl, i)
+BindGlobal("CubicComPart", function(cubicEl, i)
 	if i in [1,2,3] then
 		return UnderlyingElement(cubicEl)[1][i];
 	else
 		Error("Cubic element: Invalid position.");
 		return fail;
 	fi;
-end;
+end);
 
 # Returns: a \in ComRing or a \in ConicAlg such that a[ij] is the ij-summand of cubicEl.
-CubicPartMat := function(cubicEl, i, j)
+DeclareGlobalName("CubicPartMat");
+BindGlobal("CubicPartMat", function(cubicEl, i, j)
 	if i=j then
 		return CubicComPart(cubicEl, i);
 	elif CycPerm[i][2] = j then
@@ -119,36 +120,36 @@ CubicPartMat := function(cubicEl, i, j)
 	else
 		return ConicAlgInv(CubicPartMat(cubicEl, j, i));
 	fi;
-end;
+end);
 
 # ----- Constructors for elements of Cubic -----
 
-CubicZero := Cubic([[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]]);
+BindGlobal("CubicZero", Cubic([[Zero(ComRing), Zero(ComRing), Zero(ComRing)], [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)]]));
 
 # TODO: Change order of arguments in CubicComEl and CubicConicEl
 
 # i: 1, 2, or 3
 # t: Element of ComRing
 # Returns: The element t[ii] of Cubic.
-CubicComEl := function(i, t)
+BindGlobal("CubicComEl", function(i, t)
 	local comList, conicList;
 	ReqComRingEl(t);
 	comList := [Zero(ComRing), Zero(ComRing), Zero(ComRing)];
 	comList[i] := t;
 	conicList := [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)];
 	return Cubic([comList, conicList]);
-end;
+end);
 
 # i: 1, 2, or 3
 # Returns: The element 1[ii] of Cubic.
-CubicComElOne := function(i)
+BindGlobal("CubicComElOne", function(i)
 	return CubicComEl(i, One(ComRing));
-end;
+end);
 
 # i: 1, 2, or 3
 # a: Element of ConicAlg
 # Returns: The element a[jl] of Cubic if [i, j, l] is the cyclic permutation starting from i.
-CubicConicEl := function(i, a)
+BindGlobal("CubicConicEl", function(i, a)
 	local comList, conicList;
 	if not ReqConicAlgEl(a) then
 		return fail;
@@ -157,12 +158,12 @@ CubicConicEl := function(i, a)
 	conicList := [Zero(ConicAlg), Zero(ConicAlg), Zero(ConicAlg)];
 	conicList[i] := a;
 	return Cubic([comList, conicList]);
-end;
+end);
 
 # a: Element of ConicAlg
 # j, l: 1, 2, or 3 such that j <> l
 # Returns: a[jl] \in Cubic
-CubicConicElMat := function(j, l, a)
+BindGlobal("CubicConicElMat", function(j, l, a)
 	local i;
 	if not (l in [1,2,3] and j in [1,2,3] and l <> j) then
 		return fail;
@@ -174,20 +175,20 @@ CubicConicElMat := function(j, l, a)
 			return CubicConicEl(i, ConicAlgInv(a));
 		fi;
 	fi;
-end;
+end);
 
-CubicConicElOne := function(i)
+BindGlobal("CubicConicElOne", function(i)
 	return CubicConicEl(i, One(ConicAlg));
-end;
+end);
 
-CubicConicElOneMat := function(i, j)
+BindGlobal("CubicConicElOneMat", function(i, j)
 	return CubicConicElMat(i, j, One(ConicAlg));
-end;
+end);
 
 # i, j: Indices 1, 2 or 3
 # a: Element of ComRing or ConicAlg
 # Returns: a[ij] \in Cubic
-CubicElMat := function(i, j, a)
+BindGlobal("CubicElMat", function(i, j, a)
 	if i = j then
 		ReqComRingEl(a);
 		return CubicComEl(i, a);
@@ -198,33 +199,33 @@ CubicElMat := function(i, j, a)
 		Error("Invalid input");
 		return fail;
 	fi;
-end;
+end);
 
 # i, j: Indices 1, 2 or 3
 # Returns: 1[ij] \in Cubic
-CubicElOneMat := function(i, j)
+BindGlobal("CubicElOneMat", function(i, j)
 	if i = j then
 		return CubicComEl(i, One(ComRing));
 	else
 		return CubicConicElMat(i, j, One(ConicAlg));
 	fi;
-end;
+end);
 
 # t1, t2, t3: Elements of ComRing
 # a1, a2, a3: Elements of ConicAlg
 # Returns: t1[11] + t2[22] + t3[33] + a1[23] + a2[31] + a3[12]
-CubicElFromTuple := function(t1, t2, t3, a1, a2, a3)
+BindGlobal("CubicElFromTuple", function(t1, t2, t3, a1, a2, a3)
 	return Sum([
 		CubicComEl(1, t1), CubicComEl(2, t2), CubicComEl(3, t3),
 		CubicConicEl(1, a1), CubicConicEl(2, a2), CubicConicEl(3, a3)
 	]);
-end;
+end);
 
 # i: Integer
 # Returns: Put p := 3i+1, q := 3i+2, r := 3i+3. Then the output is
 # t_p[11] + t_q[22] + t_r[33] + a_p[23] + a_q[31] + a_r[12]
 # where t_l and a_l are the respective indeterminates.
-CubicGenericEl := function(i)
+BindGlobal("CubicGenericEl", function(i)
 	if 3*i+3 > ConicAlg_rank or 3*i+3 > ComRing_rank then
 		return fail;
 	else
@@ -233,12 +234,12 @@ CubicGenericEl := function(i)
 			ConicAlgIndet(3*i+1), ConicAlgIndet(3*i+2), ConicAlgIndet(3*i+3)
 		);
 	fi;
-end;
+end);
 
 # i: Integer.
 # Returns: A list of the six generic basic elements of Cubic,
 # using indeterminates a_i and t_i.
-CubicGensAsModule := function(i)
+BindGlobal("CubicGensAsModule", function(i)
 	local a, t;
 	t := ComRingIndet(i);
 	a := ConicAlgIndet(i);
@@ -246,7 +247,7 @@ CubicGensAsModule := function(i)
 		CubicComEl(1, t), CubicComEl(2, t), CubicComEl(3, t),
 		CubicConicEl(1, a), CubicConicEl(2, a), CubicConicEl(3, a)
 	];
-end;
+end);
 
 # ----- Summands -----
 

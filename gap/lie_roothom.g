@@ -174,20 +174,15 @@ DeclareOperation("LieRootHomF4", [IsList, IsRingElement, IsBool, IsBool]);
 DeclareOperation("LieRootHomF4", [IsList, IsRingElement]);
 
 # List of roots whose root homomorphisms get an additional minus sign
-if not IsBoundGlobal("_MinusSignRootsLong") then
-	_MinusSignRootsLong := Difference(
-		F4NegLongRoots, 
-		[ [-1, -1, -1, 1], [1, 1, -1, 1], [1, -1, 1, 1], [-1, 1, 1, 1] ]
-	);
-	MakeConstantGlobal("_MinusSignRootsLong");
-fi;
-if not IsBoundGlobal("_MinusSignRootsShort") then
-	_MinusSignRootsShort := [
-		[1, 0, -1, 0], [0, 1, 0, 1], [0, 0, 1, 1], [0, -1, -1, 0],
-		[-1, 1, 0, 0], [-1, 0, 0, 1]
-	];
-	MakeConstantGlobal("_MinusSignRootsShort");
-fi;
+
+BindGlobal("_MinusSignRootsLong", Difference(
+	F4NegLongRoots, 
+	[ [-1, -1, -1, 1], [1, 1, -1, 1], [1, -1, 1, 1], [-1, 1, 1, 1] ]
+));
+BindGlobal("_MinusSignRootsShort", [
+	[1, 0, -1, 0], [0, 1, 0, 1], [0, 0, 1, 1], [0, -1, -1, 0],
+	[-1, 1, 0, 0], [-1, 0, 0, 1]
+]);
 
 # root: Root in F4.
 # a: Element of ComRing if root is long and element of ConicAlg otherwise
@@ -295,7 +290,7 @@ end);
 # Involves indeterminates t_comIndetNum, a_conicIndetNum, a_{conicIndetNum+1}.
 # Uses the formulas d_{a[ij],b[jk]} = TwistDiag[j]*d_{1[ii],ab[kk]} from [DMW]
 # to reduce the number of generators, which is why we have to assume that g1, g2, g3 are invertible.
-LieGensAsModule := function(comIndetNum, conicIndetNum)
+BindGlobal("LieGensAsModule", function(comIndetNum, conicIndetNum)
 	local t1, a1, a2, gens, root, i, j, gen;
 	t1 := ComRingIndet(comIndetNum);
 	a1 := ConicAlgIndet(conicIndetNum);
@@ -330,4 +325,4 @@ LieGensAsModule := function(comIndetNum, conicIndetNum)
 		od;
 	od;
 	return gens;
-end;
+end);

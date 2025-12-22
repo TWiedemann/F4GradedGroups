@@ -5,33 +5,33 @@
 ### because _InitTrDict has to be called before ComRing is defined.
 
 # Initialises the lists _ComRingTraceIndets and _ConicAlgTraces
-_InitTraceIndets := function()
+BindGlobal("_InitTraceIndets", function()
 	local i, infoList, type, info, a, aInv;
-	_ComRingTraceIndets := [];
-	_ConicAlgTraces := [];
+	BindGlobal("_ComRingTraceIndets", []);
+	BindGlobal("_ConicAlgTraces", []);
 	# Look up the corresponding information in _ComRingIndetInfo
 	for i in [1..Length(_ComRingIndetInfo)] do
 		infoList := _ComRingIndetInfo[i];
 		type := infoList[1];
 		info := infoList[2];
 		if type = "tr" then
-			Add(_ComRingTraceIndets, Indeterminate(BaseRing, i));
+			Add(_ComRingTraceIndets, Indeterminate(ComRingBaseRing, i));
 			a := ConicAlgMagEmb(info); # \in ConicAlg
 			aInv := ConicAlgMagEmb(ConicAlgMagInv(a));
 			Add(_ConicAlgTraces, a+ConicAlgInv(a));
 		fi;
 	od;
-end;
+end);
 
 _InitTraceIndets();
 
 # Initialises the lists _TrSubIndetList and _TrSubValueList
 # Currently these lists are filled "by hand" and only for products tr(xyz) up
 # to length 3. This is sufficient for our computations.
-_InitTrSubLists := function()
+BindGlobal("_InitTrSubLists", function()
 	local tr, inv, add, indet, i, j, k, x, y, z;
-	_TrSubIndetList := [];
-	_TrSubValueList := [];
+	BindGlobal("_TrSubIndetList", []);
+	BindGlobal("_TrSubValueList", []);
 	tr := ConicAlgMagTr;
 	inv := ConicAlgMagInv;
 	indet := ConicAlgMagIndet;
@@ -69,6 +69,6 @@ _InitTrSubLists := function()
 			od;
 		od;
 	od;
-end;
+end);
 
 _InitTrSubLists();

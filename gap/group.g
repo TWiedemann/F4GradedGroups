@@ -7,7 +7,7 @@
 
 # ----- Definition of LieEndo -----
 
-LieEndoSpec := rec(
+BindGlobal("LieEndoSpec", rec(
 	ElementName := "LieEndo",
 	# Zero map
 	Zero := a -> function(x)
@@ -40,11 +40,11 @@ LieEndoSpec := rec(
 		return x -> f(g(x));
 	end,
 	MathInfo := IsAdditivelyCommutativeElement
-);
+));
 
-LieEndo := ArithmeticElementCreator(LieEndoSpec);
-GrpOne := LieEndo(LieEndoSpec.One(fail));
-GrpZero := LieEndo(LieEndoSpec.Zero(fail));
+BindGlobal("LieEndo", ArithmeticElementCreator(LieEndoSpec));
+BindGlobal("GrpOne", LieEndo(LieEndoSpec.One(fail)));
+BindGlobal("GrpZero", LieEndo(LieEndoSpec.Zero(fail)));
 
 # For f \in LieEndo and a \in Lie, we want to write f(a) for the image of a under f.
 InstallMethod(CallFuncList,
@@ -414,7 +414,7 @@ DeclareOperation("GrpRootHomF4", [IsList, IsRingElement]);
 # root: Root in F4.
 # sign (optional argument): 1 or -1. Default 1.
 # Returns: The standard Weyl element corresponding to root if sign=1, and its inverse otherwise.
-GrpStandardWeylF4 := function(root, sign...)
+BindGlobal("GrpStandardWeylF4", function(root, sign...)
 	local inv, one;
 	# Handle optional argument
 	if Length(sign) = 0 then
@@ -435,7 +435,7 @@ GrpStandardWeylF4 := function(root, sign...)
 	fi;
 	inv := GrpRootHomF4(-root, -sign*one);
 	return inv * GrpRootHomF4(root, sign*one) * inv;
-end;
+end);
 
 # root: Root in F4.
 # a: Element of ConicAlg if root is short and element of ComRing if root is long.

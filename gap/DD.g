@@ -12,7 +12,7 @@
 # Returns: Nothing, but the following sanitization steps are applied to rep:
 # - Summands c*dd_{a,b} with one of a, b, c equal to zero are removed
 # - If two summands c1*dd_{a,b}, c2*dd_{a,b} appear, they are replaced by (c1+c2)*dd_{a,b}
-DDSanitizeRep := function(rep)
+BindGlobal("DDSanitizeRep", function(rep)
 	local i, j, x;
 	for i in [Length(rep), Length(rep)-1 .. 1] do
 		if i > Length(rep) then
@@ -37,15 +37,15 @@ DDSanitizeRep := function(rep)
 			fi;
 		od;
 	od;
-end;
+end);
 
 # Display strings
-_DDZeroString := "0_{DD}";
-_DDSymString := "\dd";
+BindGlobal("_DDZeroString", "0_{DD}");
+BindGlobal("_DDSymString", "\dd");
 
 # a: Internal representation of an element of DD.
 # Returns: A string representation of a.
-DDRepToString := function(a)
+BindGlobal("DDRepToString", function(a)
 	local stringList, summand, s;
 	stringList := [];
 	for summand in a do
@@ -56,9 +56,9 @@ DDRepToString := function(a)
 		Add(stringList, s);
 	od;
 	return StringSum(stringList, "+", _DDZeroString);
-end;
+end);
 
-DDSpec := rec(
+BindGlobal("DDSpec", rec(
 	ElementName := "DDElement",
 	Zero := a -> [],
 	Addition := function(a, b)
@@ -115,9 +115,9 @@ DDSpec := rec(
 		return productRep;
 	end,
 	MathInfo := IsAdditivelyCommutativeElement
-);
+));
 
-DD := ArithmeticElementCreator(DDSpec);
+BindGlobal("DD", ArithmeticElementCreator(DDSpec));
 InstallMethod(String, [IsDDElement], x -> DDRepToString(UnderlyingElement(x)));
 
 # Scalar multiplication ComRing x DD -> DD
@@ -142,7 +142,7 @@ end);
 
 # ----- Constructors for elements of DD -----
 
-DDZero := DD([]);
+BindGlobal("DDZero", DD([]));
 
 # cubicEl1, cubicEl2: Elements of Cubic.
 # Returns: dd_{cubicEl1, cubicEl2} \in DD.

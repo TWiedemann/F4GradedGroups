@@ -3,6 +3,7 @@
 
 ### ----- Init -----
 gap> InitF4Graded(6, 2, 4, false);;
+gap> RereadPackage("F4GradedGroups", "gap/test_paper.g");;
 
 ### Test that all elements w_a for a in F4 are indeed reflections. Takes 4 minutes.
 gap> TestAllReflections();

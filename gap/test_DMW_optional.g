@@ -1,5 +1,5 @@
 ### This file contains tests of (special cases of) statements that are proven
-### abstractly or by hand in [DMW].
+### abstractly or by hand in [DMW]. It is not loaded by default.
 
 # Tests whether GrpRootHomF4(root, _) is a homomorphism.
 # If root is short: Uses indeterminates a_1, a_2, a_(ConicAlg_rank), t_(ComRing_rank),

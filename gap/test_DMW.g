@@ -1,5 +1,5 @@
 ### This file contains test functions that verify the correctness of certain claims
-### in [DMW].
+### in [DMW]. It is not loaded by default.
 
 # ----- Tests involving Weyl elements -----
 

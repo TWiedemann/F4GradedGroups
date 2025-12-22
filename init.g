@@ -48,8 +48,6 @@ InstallGlobalFunction(InitF4Graded, function(args...)
 	RereadPackage("F4GradedGroups", "gap/simplify.g");
 	RereadPackage("F4GradedGroups", "gap/chev.g");
 	RereadPackage("F4GradedGroups", "gap/test_equal.g");
-	RereadPackage("F4GradedGroups", "gap/test_paper.g");
-	RereadPackage("F4GradedGroups", "gap/test_additional.g");
 	if userVars = true then
 		RereadPackage("F4GradedGroups", "gap/user_vars.g");
 	fi;

@@ -1,138 +1,374 @@
 # Initialisation
 
-This package allows symbolic computations in a free multiplicative conic alternative algebra $C$ on generators `a1, a2, ...` over a free commutative ring $k$ on generators `t1, t2, ...`. For technical reasons, the numbers of generators must be fixed during initialisation, and are stored in the constants `ConicAlg_rank` and `ComRing_rank`. Further, the maximal length of products 
+This package allows symbolic computations in a free multiplicative conic alternative algebra $C$ on generators `a1, a2, ...` over a free commutative ring $k$ on generators `t1, t2, ...`. For technical reasons, three constants that must be set during initialisation limit the ring elements that may arise during runtime:
+- `ComRing_rank` is the number of *indeterminates* `t1, t2, ...`. If for example `ComRing_rank = 3`, then `t1, t2, t3` are defined but `t4` is not.
+- `ConicAlg_rank` is the number of *indeterminates* `a1, a2, ...`.
+- `Trace_MaxLength` is the maximal length of products that may appear inside the argument of the trace function of $C$. For example, if `Trace_MaxLength = 2`, then `tr(a1a2)` is defined but  `tr(a1a2a1)` is not.
 
-Three constants of this package may be set by the user:
-- `ComRing_rank` is the maximal number of independent elements in the commutative base ring that may appear.
-- `ConicAlg_rank` is the maximal number of independent elements in the multiplicative conic alternative algebra that may appear.
-TODO
+These constants may be set by the user with the following function (after loading the package with `LoadPackage("F4GradedGroups")`):
 
-# Indeterminates in the rings
+```
+InitF4Graded(comrank, conicrank, tracelength, userVars)
+```
+Initialises the package with `ComRing_rank := comrank`, `ConicAlg_rank := conicrank`, `Trace_MaxLength := tracelength`. If `userVars = true`, then the following GAP variables are defined for the user's convenience: `t1, t2, ...` for the generators of $k$; `a1, a2, ...` for the generators of $C$; `g1, g2, g3` for the (arbitrary) constants $\gamma_1, \gamma_2, \gamma_3$ in $k$ (see below); `dd` for `Liedd` (see below). If `userVars = false`, then for example the indeterminates in $k$ are still printed as `t1, t2, ...`, but no GAP variables of the same name are defined to easily access these elements of $k$.
 
-The symbols `t1, t2, ...` denote arbitrary elements of the (arbitrary) commutative ring over which we work and `a1, a2, ...` denote arbitrary elements of the (arbitrary) multiplicative conic alternative algebra.
-We refer to these elements as *indeterminates*.
-The available number of such indeterminates of each type is determined by the variables `ComRing_rank` and `ConicAlg_rank`, respectively, which may be modified by the user before reading the files (see [Installation]).
-The indeterminates may be accessed by `ComRingIndet(i)` and `ConicAlgIndet(i)` where `i` is the number of the desired indeterminate, or alternatively as the values of the predefined constants `t1, t2, ...` and `a1, a2, ...`.
+High values of `ConicAlg_rank` and `Trace_MaxLength` strongly impact the runtime of computations. All serious computations needed in \[DMW\] work in the setup `InitF4Graded(6, 3, 4, false)` or `InitF4Graded(6, 2, 4, false)`.
 
-In this documentation, we will refer to the commutative ring and to the multiplicative conic alternative algebra by $k$ and $C$. Internally, they are called `ComRing` and `ConicAlg`.
+# Notational conventions
 
-The (arbitrarily chosen) constants $ \Gamma =(\gamma_1, \gamma_2, \gamma_3) \in k^3 $ are printed as `g1, g2, g3`.
-They may be accessed by `ComRingGamIndet(i)`, or alternatively as the values of the predefined constants `g1, g2, g3`.
+In the following, we denote elements of $k$ by `t, s, r`, elements of $C$ by `a, b, c`, elements of the cubic Jordan matrix algebra by `cub`, elements of the Brown algebra $B$ by `brown`, elements of `DD` by `ddEl`, elements of $L_0$ by `l0`, elements of $L$ by `lie` and elements of `LieEndo` by `f, g`. Further, we denote by `i, j, l` integers in ˙[1,2,3]˙ and by `p` arbitrary integers.
 
-Sums and products in $k$ and $C$ can be computed by the usual GAP operations `+` and `*`, and inverses of elements of the commutative ring (but not of the conic algebra) may be computed using `^-1`. Taking the inverse of a ring element implictly introduces the assumption that it is indeed invertible. In practice, we will only have to use the inverses of `g1, g2, g3`, and this only in situations in which they are indeed assumed to be invertible.
+# The commutative ring $k$
 
-# The conic algebra structure
+Internally, we use the name `ComRing` for the commutative ring $k$.
 
-Let `a` be an element of $C$.
-Then the conjugate of `a`, which is again an element of $C$, is printed as `a'` and may be computed using `ConicInv(a)` (referring to the fact the conjugation map is an involution).
-The norm and trace of `a`, which are elements of $k$, are printed as `n(a)` and `tr(a)` and may be computed using `ConicNorm(a)` and `ConicTr(a)`.
-For another conic algebra element `b`, the evaluation of the linearisation of the norm at `(a,b)` may be computed using `ConicNormLin(a,b)`.
-It is a known fact that `ConicNormLin(a,b) = tr(a'b)` holds in any multiplicative conic alternative algebra.
+```
+ComRingIndet(i)
+```
+Returns the `i`-th indeterminate in $k$, which is printed as `ti`. If the package was initialised with `userVars = true`, then GAP variables `t1 := ComRingIndet(1), ...` are defined.
+
+```
+ComRingGamIndet(i)
+```
+Returns the `i`-th element of $\Gamma = (\gamma_1, \gamma_2, \gamma_3)$. These are the (arbitrarily chosen, but fixed) constants that appear in the definition of cubic Jordan matrix algebras. They are printed as `g1, g2, g3`. If the package was initialised with `userVars = true`, then GAP variables `g1 := ComRingGamIndet(1), ...` are defined.
+
+```
++, *, ^-1
+```
+The usual arithmetic operations in GAP for addition, multiplication and inversion are available for elements of $k$.
+
+# The multiplicative conic alternative algebra $C$
+
+Internally, we use the name `ConicAlg` for the multiplicative conic alternative $k$-algebra $C$.
+
+```
+ConicAlgIndet(i)
+```
+Returns the `i`-th indeterminate in $C$, which is printed as `ai`. If the package was initialised with `userVars = true`, then GAP variables `a1 := ConicAlgIndet(1), ...` are available.
+
+```
++, *, ^-1
+```
+The usual arithmetic operations in GAP for addition and multiplication (but not inversion) are available for elements of $k$.
+
+```
+ConicInv(a)
+```
+Returns the conjugate of `a`. This is an element of $C$ which is printed as `a'`.
+```
+ConicNorm(a)
+```
+Returns the norm of `a`. This is an element of $k$ which is printed as `n(a)`.
+```
+ConicTr(a)
+```
+Returns the trace of `a`. This is an element of $k$ which is printed as `tr(a)`.
 
 Several measures are taken to simplify (the display of) traces.
 Multiplication signs in the argument of the trace are not printed:
 For `a=a1*a2`, the trace of `a` is printed as `tr(a1a2)`.
-By the relation `tr((xy)z) = tr(x(yz))`, we can often omit brackets, so the result of `ConicTr((a1*a2)*a3)`is printed as `tr(a1a2a3)`.
-Using in addition the relations `tr(x') = tr(x)` and `tr(xy) = tr(yx)`, the arguments of the trace are often permuted and/or replaced by their conjugates to ensure proper cancellation of terms.
-For example, both `ConicTr(a1*ConicInv(a2))` and `ConicTr(ConicInv(a1)*a2)` are printed as `tr(a1a2')`, and `ConicTr(ConicInv(a1)*a2*a3)` is printed as `tr(a1a3'a2')` (because `tr(a1'a2a3) = tr((a1'a2a3)') = tr(a3'a2'a1) = tr(a1a3'a2')`).
+By the relation `tr((ab)c) = tr(a(bc))`, we can omit brackets in products of length at most 3, so the result of `ConicTr((a1*a2)*a3)` is printed as `tr(a1a2a3)`.
+Using in addition the relations `tr(a') = tr(a)` and `tr(ab) = tr(ba)`, the arguments of the trace are often permuted and/or replaced by their conjugates to ensure proper cancellation of terms.
+For example, both `ConicTr(a1*ConicInv(a2))` and `ConicTr(ConicInv(a1)*a2)` evaluate to `tr(a1a2')`, and `ConicTr(ConicInv(a1)*a2*a3)` evaluates to `tr(a1a3'a2')` (which is correct because `tr(a1'a2a3) = tr((a1'a2a3)') = tr(a3'a2'a1) = tr(a1a3'a2')`).
+```
+ConicNormLin(a, b)
+```
+Returns `n(a+b)-n(a)-n(b)`, which is known to be the same as `tr(a'b)`.
+
+
 
 # The cubic Jordan matrix algebra
 
+Internally, we use the name `Cubic` for the cubic Jordan matrix algebra $J \coloneqq\operatorname{Her}_3(C, \Gamma)$.
+
 ## Elements of the cubic Jordan matrix algebra
 
-Let `a` be an element of $C$, let `t` be an element of $k$, let `i` be `1`, `2` or `3` and let `i, j, l` denote the unique cyclic permutation of `1, 2, 3` starting with `i`.
-Then the elements of the cubic Jordan matrix algebra $J = J' = Her_3(k, C, \Gamma)$ that are denoted in \[DMW\] by $a[ij]$ and $te_i$ can be constructed as `CubicConicEl(a, i)` and `CubicComEl(t, i)` and are printed as `a[ij]` and `t[ii]`, respectively.
-Recall that `a[ji]` is defined to be `a'[ij]`, so `a[pq]` is defined for all distinct `p, q` in `[1, 2, 3]`.
-For arbitrary distinct `i, j` in `[1, 2, 3]` and `b` from $C$ or $k$, the expression `CubicElMat(b, i, j)` evaluates to the element `b[ij]` if it exists, and throws an error otherwise.
+```
+CubicConicEl(a, i)
+```
+Returns `a[jl]` where `[i,j,l]` is the unique cyclic permutation of `[1,2,3]` starting from `i`.
+```
+CubicComEl(t, i)
+```
+Returns the element of $J$ which is denoted by $te_i$ in \[DMW\]. It is printed as `t[ii]`.
+```
+CubicElMat(z, i, j)
+```
+Returns `z[ij]`. Thus `z` must lie in $k$ if `i=j` and in $C$ otherwise.
+```
+CubicElFromTuple(t, s, r, a, b, c)
+```
+Returns  `t[11] + s[22] + r[33] + a[23] + b[31] + c[12]`.
+```
+CubicConicPart(cub, i)
+CubicComPart(cub, i)
+```
+Returns the corresponding component of `cub`. For example, for `cub = t[11] + s[22] + r[33] + a[23] + b[31] + c[12]`, we have `CubicConicPart(cub, 1) = a` and `CubicComPart(cub, 2) = s`.
+```
++, *
+```
+The usual GAP operations for addition $+: J \times J \to J$ and scalar multiplication $\cdot: k \times J \to J$ are available on $J$.
 
-Arbitrary elements of $J$ may be constructed as sums of the "basic" elements described above.
-Alternatively, the element `t[11] + s[22] + r[33] + a[23] + b[31] + c[12]` may be constructed as `CubicElFromTuple(t, s, r, a, b, c)`.
+## The cubic norm structure
 
-Let `cub = t[11] + s[22] + r[33] + a[23] + b[31] + c[12]` be an arbitrary element of $J$.
-Then the components of `cub` may be accessed by `CubicConicPart(cub, i)` and `CubicComPart(cub, i)`.
-For example, `CubicConicPart(cub, 1) = a` and `CubicComPart(cub, 2) = s`.
+$J$ has the structure of a cubic norm structure, whose structural maps can be computed as follows.
+```
+CubicNorm(cub)
+```
+Returns the norm of `cub`, which is an element of $k$.
+```
+CubicAdj(cub)
+```
+Returns the adjoint $\text{cub}^\sharp$ of `cub`, which is an element of $J$.
+```
+CubicBiTr(cub1, cub2)
+```
+Returns the bilinear trace $T(\text{cub1}, \text{cub2})$ of `cub1`, `cub2`, which is an element of $k$.
+```
+CubicCross(cub1, cub2)
+```
+Returns $\text{cub1} \times \text{cub2}$, which is an element of $J$.
 
 ## The Jordan algebra structure
 
-Let `a, b, c` be elements of $J$. The Jordan algebra operators of $J$ can be computed as follows: `JordanU(a,b)` is $U_a(b)$, `JordanULin(a,b,c)` is the linearisation $U_{a,b}(c)$ and `JordanD(a,b,c)` is $D_{a,b}(c) = \{ a, b, c \} = U_{a,c}(b)$. 
+$J$ has the structure of a quadratic Jordan algebra, whose structural maps can be computed as follows.
+```
+JordanU(cub1, cub2)
+```
+Returns $U_{\text{cub1}}(\text{cub2})$, which is an element of $J$.
+```
+JordanULin(cub1, cub2, cub3)
+```
+Returns $U_{\text{cub1},\text{cub2}}(\text{cub3})=U_{\text{cub1}+\text{cub2}}(\text{cub3}) - U_{\text{cub1}}(\text{cub3}) - U_{\text{cub2}}(\text{cub3})$, which is an element of $J$.
+```
+JordanD(cub1, cub2, cub3)
+```
+Returns $D_{\text{cub1}, \text{cub2}}(\text{cub3}) = \{\text{cub1}, \text{cub2}, \text{cub3}\} = U_{\text{cub1}, \text{cub3}}(\text{cub2})$, which is an element of $J$.
 
 # The Brown algebra
 
-We refer to the $k$-module $B = (k, J, J', k)$ as the *Brown algebra* because if $2$ is invertible in $k$, then it has the structure of a structurable algebra that is known under this name.
+We refer to the $k$-module $B = (k, J, J', k)$ as the *Brown algebra* because, if $2$ is invertible in $k$, then it has the structure of a structurable algebra that is known under this name.
 It parametrises the $1$- and $(-1)$-parts of the Lie algebra that we construct in \[DMW\].
-The element `[ t, cub1, cub2, s ]` of $B$ may be constructed as `BrownElFromTuple(t, cub1, cub2, s)`.
 
-Let `brown` be an element of $B$. While `brown` is internally represented as a list, it is itself not a list in GAP, so `brown[1]` throws an error. The underlying 4-element list which describes `brown` may be accessed as `BrownElTuple(brown)`. Further, `BrownElPart(brown, i) = BrownElTuple(brown)[i]` for `i` in `[1, 2, 3, 4]`. We also define `BrownElComPart(brown, 1) = BrownElPart(brown, 1)`, `BrownElComPart(brown, 2) = BrownElPart(brown, 4)`, `BrownElConicPart(brown, 1) = BrownElPart(brown, 2)` and `BrownElConicPart(brown, 2) = BrownElPart(brown, 3)`.
+Note that while elements of $B$ are internally represented and also printed as lists `[t, cub1, cub2, s]`, they are not lists in the GAP sense. Thus for an element `brown` of $B$, we have `IsList(brown) = false` and `brown[1]` is not a well-defined expression.
+```
+BrownElFromTuple(t, cub1, cub2, s)
+```
+Returns the element `[ t, cub1, cub2, s ]` of $B$. 
+```
+BrownElTuple(brown)
+```
+Returns the GAP list `[ t, cub1, cub2, s ]` underlying `brown`.
+```
+BrownElPart(brown, p)
+```
+Returns the `p`-th entry of the list underlying `brown`, where `1 <= p <= 4`.
+```
+BrownElComPart(brown, p)
+```
+Returns `BrownElPart(brown, 1)` for `p=1` and `BrownElPart(brown, 4)` for `p=2`.
+```
+BrownElCubicPart(brown, p)
+```
+Returns `BrownElPart(brown, 2)` for `p=1` and `BrownElPart(brown, 3)` for `p=2`.
 
 # The Lie algebra
 
-The Lie algebra $L$ that we construct from $J$ is, as a $k$-module, the direct sum $\bigoplus_{i=-2}^2 L_i$. We refer to it as `Lie` in the documentation and in our naming conventions. For arbitrary elements `lie1`, `lie2`, their sum may be computed as `lie1 + lie2` and their Lie bracket as `lie1 * lie2`. For `lie` in $L$ and `t` in $k$, the scalar multiplication of `lie` by `t` may be computed as `t * lie`.
+The Lie algebra $L$ that we construct from $J$ is, as a $k$-module, a direct sum $\bigoplus_{i=-2}^2 L_i$. We refer to it as `Lie` in the documentation and in our naming conventions.
+
+```
+LiePart(lie, p)
+```
+Returns the projection of `lie` to $L_p$ where `-2 <= p <= 2`. This is an element of $k$ if $p = \pm 2$, and element of $B$ if $p = \pm 1$ and an element of $L_0$ if $p=0$.
+```
++, *
+```
+As usual in GAP, the sum and Lie bracket of two elements of $L$ can be computed as `lie1 + lie2` and `lie1 * lie2`, respectively. Further, the scalar multiplication $k \times L \to L$ can also be computed using `*`.
 
 ## The parts $L_{-2}$ and $L_2$
 
-The $k$-submodules $L_{-2}$ and $L_2$ are isomorphic to $k$. Their generators are denoted by $x$ and $y$ in \[DMW\]. They are printed as `x` and `y`, and may be accessed as the constants `LieX` and `LieY`.
+The $k$-submodules $L_{-2}$ and $L_2$ are isomorphic to $k$.
 
-For an arbitrary element `lie` of $L$, the elements `t` and `s` of $k$ for which `t*LieX` and `s*LieY` are the components of `lie` in $L_{-2}$ and $L_{-1}$ may be accessed as `LiePart(lie, -2)` and `LiePart(lie, 2)`, respectively.
+```
+LieX, LieY
+```
+The generators of $L_{-2}$ and $L_2$, respectively. They are denoted by $x$ and $y$ in \[DMW\]. They are printed as `x` and `y`.
 
 ## The parts $L_{-1}$ and $L_1$
 
-The $k$-submodules $L_{-1}$ and $L_1$ are isomorphic to the Brown algebra $B$. However, we strictly distinguish between elements of $B$, $L_{-1}$ and $L_1$. For an element `brown` of $B$, the corresponding elements of $L_{-1}$ and $L_1$ may be constructed as `BrownNegToLieEmb(brown)` and `BrownPosToLieEmb(brown)`, respectively. We also provide the shorthand `LieBrownPosElFromTuple(a, t, s, b) := BrownPosToLieEmb(BrownPosElFromTuple(a, t, s, b))`, and a similar shorthand `LieBrownNegElFromTuple`.
+The $k$-submodules $L_{-1}$ and $L_1$ are isomorphic to the Brown algebra $B$. However, just like elements of $B$ are not lists in the GAP sense, we strictly distinguish between elements of $B$, $L_{-1}$ and $L_1$. Elements of $L_{-1}$ and $L_1$ are printed as `[t, cub1, cub2, s]_-` and `[t, cub1, cub2, s]_+`, respectively. For example, `[ t1, a1[23], a2[12], t1+t2 ]_+` is an element of $L_1$.
 
-The element `lie := BrownPosToLieEmb(brown)` is printed as `brown_+`, and `lie := BrownNegToLieEmb(brown)` is printed as `brown_-`. For example, `[ t1, a1[23], a2[12], t1+t2 ]_+` is an element of $L_1$.
-
-For an arbitrary element `lie` of $L$, the elements `brownNeg` and `brownPos` of $B$ for which `BrownNegToLieEmb(brownNeg)` and `BrownPosToLieEmb(brownPos)` are the components of `lie` in $L_{-1}$ and $L_{1}$ may be accessed as `LiePart(lie, -1)` and `LiePart(lie, 1)`, respectively.
+```
+BrownPosToLieEmb(brown)
+BrownNegToLieEmb(brown)
+```
+Returns the element `brown_+` of $L_1$ or `brown_-` of $L_{-1}$, respectively.
+```
+LieBrownPosElFromTuple(t, cub1, cub2, s)
+LieBrownNegElFromTuple(t, cub1, cub2, s)
+```
+Returns the element `[t, cub1, cub2, s]_+` of $L_1$ or `[t, cub1, cub2, s]_-` of $L_{-1}$, respectively.
 
 ## The Lie subalgebra $L_0$
 
-The subalgebra $L_0$ of $L$ is itself the direct sum of three components $L_{0,-1}, Z, L_{0,1}$. We internally distinguish between elements of $L_0$ and elements of $L$, and the function `L0ToLieEmb` describes the corresponding embedding.
+The subalgebra $L_0$ of $L$ is itself the direct sum of three components $L_{0,-1}, Z, L_{0,1}$. Again, we internally distinguish between elements of $L_0$ and their embedding into $L$.
+```
+L0ToLieEmb(l0)
+```
+Returns the embedding of `l0` into $L$.
 
 ### The parts $L_{0,-1}$ and $L_{0,1}$
 
-The $k$-submodules $L_{0,-1}$ and $L_{0,1}$ are isomorphic to the cubic Jordan matrix algebra $J$. For an element `cub` of $J$, the corresponding elements of $L_{0,-1}$ and $L_{0,1}$ may be constructed as `CubicNegToLieEmb(cub)` and `CubicPosToLieEmb(cub)`, respectively. Note that we strictly distinguish between elements of $J$, $L_{0,-1}$ and $L_{0,1}$.
+The $k$-submodules $L_{0,-1}$ and $L_{0,1}$ are isomorphic to the cubic Jordan matrix algebra $J$. Again, we strictly distinguish between elements of $J$, $L_{0,-1}$ and $L_{0,1}$. For an element `cub` of $J$, the corresponding elements of $L_{0,-1}$ and $L_{0,1}$ are printed as `ad_{cub}^-` and `ad_{cub}^+`, respectively. While we internally distinguish between elements of $L_{0,\pm 1}$ and their embeddings into $L$, they are printed in the same way.
 
-The element `lie := CubicPosToLieEmb(cub)` is printed as `ad_{cub}^+`, and `lie := CubicNegToLieEmb(cub)` is printed as `ad_{cub}^-`. For example, `ad_{a1[23]}^+` is an element of $L_{0,1}.
-
-For an arbitrary element `lie` of $L$, the elements `brownNeg` and `brownPos` of $B$ for which `BrownNegToLieEmb(brownNeg)` and `BrownPosToLieEmb(brownPos)` are the components of `lie` in $L_{-1}$ and $L_{1}$ may be accessed as `LiePart(lie, -1)` and `LiePart(lie, 1)`, respectively.
+```
+CubicPosToL0Emb(cub)
+CubicNegToL0Emb(cub)
+```
+Returns the elements `ad_{cub}^+` and `ad_{cub}^-` of $L_0$, respectively.
+```
+CubicPosToLieEmb(cub)
+CubicNegToLieEmb(cub)
+```
+Returns the elements `ad_{cub}^+` and `ad_{cub}^-` of $L$, respectively.
+```
+L0CubicPosPart(l0)
+L0CubicNegPart(l0)
+```
+Returns the projection of `l0` onto $L_{0,1}$ or $L_{0,-1}$, respectively.
 
 ### The parts $Z$ and `DD`
 
-We refer to the $k$-module $\langle \mathbf{d}_{a,b} \mid a \in J, b \in J' \rangle$ (which is unnamed in \[DMW\]) as `DD` in (the documentation of) this GAP package. The $k$-module $L_0$, denoted by `L0` in the code, is the (not necessarily direct) sum of `DD` with $k \xi + k\zeta$.
-
-The elements $\xi$ and $\zeta$ are printed as `xi` and `zeta`, and they may be accessed by the constants `LieXi` and `LieZeta`, respectively.
-An element $\mathbf{d}_{a,b}$ is printed as `dd_{a,b}`, and it may be constructed as `dd(a, b)`.
-
-While this should usually not be relevant for the end user, we note that we internally distinguish between elements of `DD`, $L_0$ and $L$. The elements `DDdd(a, b)`, `L0dd(a, b)` and `Liedd(a, b)` all describe the element $\mathbf{d}_{a,b}$, but regarded as an element of `DD`, $L_0$ and $L$, respectively. `dd` is a shorthand for `Liedd`. Similarly, `L0Xi` and `L0Zeta` represent $\xi$ and $\zeta$ regarded as elements of $L_0$. The functions `DDToL0Emb` and `DDToLieEmb` describe the embeddings defined on `DD`.
-
-Since the sum of `DD` and $k \xi + k \zeta$ is not necessarily direct, there are no projection maps from $L$ (or $L_0$) onto `DD`, $k\xi$ and $k\zeta$. Still, every element `l0` of `L0` is internally represented as a sum `d + t*L0Xi + s*L0Zeta` where `d` is in `DD` and `t, s` are in $k$, and we define functions `L0DDPart(l0) := d`, `L0XiPart(l0) := t`, `L0ZetaPart(l0) := s`.
+We refer to the $k$-module $\langle \mathbf{d}_{a,b} \mid a \in J, b \in J' \rangle$ (which is unnamed in \[DMW\]) as `DD` in (the documentation of) this GAP package. The $k$-module $Z$ is the (not necessarily direct) sum of `DD` with $k \xi + k\zeta$. Again, we internally distinguish between elements of `DD` and their embedding into $L_0$ and $L$.
+```
+LieXi
+L0Xi
+LieZeta
+L0Zeta
+```
+The elements $\xi$ and $\zeta$ regarded as elements of $L$ or of $L_0$, respectively. They are printed as `xi` and `zeta`.
+```
+DDdd(cub1, cub2)
+L0dd(cub1, cub2)
+Liedd(cub1, cub2)
+```
+Returns the element $\mathbf{d}_{\text{cub1},\text{cub2}}$, regarded as an element of `DD`, $L_0$ or $L$, respectively. In all three cases, it is printed as `dd_{cub1,cub2}`. If the package was initialised with `userVars = true`, then the shortcut `dd := Liedd` is defined.
+```
+DDToL0Emb(ddEl)
+DDToLieEmb(ddEl)
+```
+Returns the embedding of `ddEl` into $L_0$ or $L$, respectively.
+```
+L0DDPart(l0)
+L0XiPart(l0)
+L0ZetaPart(l0)
+```
+Returns elements of `DD` and $k$ such that the projection of `l0` onto $Z$ is `L0DDPart(l0) + L0XiPart(l0)*L0Xi + L0ZetaPart(l0)*L0Zeta`. Note that since the sum of `DD` and $k \xi + k \zeta$ is not necessarily direct, these elements are not uniquely determined by this property.
 
 ## Root homomorphisms
 
-We represent a root in $G_2$ (respectively, $F_4$) as a list with two (respectively, four) elements, each of which is in `[-2, -1, 0, 1, 2]`. This representation corresponds precisely to Figure ??? in \[DMW\]. For a root `a` in $F_4$, `F4RootG2Coord(a)` is its image in $G_2 \cup \{0\}$. The sets of all roots in $F_4$ and $G_2$ are stored in the lists `F4Roots` and `G2Roots`, respectively.
-
-For a root `alpha` in $F_4$ and an element `a` of $k$ or $C$, `LieRootHomF4(alpha, a)` is the element $\vartheta_\alpha(a)$ of $L$ (see \[DMW\]). It is required that either `alpha` is short and $a \in C$, or `alpha` is long and $a \in k$.
+We represent a root in $G_2$ (respectively, $F_4$) as a list with two (respectively, four) elements, each of which is an integer in the range `[-2, -1, 0, 1, 2]`. This representation corresponds precisely to Figures 1 and 3 in \[DMW\].
+```
+F4Roots
+F4ShortRoots
+F4LongRoots
+G2Roots
+G2ShortRoots
+G2LongRoots
+```
+Lists of all (resp. all short reps. all long) roots in $F_4$ (resp. $G_2$).
+```
+F4SimpleRoots
+```
+The system `[[1,1,-1,-1], [-2, 0, 0, 0], [1, -1, 0, 0], [0, 1, 1, 0]` of simple roots in $F_4$. This is precisely $\Delta_F = (\delta_1, \delta_2, \delta_3, \delta_4)$ in \[DMW, 11.1\].
+```
+F4RootG2Coord(F4Root)
+```
+Returns the image of `F4Root` under the surjection $\pi: F_4 \to G_2 \cup \{0\}$ described in \[DMW, 10.24\].
+```
+F4Refl(F4Root1, F4Root2)
+```
+Returns $\text{F4Root1}^{\sigma(\text{F4Root2})}$, the image of `F4Root1` along the hyperplane orthogonal to `F4Root2`.
+```
+LieRootHomF4(F4Root, z)
+```
+Returns the element $\vartheta_\alpha(z)$ of $L$ as defined in \[DMW, 10.29\]. Thus `z` must be in $k$ if `F4Root` is long and in $C$ otherwise.
 
 # The automorphism group
 
-For a root `alpha` in $F_4$ and an element `a` of $k$ or $C$, `GrpRootHomF4(alpha, a)` is the automorphism $\theta_\alpha(a)$ of $L$ (see \[DMW\]). It is required that either `alpha` is short and $a \in C$, or `alpha` is long and $a \in k$. Further, `GrpStandardWeylF4(alpha)` is the Weyl element $w_\alpha$.
+The $F_4$-graded group constructed in \[DMW\] is a group of automorphisms of $L$. This package provides the internal structure `LieEndo` to perform computations with automorphisms of $L$.
+```
+f(lie)
+```
+For an element `f` of `LieEndo` and `lie` in $L$, `f(lie)` is the image of `lie` under `f`.
+```
+f+g, f*g
+```
+For two elements `f` and `g` of `LieEndo`, `f+g` and `f*g` are the elements of `LieEndo` that map `lie` to `f(lie) + g(lie)` and `f(g(lie))`, respectively.
+```
+GrpRootHomF4(F4Root, z)
+```
+Returns the automorphism $\theta_\alpha(a)$ of $L$ in `LieEndo` as defined in \[DMW, 11.2, 11.8\]. Thus `z` must be in $k$ if `F4Root` is long and in $C$ otherwise.
+```
+GrpStandardWeylF4(F4Root)
+```
+Returns the Weyl element $w_\alpha = \theta_{-\alpha}(-1) \theta_\alpha(1) \theta_{-\alpha}(-1)$ in `LieEndo`.
 
-The automorphisms defined above lie in the internal structure `LieEndo`. For an element `f` of `LieEndo` and `lie` in $L$, `f` may be evaluated on `lie` in the usual way, by writing `f(lie)`. For two elements `f` and `g` of `LieEndo`, `f+g` and `f*g` are the elements of `LieEndo` that map `lie` to `f(lie) + g(lie)` and `f(g(lie))`, respectively.
 
 # Trivial elements
 
-The zero elements in $k$, $C$, $B$, `DD`, $L_0$, $L$, `LieEndo` may be accessed as `Zero(ComRing)`, `Zero(ConicAlg)`, `BrownZero`, `DDZero`, `L0Zero`, `LieZero` and `GrpZero`. The identity element of `LieEndo` may be accessed as `GrpOne`.
+```
+Zero(ComRing)
+Zero(ConicAlg)
+BrownZero
+DDZero
+L0Zero
+LieZero
+GrpZero
+```
+The zero elements in $k$, $C$, $B$, `DD`, $L_0$, $L$, `LieEndo`, respectively.
+```
+GrpOne
+```
+The identity element in `LieEndo`.
 
-# Simplification
+# Simplification and equality tests
 
-Let `a` be an element of $C$. Then `Simplify(a)` represents the same element of (the free multiplicative conic alternative algebra `C`), but its internal representation is (hopefully) simplified. In many situations, if `a` represents the zero element in $C$, then the internal representation of `Simplify(a)` is trivial. Thus in order to check whether `a = b`, one should always check whether `Simplify(a-b) = Zero(ConicAlg)`: If this is true, then `a` and `b` are proven to represent the same element of $C$. However, if it is `false`, this does not prove that they represent distinct elements.
+Let `u, v` be two element of $k$ (or of $C$, $B$, `DD`, $L_0$ or $L$, but not of `LieEndo` which is handled somewhat differently). Then `u = v` evaluates to `true` if and only if the internal representations of `u` and `v` coincide. In particular, if it evaluates to `true`, then `u` and `v` are certainly equal (in the mathematical sense, i.e. regarded as elements of a "free" mathematical structure). If for example `u`, `v` lies in $C$, this means that for any multiplicative conic alternative algebra $\tilde{C}$ over any commutative ring $\tilde{k}$, the identity `u = v` holds whenever `a1, a2, ...` are replaced by arbitrary elements of $\tilde{C}$ and `t1, t2, ...` are replaced by arbitrary elements of $\tilde{k}$.
 
-The function `Simplify` is also defined on $k$, $B$, `DD`, $L_0$ and $L$, and works on these structures in a similar way. For more details, we refer to Section 9.3 (TODO: number still correct?) in \[DMW\].
+However, it `u = v` evaluates to `false`, then this does not prove that `u` and `v` are not equal (in the mathematical sense). The following key function of this package aims to mitigate this problem:
+
+```
+Simplify(u)
+```
+Returns an element of the parent structure of `u` (that is, of $k$, $C$, $B$, `DD`, $L_0$ or $L$) which is mathematically equivalent to `u`. Usually the internal representation of `Simplify(u)` is "easier"/"shorter"/"more canonical" than that of `u`.
+
+Thus to check whether `u = v`, one should check whether `Simplify(u-v)` equals zero. If this is true, then `u` and `v` represent the same element. If not, then they might still represent the same element, and we can try to prove this by hand by showing that `Simplify(u-v)` represents 0 (which is usually easier than showing that `u-v` represents 0).
+
+The function `Simplify` relies on several subroutines which can be studied in detail in `gap/simplify.g`. For Lie algebra elements, we also provide the following function.
+```
+TestEquality(lie1, lie2[, print])
+```
+Returns `true` if `lie1`, `lie2` can be proven to represent the same elements using the techniques outlined above, and `false` otherwise.
+If the optional argument `print` is supplied and `true`, then in addition, simplifications of all non-zero components of `lie1-lie2` in $L_{-2}, \dots, L_2$ are printed.
+
 
 # Testing equality of automorphism of $L$
 
-Let `g, h` be elements of `LieEndo` which are assumed to be compatible with the Lie bracket. We can try to prove that `g` equals `h` by checking that `Simplify(g(gen) - h(gen))` is zero (in $L$) for all `gen` in a set of Lie algebra generators of $L$. Two functions are available for this task:
-- `TestEquality(g, h)` is `true` if all checks described above are successful. Otherwise it is the list of all lists `[gen, Simplify(g(gen) - h(gen))]` for any `gen` for which the test was not successfull.
-- `TestEqualityPieces(g, h)` is `true` if all checks described above are successful. Otherwise it is a list of all non-zero elements of $k$, $C$ and $L_0$ that appear in `Simplify(g(gen) - h(gen))` for any `gen`.
+For elements of `LieEndo`, equality tests with `=` are useless: Even `GrpRootHomF4(F4Root, z) = GrpRootHomF4(F4Root, z)` evaluates to `false` for technical reasons. Instead, the following functions should be used.
+```
+TestEquality(g, h)
+```
+Returns `true` if `TestEquality(g(gen), h(gen))` is `true` for all `gen` in a certain list of Lie algebra generators of $L$.
+Otherwise returns the list of all lists `[gen, Simplify(g(gen) - h(gen))]` for any `gen` for which the test was not successfull.
 
-The general strategy for proving equality of `g` and `h` is to call `TestEqualityPieces(g, h)` and to prove by hand that all terms in the result (if there are any) equal zero.
+The list of all generators `gen` on which we test equality is obtained by evaluating all root homomorphisms with image in $L_{-2} + L_1$ on the last indeterminate in $k$ or $C$ (that is, on `ComRingIndet(ComRing_rank)` or `ConicAlgIndet(ConicAlg_rank)`). The user should assure that these indeterminates do not occur in the definition of `g` and `h`.
+```
+TestEqualityPieces(g, h)
+```
+Returns `true` in the same situations as `TestEquality`.
+Otherwise the output is a list of all non-zero "pieces" of all "error terms" `Simplify(g(gen) - h(gen))` that arise during the test.
+By "pieces" we mean the underlying elements of $k$, $C$ and $L_0$ that make up the error terms.
+Thus to prove that `g` and `h` are the same, it suffices to prove that all elements in the output list represent 0.
 
-The list of all generators `gen` on which we test equality is obtained by evaluating all root homomorphisms with image in $L_{-2} + L_1$ on the last indeterminate in $k$ or $C$ (that is, on `ComRingIndet(ComRing_rank)` or `ConicAlgIndet(ConicAlg_rank)`). The user should assure that these indeterminates do not occur in `g` and `h`.
+As for `TestEquality`, the user should assure that `ComRingIndet(ComRing_rank)` or `ConicAlgIndet(ConicAlg_rank)` do not occur in the definition of `g` and `h`.

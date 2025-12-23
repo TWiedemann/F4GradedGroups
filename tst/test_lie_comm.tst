@@ -6,7 +6,7 @@
 
 # Init
 gap> InitF4Graded(6, 2, 4, false);;
-gap> RereadPackage("F4GradedGroups", "gap/test_paper.g");;
+gap> RereadPackage("F4GradedGroups", "gap/DMW/test_DMW.g");;
 
 # Test claim about length of roots for pairs a, b for which a+b is a root
 gap> TestF4RootLengthSum();

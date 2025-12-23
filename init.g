@@ -3,7 +3,6 @@
 # the variables in user_vargs.g if d = true.
 # InitF4Graded() uses (6,4,4,true) as the default values for (a,b,c,d).
 DeclareGlobalFunction("InitF4Graded");
-# DeclareOperation("InitF4Graded", [IsInt, IsInt, IsInt]);
 InstallGlobalFunction(InitF4Graded, function(args...)
 	local comrank, conicrank, tracelength, s, userVars;
 	# Set default values for ComRing_rank, ConicAlg_rank, Trace_MaxLength
@@ -30,25 +29,25 @@ InstallGlobalFunction(InitF4Graded, function(args...)
 	BindGlobal("ConicAlg_rank", conicrank);
 	BindGlobal("Trace_MaxLength", tracelength);
 	# Read files
-	RereadPackage("F4GradedGroups", "gap/constants.g");
-	RereadPackage("F4GradedGroups", "gap/F4-roots.g");
-	RereadPackage("F4GradedGroups", "gap/parity_lists.g");
-	RereadPackage("F4GradedGroups", "gap/helper.g");
-	RereadPackage("F4GradedGroups", "gap/conic_mag.g");
-	RereadPackage("F4GradedGroups", "gap/comring.g");
-	RereadPackage("F4GradedGroups", "gap/conic.g");
-	RereadPackage("F4GradedGroups", "gap/init.g");
-	RereadPackage("F4GradedGroups", "gap/cubic.g");
-	RereadPackage("F4GradedGroups", "gap/brown.g");
-	RereadPackage("F4GradedGroups", "gap/DD.g");
-	RereadPackage("F4GradedGroups", "gap/lie0.g");
-	RereadPackage("F4GradedGroups", "gap/lie.g");
-	RereadPackage("F4GradedGroups", "gap/lie_roothom.g");
-	RereadPackage("F4GradedGroups", "gap/group.g");
-	RereadPackage("F4GradedGroups", "gap/simplify.g");
-	RereadPackage("F4GradedGroups", "gap/chev.g");
-	RereadPackage("F4GradedGroups", "gap/test_equal.g");
+	RereadPackage("F4GradedGroups", "gap/constants.g"); # Global constants of the package
+	RereadPackage("F4GradedGroups", "gap/F4-roots.g"); # The root systems F4 and G2
+	RereadPackage("F4GradedGroups", "gap/parity_lists.g"); # Stores the parity map of the F4-graded group
+	RereadPackage("F4GradedGroups", "gap/helper.g"); # Helper functions, monstly for lists
+	RereadPackage("F4GradedGroups", "gap/conic_mag.g"); #
+	RereadPackage("F4GradedGroups", "gap/comring.g"); # Commutative ring k = ComRing
+	RereadPackage("F4GradedGroups", "gap/conic.g"); # Conic algebra C = Conic
+	RereadPackage("F4GradedGroups", "gap/init_trlists.g"); # Initialises some global constants
+	RereadPackage("F4GradedGroups", "gap/cubic.g"); # Cubic Jordan matrix algebra
+	RereadPackage("F4GradedGroups", "gap/brown.g"); # Brown algebra
+	RereadPackage("F4GradedGroups", "gap/DD.g"); # DD
+	RereadPackage("F4GradedGroups", "gap/lie0.g"); # L_0
+	RereadPackage("F4GradedGroups", "gap/lie.g"); # Lie algebra L
+	RereadPackage("F4GradedGroups", "gap/lie_roothom.g"); # Root homomorphisms in L
+	RereadPackage("F4GradedGroups", "gap/group.g"); # LieEndo and root homomorphisms in there
+	RereadPackage("F4GradedGroups", "gap/simplify.g"); # Simplification functions
+	RereadPackage("F4GradedGroups", "gap/chev.g"); # Chevalley-type bases
+	RereadPackage("F4GradedGroups", "gap/test_equal.g"); # Equality tests
 	if userVars = true then
-		RereadPackage("F4GradedGroups", "gap/user_vars.g");
+		RereadPackage("F4GradedGroups", "gap/user_vars.g"); # Additional shortcuts for convenience
 	fi;
 end);

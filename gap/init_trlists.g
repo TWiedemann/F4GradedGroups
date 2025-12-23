@@ -1,8 +1,8 @@
 ### This file calls functions that initialise
 ### _ComRingTraceIndets, _ConicAlgTraces, _TrSubIndetList and _TrSubValueList.
-### For their documentation, see read.g.
 ### The list _ComRingIndetInfo and the dict _TrDict are not initialised here but in comring.g
 ### because _InitTrDict has to be called before ComRing is defined.
+### For a documentation of these objects, see constants.g.
 
 # Initialises the lists _ComRingTraceIndets and _ConicAlgTraces
 BindGlobal("_InitTraceIndets", function()

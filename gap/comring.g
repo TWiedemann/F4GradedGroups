@@ -223,16 +223,15 @@ end);
 
 # _ComRingGamIndetNum := []; # Contains the indeterminate number of gamma_i at position i (not used)
 
-# Initialises:
-# - the dictionary _TrDict with precomputed trace values.
-# - the list _ComRingIndetInfo
+# This function does the following:
+# - Initialises the dictionary _TrDict (see constants.g for a documentation).
+# - Initialises the list _ComRingIndetInfo (see constants.g for a documentation).
 # - Every indeterminate that may appear in ComRing is created once, and this always happens
 # in the same order (for a fixed choice of ConigAlg_rank and Trace_MaxLength). Every indeterminate
 # is assigned a number by GAP the first time it is used. Calling this function ensures that
 # the indeterminates are always initialised in the same order and hence always have the same
 # internal number. This guarantees that they are always printed in the same order. Hence it
 # is necessary to call this function even if _CacheTrace = false.
-# For a documentation of _TrDict and _ComRingIndetInfo, see read.g.
 BindGlobal("_InitTrDict", function()
 	local maxIndetNum, magEl, magEls, magElsReps, magElRep, trace, polyRep, monomial, i, j;
 	BindGlobal("_ComRingIndetInfo", []);

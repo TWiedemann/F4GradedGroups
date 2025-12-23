@@ -438,9 +438,8 @@ TestF4RootLengthSum := function()
 	return true;
 end;
 
-# TODO: Check.
 # Prints F4SimpleRootParLists as a LaTeX table
-printLatexParityTable := function()
+PrintLatexParityTable := function()
 	local e1, e2, e3, e4, rootCoeffs, rootCoeff, root, pos, i, k, l, par;
 	Display("\\toprule");
 	Display("$\\alpha$ & $\\tilde{\\eta}(\\alpha, f_1)$ & $\\tilde{\\eta}(\\alpha, f_2)$ & $\\tilde{\\eta}(\\alpha, f_3)$ & $\\tilde{\\eta}(\\alpha, f_4)$ \\\\");
@@ -455,6 +454,7 @@ printLatexParityTable := function()
 		e1+3*e2+4*e3+2*e4, 2*e1+3*e2+4*e3+2*e4 
 	]; # Positive roots in the desired order, expressed as linear combinations of F4SimpleRoots
 	for i in [1..Length(rootCoeffs)] do
+		# \midrule after 5 rows
 		if IsInt((i-1)/5) then
 			Display("\\midrule");
 		fi;

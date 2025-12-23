@@ -169,13 +169,16 @@ InstallMethod(MakeTraces, [IsElementOfFreeMagmaRing], function(a)
 	return ElementOfMagmaRing(FamilyObj(a), Zero(ComRing), resultCoeffList, resultMagList);
 end);
 
-# a: Element of ComRing.
-# Returns: The element of ConicAlg obtained from a by replacing each occurence of tr(a) by a+a'.
+# t: Element of ComRing.
+# Returns: The element of ConicAlg obtained from t by replacing each occurence of tr(a) inside t by a+a'.
+# This function is not called by Simplify because it usually makes the representation of t
+# more complicated, but sometimes an element b of ConicAlg can be reduced to 0 by
+# applying WithoutTraces to all ComRing-coefficients inside b.
 DeclareOperation("WithoutTraces", [IsRationalFunction]);
-InstallMethod(WithoutTraces, [IsRationalFunction], function(a)
+InstallMethod(WithoutTraces, [IsRationalFunction], function(t)
 	local coeffList, result, i, magEl, comEl;
-	ReqComRingEl(a);
-	return Value(a, _ComRingTraceIndets, _ConicAlgTraces, One(ConicAlg));
+	ReqComRingEl(t);
+	return Value(t, _ComRingTraceIndets, _ConicAlgTraces, One(ConicAlg));
 end);
 
 # a: Element of ConicAlg.

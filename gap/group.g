@@ -444,7 +444,7 @@ end);
 # w.r.t. root. If naive=true, the "naive" root homomorphism is used (no multiplication
 # by -1, g1, g2, g3).
 InstallMethod(GrpRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, naive)
-	local roothom, roothomNeg, weyl, weylInv, d1, d4, minusRoots, invRoots;
+	local roothom, weyl, weylInv, d1, d4;
 	if root in F4LongRoots then
 		ReqComRingEl(a);
 	elif root in F4ShortRoots then
@@ -454,17 +454,23 @@ InstallMethod(GrpRootHomF4, [IsList, IsRingElement, IsBool], function(root, a, n
 		return fail;
 	fi;
 	if F4RootG2Coord(root) = [0,0] then
-		# Define root homomorphism as conjugate of root homomorphisms outside of [0, 0]
+		## Define root homomorphism as conjugate of root homomorphisms outside of [0, 0]
+		# Twist parameter
+		if root in [[0, 1, -1, 0], [0, -1, 1, 0]] then
+			a := -a;
+		fi;
+		if root in [[0, -1, 1, 0], [0, 1, 0, -1], [0, 0, 1, -1]] then
+			a := ConicAlgInv(a);
+		fi;
 		roothom := rootArg -> GrpRootHomF4NonDiv(rootArg, a, naive);
-		roothomNeg := rootArg -> GrpRootHomF4NonDiv(rootArg, -a, naive);
 		weyl := GrpStandardWeylF4;
 		weylInv := x -> GrpStandardWeylF4(x, -1);
 		d1 := F4SimpleRoots[1];
 		d4 := F4SimpleRoots[4];
 		if root = [0, 1, -1, 0] then
-			return weylInv(d1) * roothomNeg([-1, 0, 0, 1]) * weyl(d1);
+			return weylInv(d1) * roothom([-1, 0, 0, 1]) * weyl(d1);
 		elif root = [0, -1, 1, 0] then
-			return weylInv(d1) * roothomNeg([1, 0, 0, -1]) * weyl(d1);
+			return weylInv(d1) * roothom([1, 0, 0, -1]) * weyl(d1);
 		elif root = [0, 1, 0, -1] then
 			return weylInv(d1) * roothom([-1, 0, 1, 0]) * weyl(d1);
 		elif root = [0, -1, 0, 1] then

@@ -80,12 +80,12 @@ _WeylErrorAndParity := function(root, onRootList, w, wInv)
 		# Define root group element x on which we act
 		if baseRoot in F4ShortRoots then
 			a := ConicAlgIndet(1);
-			x := GrpRootHomF4(baseRoot, a, true, true);
+			x := GrpRootHomF4(baseRoot, a, true);
 			twistList := [a, -a, ConicAlgInv(a), -ConicAlgInv(a)];
 			parList := [[1,1], [-1,1], [1,-1], [-1,-1]];
 		else
 			t := ComRingIndet(1);
-			x := GrpRootHomF4(baseRoot, t, true, true);
+			x := GrpRootHomF4(baseRoot, t, true);
 			twistList := [t, -t];
 			parList := [[1,1], [-1,1]];
 		fi;
@@ -94,7 +94,7 @@ _WeylErrorAndParity := function(root, onRootList, w, wInv)
 		par := fail;
 		for i in [1..Length(parList)] do
 			b := twistList[i];
-			y := GrpRootHomF4(F4Refl(baseRoot, root), b, true, true);
+			y := GrpRootHomF4(F4Refl(baseRoot, root), b, true);
 			test := TestEquality(wInv*x*w, y);
 			if test = true then
 				isWeylOnBaseRoot := true;
@@ -183,6 +183,36 @@ TestSimpleRootParLists := function()
 		fi;
 	od;
 	return errorList;
+end;
+
+# Returns: true if the parities used in the definition of GrpRootHomF4(alpha, ...)
+# are correct for alpha in F4Roots with F4RootG2Coor(alpha) = [0,0].
+TestZeroParities := function()
+	local w1, w4, a1, alphaList, betaList, wiList, etaList, i;
+	w1 := GrpStandardWeylF4(F4SimpleRoots[1]);
+	w4 := GrpStandardWeylF4(F4SimpleRoots[4]);
+	a1 := ConicAlgIndet(1);
+	# The rows in [DMW, Table 2]
+	alphaList := [
+		[0, 1, -1, 0], [0, -1, 1, 0], [0, 1, 0, -1],
+		[0, -1, 0, 1], [0, 0, 1, -1], [0, 0, -1, 1]
+	];
+	betaList := [
+		[-1, 0, 0, 1], [1, 0, 0, -1], [-1, 0, 1, 0],
+		[1, 0, -1, 0], [0, -1, 0, -1], [0, 1, 0, 1]
+	];
+	wiList := [ w1, w1, w1, w1, w4, w4 ];
+	etaList := [ [-1,1], [-1,-1], [1,-1], [1,1], [1,-1], [1,1] ];
+	# Test
+	for i in [1..6] do
+		if not TestEquality(
+			wiList[i](LieRootHomF4(alphaList[i], a1)), 
+			LieRootHomF4(betaList[i], TwistGrpAct(etaList[i],a1))
+		) then
+			return false;
+		fi;
+	od;
+	return true;
 end;
 
 # ----- Tests involving commutator relations in the group -----

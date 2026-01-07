@@ -202,3 +202,19 @@ BindGlobal("ConicAlgSplitOne", function(a)
 	# No summand t*One(ConicAlg) found
 	return [Zero(ComRing), a];
 end);
+
+# twist: Element of the twisting group of (ComRing, ConicAlg), i.e., one of
+# [1,1], [-1,1], [1,-1], [-1,-1].
+# a: Element of ComRing or of ConicAlg.
+# Returns: twist.a, i.e., the action of twist on a.
+BindGlobal("TwistGrpAct", function(twist, a)
+	if IsRationalFunction(a) then # a in ComRing
+		return twist[1]*a;
+	else
+		a := twist[1]*a;
+		if twist[2] = -1 then
+			a := ConicAlgInv(a);
+		fi;
+		return a;
+	fi;
+end);

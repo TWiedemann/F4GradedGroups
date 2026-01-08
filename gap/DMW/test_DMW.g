@@ -505,3 +505,19 @@ PrintLatexParityTable := function()
 	od;
 	Display("\\bottomrule");
 end;
+
+# Returns: true if \eta(a, b) = \eta(-a, b) for all a \in F4Roots, b \in F4SimpleRoots and
+# \eta is the parity map given by F4SimpleRootParLists
+TestParityNegatives := function()
+	local i, j, k, root;
+	for i in [1..4] do
+		for j in [1..Length(F4Roots)] do
+			root := F4Roots[j];
+			k := Position(F4Roots, -root);
+			if F4SimpleRootParLists[i][j] <> F4SimpleRootParLists[i][k] then
+				return false;
+			fi;
+		od;
+	od;
+	return true;
+end;

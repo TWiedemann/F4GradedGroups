@@ -80,12 +80,12 @@ _WeylErrorAndParity := function(root, onRootList, w, wInv)
 		# Define root group element x on which we act
 		if baseRoot in F4ShortRoots then
 			a := ConicAlgIndet(1);
-			x := GrpRootHomF4(baseRoot, a, true);
+			x := GrpRootHomF4(baseRoot, a);
 			twistList := [a, -a, ConicAlgInv(a), -ConicAlgInv(a)];
 			parList := [[1,1], [-1,1], [1,-1], [-1,-1]];
 		else
 			t := ComRingIndet(1);
-			x := GrpRootHomF4(baseRoot, t, true);
+			x := GrpRootHomF4(baseRoot, t);
 			twistList := [t, -t];
 			parList := [[1,1], [-1,1]];
 		fi;
@@ -94,7 +94,7 @@ _WeylErrorAndParity := function(root, onRootList, w, wInv)
 		par := fail;
 		for i in [1..Length(parList)] do
 			b := twistList[i];
-			y := GrpRootHomF4(F4Refl(baseRoot, root), b, true);
+			y := GrpRootHomF4(F4Refl(baseRoot, root), b);
 			test := TestEquality(wInv*x*w, y);
 			if test = true then
 				isWeylOnBaseRoot := true;
@@ -192,7 +192,7 @@ TestZeroParities := function()
 	w1 := GrpStandardWeylF4(F4SimpleRoots[1]);
 	w4 := GrpStandardWeylF4(F4SimpleRoots[4]);
 	a1 := ConicAlgIndet(1);
-	# The rows in [DMW, Table 2]
+	# The values used in the table in [DMW] in the definition of \theta_\alpha
 	alphaList := [
 		[0, 1, -1, 0], [0, -1, 1, 0], [0, 1, 0, -1],
 		[0, -1, 0, 1], [0, 0, 1, -1], [0, 0, -1, 1]

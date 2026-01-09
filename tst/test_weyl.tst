@@ -14,7 +14,7 @@ gap> TestParityNegatives();
 true
 gap> PrintLatexParityTable();
 \toprule
-$\alpha$ & $\eta(\alpha, f_1)$ & $\eta(\alpha, f_2)$ & $\eta(\alpha, f_3)$ & $\eta(\alpha, f_4)$ \\
+$\alpha$ & $\eta(\alpha, \delta_1)$ & $\eta(\alpha, \delta_2)$ & $\eta(\alpha, \delta_3)$ & $\eta(\alpha, \delta_4)$ \\
 \midrule
 1000 & $ (-1, 1) $ & $ (1, 1) $ & $ (1, 1) $ & $ (1, 1) $\\
 0100 & $ (-1, 1) $ & $ (-1, 1) $ & $ (1, 1) $ & $ (1, 1) $\\

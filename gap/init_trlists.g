@@ -53,7 +53,14 @@ BindGlobal("_InitTrSubLists", function()
 			y := indet(j);
 			## Product of length 2
 			# tr(xy') = tr(x)tr(y) - tr(xy)
-			add(tr(x*inv(y)), tr(x)*tr(y) - tr(x*y));
+			if i<>j then
+				add(tr(x*inv(y)), tr(x)*tr(y) - tr(x*y));
+			else
+				# If x=y, then the term tr(xx') never appears because it is automatically
+				# replaced by 2n(x) (=tr(n(x))). Hence we write the replacement rule
+				# the other way around. This is precisely relation [GPR, (16.5.8)].
+				add(tr(x*x), tr(x)^2 - 2*ConicAlgMagNorm(x));
+			fi;
 			## Products of length 3
 			if Trace_MaxLength < 3 then
 				return;

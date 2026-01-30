@@ -70,7 +70,7 @@ end);
 
 # a: Element of ComRing
 # Returns: The same element brought into a "more canonical" form by using the relation
-# tr(xy') = tr(x)tr(y) - tr(xy). In this way, all occurences of conjugates a_i'
+# tr(xy') = tr(x)tr(y) - tr(xy) [GPR, (16.5.10)]. In this way, all occurences of conjugates a_i'
 # inside the argument of tr may be removed (though we only do this for products
 # of length up to 3)
 DeclareOperation("ComRingSimplifyTr", [IsRationalFunction]);

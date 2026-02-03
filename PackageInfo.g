@@ -6,9 +6,9 @@
 SetPackageInfo( rec(
 
 PackageName := "CubicJordanMatrixAlg",
-Subtitle := "Provides basic functionality for symbolic computation in cubic Jordan matrix algebras and associated F4-graded Lie algebras and groups",
-Version := "0.1",
-Date := "19/12/2025", # dd/mm/yyyy format
+Subtitle := "Symbolic computation in cubic Jordan matrix algebras",
+Version := "1.0",
+Date := "03/02/2026", # dd/mm/yyyy format
 License := "GPL-3.0-or-later",
 
 Persons := [
@@ -43,7 +43,7 @@ PackageDoc := rec(
   HTMLStart := "doc/chap0_mj.html",
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
-  LongTitle := "Provides basic functionality for symbolic computation in free multiplicative conic alternative algebras and associated F4-graded Lie algebras and groups",
+  LongTitle := "Symbolic computation in cubic Jordan matrix algebras",
 ),
 
 Dependencies := rec(

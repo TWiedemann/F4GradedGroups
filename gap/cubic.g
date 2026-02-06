@@ -164,6 +164,8 @@ end);
 # a: Element of ConicAlg
 # j, l: 1, 2, or 3 such that j <> l
 # Returns: a[jl] \in Cubic
+# "Mat" stands for the fact that, if we think of the elements of Cubic as matrices,
+# this element has a non-zero entry at position j, l.
 BindGlobal("CubicConicElMat", function(a, j, l)
 	local i;
 	if not (l in [1,2,3] and j in [1,2,3] and l <> j) then
@@ -189,7 +191,7 @@ end);
 # i, j: Indices 1, 2 or 3
 # a: Element of ComRing or ConicAlg
 # Returns: a[ij] \in Cubic
-BindGlobal("CubicElMat", function(i, j, a)
+BindGlobal("CubicEl", function(a, i, j)
 	if i = j then
 		ReqComRingEl(a);
 		return CubicComEl(a, i);
@@ -204,7 +206,7 @@ end);
 
 # i, j: Indices 1, 2 or 3
 # Returns: 1[ij] \in Cubic
-BindGlobal("CubicElOneMat", function(i, j)
+BindGlobal("CubicElOne", function(i, j)
 	if i = j then
 		return CubicComEl(One(ComRing), i);
 	else

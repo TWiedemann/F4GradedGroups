@@ -94,7 +94,7 @@ CubicComEl(t, i)
 ```
 Returns the element of $J$ which is denoted by $te_i$ in \[DMW\]. It is printed as `t[ii]`.
 ```
-CubicElMat(z, i, j)
+CubicEl(z, i, j)
 ```
 Returns `z[ij]`. Thus `z` must lie in $k$ if `i=j` and in $C$ otherwise.
 ```

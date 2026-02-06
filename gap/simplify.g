@@ -571,12 +571,12 @@ InstallMethod(ApplyDDLaws, [IsDDElement, IsBool], function(ddEl, applyDDRels)
 		for j in [1..3] do
 			Add(resultCoeffList, [
 				One(ComRing), CubicComElOne(i),
-				CubicElMat(i, j, resultZto[i][j])
+				CubicEl(resultZto[i][j], i, j)
 			]);
 			if i<j then
 				Add(resultCoeffList, [
 					One(ComRing), CubicConicElOneMat(i,j), 
-					CubicElMat(j, i, resultZShift[i][j])
+					CubicEl(resultZShift[i][j], j, i)
 				]);
 			fi;
 		od;

@@ -6,7 +6,7 @@ and, as the main application, in cubic Jordan matrix algebras over them.
 In other words, it provides a framework to prove that certain identities hold in any multiplicative conic alternative algebra over any commutative ring.
 It does this deriving these identities from a set of known identities in such objects.
 It also supports similar computations in the Lie algebra and the group of automorphisms
-that are constructed in the preprint \[DMW\] *From cubic norm pairs to $G_2$- and $F_4$-graded groups and Lie algebras* (TODO: arXiv link)
+that are constructed in the preprint \[DMW\] [*From cubic norm pairs to $G_2$- and $F_4$-graded groups and Lie algebras*](https://arxiv.org/abs/2602.06147)
 from the cubic Jordan matrix algebra of
 an arbitrary multiplicative conic alternative algebra.
 It cannot prove any identity in the objects described above (which seems to be a hopeless task),
